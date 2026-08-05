@@ -9,6 +9,7 @@
 # Quarto output
 _book/
 _site/
+/.quarto/
 
 # Rendered documents
 *.html
