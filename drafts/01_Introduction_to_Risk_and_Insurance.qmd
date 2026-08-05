@@ -1,0 +1,1204 @@
+---
+title: "Introduction to Data Science in Non-Life Insurance"
+format: html
+---
+
+# Chapter 1: Introduction to Risk and Insurance
+
+## Learning Outcomes {.unnumbered}
+
+After studying this chapter, students should be able to:
+
+**Remember**
+
+1. **Define** the fundamental concepts of risk, peril, hazard, insurance, and insurance premiums.
+2. **Identify** the main types of insurance, the parties to an insurance contract, and the characteristics of normally insurable risks.
+
+**Understand**
+
+3. **Explain** the classifications of risk and the principles of risk transfer, risk pooling, and indemnity.
+4. **Describe** the insurance mechanism, the benefits of insurance, and the structure and regulation of the insurance industry in Thailand.
+5. **Explain** the roles of probability, the law of averages, and the law of large numbers in insurance.
+
+**Apply**
+
+6. **Classify** risks according to their characteristics and determine whether they are normally insurable.
+7. **Interpret** the basic components and principles of insurance premium determination in simple insurance scenarios.
+
+---
+
+In everyday life, individuals, businesses, and governments face uncertainty regarding future events. Some of these events may result in financial losses, while others may create opportunities. Insurance is one of the most important mechanisms for managing the financial consequences of uncertain losses by pooling risks across many policyholders.
+
+This chapter introduces the concept of risk, the causes of loss, the characteristics of insurable risks, and the role of insurance in modern society.
+
+## Understanding Risk
+
+Risk refers to the possibility that the actual outcome of an event differs from the expected outcome. In insurance, the focus is primarily on outcomes that lead to financial loss.
+
+More formally, **risk** is the uncertainty surrounding future outcomes together with the possibility that these outcomes may cause adverse financial consequences.
+
+Two perspectives of risk are commonly encountered.
+
+* **Negative perspective (downside risk):** Risk represents the possibility of loss or harm.
+* **Positive perspective (upside risk):** Risk also creates opportunities for gain when uncertainty is managed appropriately.
+
+Insurance primarily deals with **downside risk**, whereas investment and business decisions often consider both downside and upside risk.
+
+::: {.callout-important}
+
+## Risk versus Uncertainty
+
+The terms *risk* and *uncertainty* are often used interchangeably, but they are not identical.
+
+* **Risk** refers to uncertainty that can be measured or estimated using probability.
+* **Uncertainty** refers to situations where probabilities are unknown or difficult to estimate.
+
+Insurance relies on measurable risks rather than complete uncertainty.
+:::
+
+::: {#exm-risk-perspectives}
+
+## Negative and Positive Perspectives of Risk
+
+Consider a farmer deciding whether to plant a new drought-resistant crop.
+
+* From a **negative perspective**, the farmer may suffer financial losses if the crop fails.
+* From a **positive perspective**, adopting the new crop may increase future profits if market demand is high.
+
+Insurance can protect the farmer against certain losses (such as crop damage due to insured perils), but it cannot guarantee higher profits.
+:::
+
+
+## Perils and Hazards
+
+A loss does not occur randomly without a cause. In insurance, it is useful to distinguish between the **peril** that directly causes a loss and the **hazards** that increase the likelihood or severity of that loss.
+
+### Peril
+
+A **peril** is the direct cause of a loss. It is the event that triggers damage or financial loss.
+
+Common examples of perils include
+
+* fire,
+* lightning,
+* flood,
+* windstorm,
+* theft,
+* motor vehicle collision, and
+* earthquake.
+
+For example, if a house is damaged by a fire, the **fire** is the peril.
+
+### Hazard
+
+A **hazard** is a condition or circumstance that increases either
+
+* the probability that a loss will occur (**loss frequency**), or
+* the expected size of the loss (**loss severity**).
+
+A hazard does **not** directly cause a loss. Instead, it makes a peril more likely to occur or increases the damage if the peril occurs.
+
+Hazards are commonly classified into three categories.
+
+### Physical Hazard
+
+A **physical hazard** is a tangible characteristic of a person, property, or environment that increases the likelihood or severity of loss.
+
+Examples include
+
+* faulty electrical wiring,
+* worn vehicle tyres,
+* storing flammable materials improperly,
+* poor building maintenance, and
+* slippery floors.
+
+For example, faulty electrical wiring increases the likelihood of a fire occurring.
+
+### Moral Hazard
+
+A **moral hazard** arises when a person intentionally behaves dishonestly because insurance provides financial protection.
+
+Examples include
+
+* intentionally damaging insured property,
+* staging a motor vehicle accident,
+* inflating the value of stolen property, and
+* submitting fraudulent insurance claims.
+
+Because these actions are intentional, moral hazards increase expected losses and are an important concern in underwriting and claims management.
+
+### Morale Hazard
+
+A **morale hazard** arises when a person becomes less careful because insurance reduces the financial consequences of a loss. Unlike a moral hazard, there is **no intention to commit fraud**.
+
+Examples include
+
+* leaving a vehicle unlocked,
+* neglecting routine maintenance of insured property,
+* failing to install recommended safety devices, and
+* driving less cautiously because comprehensive insurance is available.
+
+Morale hazards often increase the frequency of accidental losses.
+
+::: {.callout-important}
+
+## Distinguishing Moral and Morale Hazards
+
+Although their names are similar, **moral hazard** and **morale hazard** describe different behaviours.
+
+* A **moral hazard** involves **intentional dishonesty** or fraud.
+* A **morale hazard** involves **carelessness or indifference**, but without fraudulent intent.
+
+This distinction is important because insurers use different methods to manage each type of hazard.
+:::
+
+::: {.callout-note}
+
+## Cause-and-Effect Relationship
+
+The relationship among these concepts can be summarized as
+
+$$
+\text{Hazard} \longrightarrow \text{Peril} \longrightarrow \text{Loss}.
+$$
+
+A hazard increases the likelihood or severity of a peril, while the peril is the event that directly causes the loss.
+
+For example,
+
+* **Hazard:** Faulty electrical wiring
+* **Peril:** Fire
+* **Loss:** Damage to the building and its contents
+:::
+
+::: {#exm-perils-hazards}
+
+## Identifying Perils and Hazards
+
+Consider the following situations.
+
+| Situation                                                                          | Peril | Hazard                                                 |
+| ---------------------------------------------------------------------------------- | ----- | ------------------------------------------------------ |
+| A warehouse catches fire because of faulty wiring.                                 | Fire  | Faulty electrical wiring (physical hazard)             |
+| A policyholder deliberately burns an insured building to receive compensation.     | Fire  | Intentional fraud (moral hazard)                       |
+| A driver leaves a car unlocked because it is fully insured, and the car is stolen. | Theft | Carelessness due to insurance (morale hazard)          |
+| Heavy rainfall causes a river to overflow and damage nearby houses.                | Flood | Houses located in a flood-prone area (physical hazard) |
+
+In each case, the **peril** is the immediate cause of the loss, while the **hazard** is the condition that increases the likelihood or severity of that loss.
+:::
+
+
+
+## Components of Risk
+
+Insurers assess a risk by considering several related components. Together, these components help answer four fundamental questions:
+
+| Question                                            | Component                               |
+| --------------------------------------------------- | --------------------------------------- |
+| **What can cause a loss?**                          | Peril                                   |
+| **What makes the loss more likely or more severe?** | Hazard                                  |
+| **How often and how large might losses be?**        | Degree of risk (frequency and severity) |
+| **How certain are these estimates?**                | Uncertainty                             |
+
+This framework forms the basis of underwriting and premium determination.
+
+### Peril
+
+The **peril** identifies the event that may result in a loss. Recognising the relevant peril helps insurers determine the appropriate policy coverage, exclusions, and methods of loss prevention.
+
+### Hazard
+
+The **hazard** describes the conditions that influence the likelihood or severity of the peril. During underwriting, insurers evaluate hazards to estimate the expected level of risk and determine appropriate premiums or policy conditions.
+
+
+### Degree of Risk
+
+The **degree of risk** describes the overall level of risk associated with a particular exposure. It is commonly assessed using two measures:
+
+* **Frequency:** How often losses are expected to occur.
+* **Severity:** The average financial impact of each loss.
+
+These two measures provide valuable information for insurers because risks with similar expected losses may have very different patterns of claims.
+
+| Frequency | Severity | Typical Example                       |
+| :-------- | :------- | :------------------------------------ |
+| High      | Low      | Minor motor insurance claims          |
+| Low       | High     | Large industrial fire                 |
+| High      | High     | Poorly maintained commercial building |
+| Low       | Low      | Theft of inexpensive household items  |
+
+For example, a portfolio of motor insurance policies may generate many small claims each year, whereas a commercial property portfolio may experience only a few claims but with very large losses.
+
+### Uncertainty
+
+Even after identifying the peril, hazard, frequency, and severity, insurers cannot predict exactly
+
+* whether a loss will occur,
+* when it will occur, or
+* how large the loss will be.
+
+This lack of certainty is referred to as **uncertainty**.
+
+Insurance companies reduce uncertainty by analysing historical claims data, identifying patterns, and applying statistical and actuarial methods. However, uncertainty can never be eliminated completely.
+
+::: {.callout-important}
+
+## Risk Has More Than One Dimension
+
+Two risks may have the same expected loss but require different premiums because their **frequency**, **severity**, or **uncertainty** differs.
+
+Understanding these dimensions is fundamental to underwriting, pricing, and risk management.
+:::
+
+::: {#exm-risk-components}
+
+## Analysing the Components of Risk
+
+Consider a homeowner living in an area prone to flooding.
+
+| Component       | Description                                                       |
+| :-------------- | :---------------------------------------------------------------- |
+| **Peril**       | Flood                                                             |
+| **Hazard**      | House located near a river with inadequate flood protection       |
+| **Frequency**   | Flooding is expected once every 10 years                          |
+| **Severity**    | Each flood may cause substantial damage to the property           |
+| **Uncertainty** | The exact timing and extent of the next flood cannot be predicted |
+
+Although the homeowner knows that flooding is possible, the occurrence and magnitude of the next loss remain uncertain. Insurers use historical flood data and catastrophe models to estimate the likelihood and potential cost of future claims.
+:::
+
+### Relationship among the Components
+
+The components of risk are closely related and can be viewed as a sequence:
+
+
+```{mermaid}
+%%| echo: false
+%%| id: fig-risk-flow
+%%| fig-cap: "The relationship between Hazards, Perils, and Risk Assessment."
+flowchart TD
+    H[Hazard]
+    P[Peril]
+    L[Loss]
+    R[Risk Assessment]
+    U[Uncertainty]
+
+    H -->|Increases the likelihood or severity of| P
+    P -->|Causes| L
+    L --> R
+    R --> F[Frequency]
+    R --> S[Severity]
+    R --> U
+```
+
+
+
+This framework highlights how insurers assess risks. They identify the **peril**, evaluate the **hazards**, estimate the **frequency** and **severity** of potential losses, and quantify the remaining **uncertainty** before deciding whether to insure the risk and how much premium to charge.
+
+
+
+
+## Classification of Risks
+
+Not all risks have the same characteristics. Classifying risks helps insurers understand the nature of potential losses, determine whether a risk can be insured, and select appropriate methods of risk management. Several common classifications are used in insurance.
+
+### Pure and Speculative Risks
+
+A **pure risk** is a situation in which the possible outcomes are either **loss** or **no loss**. There is no opportunity to make a profit from the occurrence of the risk. Most risks encountered in personal and commercial insurance, such as fire, theft, illness, and motor accidents, belong to this category.
+
+In contrast, a **speculative risk** involves the possibility of either a **gain** or a **loss**. Investing in stocks, starting a business, or trading foreign currencies are examples of speculative risks. Although these activities may generate profits, they may also result in financial losses.
+
+Because insurance is intended to compensate accidental losses rather than guarantee profits, private insurers generally insure **pure risks** but not **speculative risks**.
+
+::: {#exm-pure-speculative}
+
+## Pure and Speculative Risks
+
+The following situations illustrate the difference between pure and speculative risks.
+
+| Situation                                 | Type of Risk |
+| ----------------------------------------- | ------------ |
+| A house is damaged by fire.               | Pure         |
+| A driver is involved in a motor accident. | Pure         |
+| An investor purchases company shares.     | Speculative  |
+| A business launches a new product.        | Speculative  |
+|                                           |              |
+:::
+
+
+
+### Particular and Fundamental Risks
+
+Risks may also be classified according to the number of people affected.
+
+A **particular risk** affects a single individual, household, or business. Examples include the theft of a vehicle, damage to a factory caused by fire, or injuries resulting from a traffic accident. Since these losses are generally independent across policyholders, they can often be pooled effectively through insurance.
+
+A **fundamental risk**, on the other hand, affects large groups of people or even entire economies. Examples include war, widespread inflation, pandemics, and severe economic recessions. Because many losses occur simultaneously, these risks are difficult for private insurers to diversify and often require government involvement or special insurance arrangements.
+
+::: {.callout-note}
+
+## Why Fundamental Risks Are Difficult to Insure
+
+Insurance relies on pooling many independent risks. When a single event causes losses to a large number of policyholders at the same time, the insurer may face claims that exceed its financial capacity. This is one reason why risks such as war and widespread economic disruption are usually excluded from standard insurance policies.
+:::
+
+
+
+### Static and Dynamic Risks
+
+Another useful classification distinguishes between **static** and **dynamic** risks.
+
+A **static risk** exists regardless of changes in the economy or society. Many traditional insurance risks, such as fire, theft, and natural hazards, remain present over time even though their frequency may fluctuate.
+
+A **dynamic risk** arises from changes in economic conditions, technological developments, social behaviour, or government policy. For example, advances in technology have increased exposure to cyber attacks, while climate change has altered the frequency and severity of certain natural hazards. Dynamic risks evolve over time and often require insurers to update their underwriting practices and pricing models.
+
+
+
+### Insurable and Uninsurable Risks
+
+Not every risk can be transferred to an insurer. In general, an **insurable risk** has characteristics that allow its expected losses to be estimated with reasonable accuracy and its financial consequences to be shared among many policyholders.
+
+Examples of insurable risks include damage to motor vehicles, residential property, and commercial buildings, as well as liability arising from accidents.
+
+By contrast, **uninsurable risks** typically lack one or more of these characteristics. They may involve highly uncertain outcomes, affect many policyholders simultaneously, or depend primarily on business or investment decisions rather than accidental events. Examples include fluctuations in stock prices, changes in exchange rates, normal business competition, and reputational damage.
+
+The characteristics of insurable risks will be discussed in greater detail later in this chapter.
+
+::: {.callout-important}
+
+## Key Point
+
+The classifications introduced in this section are not independent. For example, most risks covered by general insurance are **pure**, **particular**, and **insurable**. Understanding these classifications helps explain why some risks are readily insured while others must be managed using alternative risk management techniques.
+:::
+
+
+
+
+
+## Characteristics of Normally Insurable Risks
+
+Although many risks exist, not all of them are suitable for insurance. To operate sustainably, insurers must be able to estimate future losses with reasonable accuracy and charge premiums that are both fair and affordable. Consequently, a risk is normally considered **insurable** only if it possesses several desirable characteristics.
+
+The following characteristics are commonly associated with risks that can be insured by private insurers.
+
+### Large Number of Homogeneous Exposure Units
+
+Insurance relies on the **law of large numbers**, which states that the average outcome of many similar exposure units becomes more predictable as the number of observations increases.
+
+To estimate future claims accurately, insurers require a large portfolio of policyholders with similar risk characteristics. The larger and more homogeneous the portfolio, the more reliable the estimates of claim frequency and severity.
+
+For example, an insurer can estimate the expected number of motor insurance claims from thousands of similar vehicles more accurately than from only a few vehicles.
+
+### Accidental and Unintentional Loss
+
+Insurance is designed to protect against losses that occur **fortuitously**, that is, by chance or accicent from the perspective of the insured.
+
+If policyholders could deliberately cause insured losses, insurance would encourage fraud and become financially unsustainable. Consequently, losses resulting from intentional acts are generally excluded from insurance coverage.
+
+::: {.callout-important}
+
+## Accidental Does Not Mean Unexpected
+
+An accidental loss does not necessarily mean that the event is impossible to anticipate. For example, insurers know that some houses will be damaged by fire each year. What is uncertain is **which** house will suffer the loss and **when** it will occur.
+:::
+
+### Determinable and Measurable Loss
+
+For a claim to be settled fairly, the occurrence and amount of the loss must be objectively verifiable.
+
+This means that insurers should be able to determine
+
+* whether the loss occurred,
+* when it occurred,
+* what caused the loss, and
+* the financial value of the loss.
+
+For example, the repair cost of a damaged vehicle can usually be estimated by an assessor, whereas emotional distress is often much more difficult to measure objectively.
+
+### Non-Catastrophic Loss
+
+Insurance works best when losses occur independently across policyholders. If a single event causes losses to a large proportion of insureds simultaneously, the insurer may be unable to meet all claim obligations.
+
+Examples of catastrophic events include major earthquakes, widespread flooding, pandemics, and war.
+
+Modern insurers manage catastrophic risks through geographical diversification, policy limits, and reinsurance. Nevertheless, some catastrophic risks remain difficult or impossible to insure in the private market.
+
+### Pure and Particular Risk
+
+As discussed earlier, insurance primarily covers **pure risks**, where the possible outcomes are loss or no loss, rather than gain.
+
+In addition, insured risks are usually **particular risks**, affecting individual policyholders rather than society as a whole. Risks such as house fires, theft, and motor accidents satisfy these characteristics and can therefore be pooled effectively.
+
+By contrast, speculative investments and widespread economic recessions generally do not satisfy these conditions.
+
+### Calculable Probability of Loss
+
+An insurer must be able to estimate the probability and expected cost of future losses using historical data, statistical analysis, and actuarial models.
+
+Reliable estimation allows insurers to determine appropriate premiums and maintain adequate reserves for future claims.
+
+When little or no historical data are available, estimating future losses becomes highly uncertain, making insurance difficult or prohibitively expensive.
+
+### Financial Loss Requirement
+
+Insurance provides compensation only for **financial losses**. The insured must have an **insurable interest**, meaning that they would suffer a genuine financial loss if the insured event occurred.
+
+For example, a homeowner has an insurable interest in their own house because its destruction would result in financial loss. However, the homeowner generally cannot insure a neighbour's house because they would not suffer a direct financial loss if it were damaged.
+
+### Reasonable Premium
+
+Finally, the premium must be affordable relative to the protection provided.
+
+If the expected loss is extremely high or highly uncertain, the premium required may become so expensive that few people are willing to purchase the insurance. In such cases, the risk is technically insurable but may not be commercially viable.
+
+For example, a house located in an area with an exceptionally high probability of flooding may require a premium that exceeds what most homeowners are willing to pay.
+
+::: {#exm-insurable-risk}
+
+## Assessing Whether a Risk Is Insurable
+
+Consider the following situations.
+
+| Risk                                  | Normally Insurable? | Reason                                                                                      |
+| ------------------------------------- | :-----------------: | ------------------------------------------------------------------------------------------- |
+| Fire damage to a residential house    |          ✓          | Losses are accidental, measurable, and supported by extensive historical data.              |
+| Motor vehicle collision               |          ✓          | Large numbers of similar exposure units allow reliable estimation of claims.                |
+| Loss from investing in company shares |          ✗          | This is a speculative risk with the possibility of gain or loss.                            |
+| Losses caused by war                  |          ✗          | A single event may produce catastrophic losses affecting many policyholders simultaneously. |
+| Damage to a neighbour's house         |          ✗          | The policyholder has no insurable interest in the property.                                 |
+
+This example illustrates that a risk is considered insurable only when it satisfies several characteristics simultaneously, rather than any single criterion alone.
+:::
+
+
+### Risks Typically Not Insurable
+
+Some risks do not satisfy the characteristics described above and are therefore not normally covered by general insurers.
+
+**Market risk** arises from fluctuations in market prices, such as changes in stock prices or commodity prices. **Financial risk** includes changes in interest rates, exchange rates, or credit conditions. **Production risk** refers to uncertainties associated with business operations, including changes in demand, production costs, or technological failures. **Political risk** arises from government actions or political instability, such as changes in legislation, expropriation of assets, or civil unrest.
+
+These risks are generally excluded because they often possess one or more of the following characteristics:
+
+* they are speculative rather than pure risks;
+* they may affect many policyholders simultaneously, making diversification difficult;
+* reliable historical data may be limited or unavailable;
+* losses are difficult to measure objectively; or
+* insuring such risks may create undesirable incentives or conflict with public policy.
+
+::: {.callout-note}
+
+## Not Absolutely Uninsurable
+
+Some risks traditionally regarded as uninsurable can be transferred through specialised insurance products or alternative risk transfer mechanisms. For example, political risk insurance, trade credit insurance, and weather derivatives are available in certain markets, although they typically involve specialised underwriting and pricing.
+:::
+
+
+
+
+## What Is Insurance?
+
+Insurance is a financial arrangement in which an insurer agrees to compensate an insured for specified financial losses in exchange for the payment of a premium. By transferring individual risks to an insurer and pooling similar risks across many policyholders, insurance reduces the financial consequences of uncertain future events.
+
+Insurance does not prevent losses from occurring. Instead, it provides financial protection by replacing the possibility of a large and uncertain loss with a relatively small and predictable premium.
+
+Three fundamental principles underpin the operation of insurance: **risk transfer**, **risk pooling**, and **indemnity**.
+
+### Risk Transfer
+
+The primary purpose of insurance is **risk transfer**. Individuals and businesses face many risks that could result in substantial financial losses. By purchasing insurance, they transfer the financial consequences of specified risks to an insurer in exchange for a premium.
+
+For example, a homeowner purchases fire insurance to protect against the financial consequences of damage caused by fire. Although the risk of fire remains, the insurer assumes responsibility for compensating covered losses according to the policy terms.
+
+### Risk Pooling
+
+Insurance operates by **pooling risks** from many policyholders who are exposed to similar types of risk. Each policyholder contributes a relatively small premium to a common fund. Since only a small proportion of policyholders are expected to experience losses during any policy period, the accumulated premiums are sufficient to compensate those who suffer covered losses.
+
+Risk pooling enables uncertain and potentially large individual losses to be shared across many participants. The effectiveness of this mechanism depends on having a sufficiently large number of similar exposure units, allowing insurers to estimate future losses with reasonable accuracy.
+
+::: {.callout-note}
+
+## Why Does Risk Pooling Work?
+
+Insurance does not require every policyholder to experience a loss. Instead, premiums collected from the many who do **not** suffer losses are used to compensate the relatively few who do. This principle enables insurers to spread financial losses across a large group of policyholders.
+:::
+
+### Indemnity
+
+Most general insurance contracts are based on the **principle of indemnity**. The objective is to restore the insured, as nearly as possible, to the same financial position they occupied immediately before the loss.
+
+Consequently, insurance is intended to compensate for financial loss rather than provide an opportunity for profit. If a vehicle worth THB 600,000 is completely destroyed in an accident, the insurer compensates the insured for the financial value of the loss, subject to the policy terms and conditions. The insured should not receive compensation exceeding the actual loss.
+
+Certain types of insurance, such as life insurance and personal accident insurance, are **not** contracts of indemnity because the amount payable is specified in advance rather than determined by the actual financial loss.
+
+::: {.callout-important}
+
+## Insurance Does Not Eliminate Risk
+
+Insurance transfers the **financial consequences** of specified losses; it does not eliminate the underlying risk itself. For example, purchasing fire insurance does not reduce the probability that a fire will occur. Instead, it protects the insured against the financial impact of a covered fire loss.
+:::
+
+::: {#exm-home-insurance}
+
+## Insurance in Practice
+
+Suppose a homeowner purchases fire insurance for a house valued at THB 5 million.
+
+If no fire occurs during the policy period, the homeowner receives no claim payment but benefits from financial protection throughout the year.
+
+If a covered fire damages the house, the insurer compensates the homeowner according to the policy terms. The financial burden of the loss is therefore transferred from the homeowner to the insurer, while the cost of providing this protection is shared among many policyholders through risk pooling.
+:::
+
+### Summary
+
+Insurance can be viewed as a system based on three interconnected principles:
+
+| Principle         | Role in Insurance                                                                           |
+| ----------------- | ------------------------------------------------------------------------------------------- |
+| **Risk transfer** | Transfers the financial consequences of specified losses from the insured to the insurer.   |
+| **Risk pooling**  | Spreads the cost of losses among many policyholders through the collection of premiums.     |
+| **Indemnity**     | Restores the insured to approximately the same financial position occupied before the loss. |
+
+This understanding provides the foundation for the next section, which explains how these principles are implemented through the insurance mechanism.
+
+
+
+
+
+
+## Insurance Mechanism
+
+Insurance functions as a **risk-sharing mechanism** that enables individuals and businesses to protect themselves against uncertain financial losses. Instead of each person bearing the full cost of a potential loss, many policyholders contribute premiums to a common fund. Those who experience covered losses are then compensated from this fund.
+
+This mechanism allows policyholders to replace an uncertain and potentially large financial loss with a relatively small and predictable premium.
+
+The insurance mechanism operates through four basic steps.
+
+### Step 1: Risk Assessment
+
+Before issuing an insurance policy, the insurer evaluates the risk presented by the applicant. This process, known as **underwriting**, considers factors that affect the likelihood and severity of future losses, such as the type of property being insured, its location, and the applicant's claims history.
+
+Based on this assessment, the insurer determines whether to accept the risk and calculates an appropriate premium.
+
+### Step 2: Premium Collection
+
+Policyholders who face similar risks pay premiums to the insurer. These premiums are pooled to form a common insurance fund that is used to pay future claims.
+
+Although individual policyholders may pay different premiums according to their level of risk, all premiums contribute to the same risk-sharing mechanism.
+
+### Step 3: Loss Occurrence and Claim Settlement
+
+During the policy period, some policyholders experience covered losses while others do not. When a covered loss occurs, the insured submits a claim to the insurer.
+
+The insurer investigates the claim to verify that
+
+* the loss is covered by the policy,
+* the amount of the loss can be determined, and
+* the claim satisfies the policy terms and conditions.
+
+If the claim is valid, the insurer compensates the insured according to the policy provisions.
+
+### Step 4: Risk Sharing
+
+Because only a relatively small proportion of policyholders experience losses during any policy period, the premiums collected from all policyholders are generally sufficient to compensate those who suffer covered losses.
+
+This sharing of losses among many policyholders is the fundamental principle that makes insurance economically feasible.
+
+::: {.callout-note}
+
+## Why Insurance Requires Many Policyholders
+
+Insurance relies on the fact that losses occur randomly and independently across a large number of similar exposure units. If every policyholder suffered a loss at the same time, the insurer would be unable to spread the financial burden effectively.
+:::
+
+### The Insurance Mechanism
+
+The operation of insurance can be summarized as follows.
+
+```{mermaid}
+%%| echo: false
+%%| id: fig-insurance-flow
+%%| fig-cap: "The mechanism of risk pooling in insurance."
+%%| fig-width: 6
+flowchart LR
+    A[Policyholders] -->|Pay premiums| B(Insurance Fund)
+    B -->|Pay covered claims| C[Claimants]
+```
+
+Although all policyholders contribute premiums, only those who experience covered losses receive compensation. In effect, the losses of the few are financed by the premiums collected from the many.
+
+::: {#exm-insurance-mechanism}
+
+## How the Insurance Mechanism Works
+
+Suppose an insurer provides fire insurance to **10,000 homeowners**.
+
+Each homeowner pays an annual premium of **THB 4,000**, creating a total premium fund of **THB 40 million**.
+
+During the year, only **80 homeowners** experience covered fire losses. After investigating the claims, the insurer compensates these policyholders from the premium fund.
+
+Although most policyholders do not make claims, they benefit from knowing that financial protection is available should a covered loss occur. By pooling risks across many homeowners, the insurer is able to compensate the relatively few who suffer losses while charging each policyholder only a small fraction of the potential loss.
+:::
+
+::: {.callout-important}
+
+## Insurance Is Based on Probability, Not Certainty
+
+Insurers cannot predict which individual policyholders will experience losses. Instead, they estimate the **expected number** and **expected cost** of claims for a large group of similar policyholders using statistical and actuarial methods.
+
+This reliance on probability is one of the fundamental differences between insurance and savings.
+:::
+
+### Connection to Actuarial Science
+
+The insurance mechanism depends on accurate estimation of future claims. Actuaries use probability, statistics, and historical claims data to estimate claim frequency and severity, determine premiums, and ensure that insurers maintain sufficient funds to meet future claim obligations.
+
+
+
+
+
+## Insurance Contracts
+
+
+An insurance policy is a legally enforceable contract between the insurer and the insured. The contract specifies the risks covered, the amount of insurance, the premium payable, the rights and obligations of each party, and the circumstances under which claims will be paid.
+
+Under Section 862 of the Thai Civil and Commercial Code, an insurance contract may involve three parties.
+
+### The Insured
+
+The **insured** is the person whose financial interest is protected by the insurance contract. The insured is responsible for paying premiums and disclosing material facts that may affect the insurer's assessment of the risk.
+
+### The Insurer
+
+The **insurer** accepts the transferred risk and agrees to compensate the insured for covered losses in accordance with the policy terms. In Thailand, an insurer must be a public limited company licensed to conduct insurance business under the relevant legislation.
+
+### The Beneficiary
+
+The **beneficiary** is the person entitled to receive policy proceeds. Depending on the type of insurance, the beneficiary may be
+
+* the insured,
+* another person designated in the policy, or
+* a third party legally entitled to compensation.
+
+::: {#exm-contract-parties}
+
+## Parties to an Insurance Contract
+
+A homeowner purchases fire insurance on a house financed by a bank.
+
+* The homeowner is the **insured**.
+* The insurance company is the **insurer**.
+* If the house is mortgaged, the bank may be named as the **beneficiary** (or loss payee) to protect its financial interest.
+:::
+
+
+
+## Benefits of Insurance
+
+Insurance provides benefits that extend beyond individual policyholders. By reducing financial uncertainty, it contributes to economic stability and supports business development.
+
+For **individuals and households**, insurance provides financial protection against unexpected losses and promotes peace of mind. Instead of facing potentially devastating financial consequences, policyholders exchange uncertain losses for predictable premium payments.
+
+For **businesses**, insurance protects assets, supports business continuity, and enables firms to undertake productive activities that might otherwise involve unacceptable levels of financial risk.
+
+For **society and the economy**, insurance facilitates investment, encourages entrepreneurship, promotes long-term savings through certain life insurance products, and assists communities in recovering more quickly after major disasters.
+
+::: {.callout-tip}
+
+## Insurance Supports Economic Growth
+
+Insurance does more than compensate individual losses. By reducing uncertainty, it encourages households and businesses to invest, borrow, and undertake economic activities that contribute to overall economic development.
+:::
+
+
+
+
+## Insurance in Thailand
+
+### Overview of the Thai Insurance Industry
+
+The insurance industry plays an important role in Thailand's financial system by providing financial protection to individuals, businesses, and public organizations against uncertain losses. Through risk pooling and risk transfer, insurers help reduce the financial impact of accidents, property damage, illness, disability, and death.
+
+In Thailand, insurance is governed by the **Civil and Commercial Code**, which recognizes two main categories of insurance contracts:
+
+* **Life insurance**, and
+* **Non-life insurance**.
+
+These two sectors operate under separate legislation and are supervised by the **Office of Insurance Commission (OIC)**.
+
+
+
+### Types of Insurance
+
+Thai insurance is broadly classified into **life insurance** and **non-life insurance**, reflecting the nature of the risks being insured and the contractual benefits provided.
+
+#### Life Insurance
+
+Life insurance provides financial protection against risks associated with human life. The payment of benefits depends on the survival or death of the insured person, as specified in the insurance contract.
+
+The term **life insurance** is widely used in the United States and many other countries. Historically, the United Kingdom used the term **life assurance**, reflecting the certainty that death will eventually occur. Today, however, the term *life insurance* has become the more widely accepted international terminology.
+
+Common examples of life insurance products include
+
+* term life insurance,
+* whole life insurance,
+* endowment insurance, and
+* annuity contracts.
+
+#### Non-Life Insurance
+
+Non-life insurance includes all forms of insurance other than life insurance. It protects policyholders against financial losses arising from damage to property, legal liability, or other specified risks.
+
+Different countries use different terminology for this sector.
+
+| Term                                      | Commonly Used In                          |
+| ----------------------------------------- | ----------------------------------------- |
+| **Non-life insurance**                    | Thailand and many Asian countries         |
+| **General insurance**                     | United Kingdom and Commonwealth countries |
+| **Property and casualty (P&C) insurance** | United States and Japan                   |
+
+Examples of non-life insurance include
+
+* motor insurance,
+* fire insurance,
+* marine insurance,
+* engineering insurance,
+* travel insurance, and
+* liability insurance.
+
+::: {.callout-note}
+
+## Different Names, Similar Concepts
+
+Although the terms *non-life insurance*, *general insurance*, and *property and casualty insurance* differ across countries, they all refer broadly to insurance that is **not** life insurance. The scope of coverage may vary slightly among jurisdictions, but the underlying concept is the same.
+:::
+
+
+
+### Characteristics of Life Insurance
+
+Life insurance differs from non-life insurance because the insured event is linked to the life of an individual rather than to damage or loss of property.
+
+Some important characteristics of life insurance are:
+
+* Benefits are payable upon the death or survival of the insured, depending on the policy.
+* Policies are generally long-term contracts that may remain in force for many years.
+* Premiums are determined using mortality assumptions together with interest rates and expense provisions.
+* Many policies accumulate a cash value or provide savings and investment features.
+* The policy benefit is specified in advance and is generally **not** based on the actual financial loss suffered.
+
+Because the amount payable is predetermined, life insurance is generally **not** a contract of indemnity.
+
+::: {#exm-life-insurance}
+
+## Example of a Life Insurance Policy
+
+A person purchases a 20-year term life insurance policy with a sum insured of THB 2 million.
+
+If the insured dies during the policy term, the insurer pays THB 2 million to the designated beneficiary. If the insured survives beyond the policy term, no death benefit is payable unless otherwise specified by the policy.
+:::
+
+
+
+### Characteristics of Non-Life Insurance
+
+Non-life insurance protects against accidental losses affecting property, liability, or other financial interests. Unlike life insurance, these contracts are generally short-term and are renewed periodically.
+
+Typical characteristics include:
+
+* Coverage applies only to specified accidental losses.
+* Policies are usually written for one year and renewed if continued protection is required.
+* Most contracts follow the **principle of indemnity**, compensating the insured for the actual financial loss up to the policy limits.
+* Premiums are determined primarily from expected claim frequency and claim severity.
+
+Since losses depend on uncertain events such as accidents, fires, or thefts, claims are paid only when a covered loss occurs.
+
+::: {#exm-motor-insurance}
+
+## Example of Non-Life Insurance
+
+A motor insurance policy provides coverage for accidental damage to a vehicle during a one-year policy period.
+
+If the insured vehicle is damaged in a covered collision, the insurer compensates the policyholder for the repair cost, subject to the policy conditions, deductible, and policy limit.
+:::
+
+
+
+### Common Terminology in Life Insurance
+
+Several terms are commonly used in life insurance and differ slightly from those used in non-life insurance.
+
+| Term                          | Meaning                                                                          |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| **Insured**                   | The person whose life is covered by the policy.                                  |
+| **Policyholder**              | The person who owns the insurance policy and is responsible for paying premiums. |
+| **Beneficiary**               | The person designated to receive the policy proceeds upon the insured's death.   |
+| **Sum insured (sum assured)** | The amount payable under the policy upon the occurrence of the insured event.    |
+| **Premium**                   | The amount paid to obtain insurance coverage.                                    |
+| **Policy term**               | The period during which the insurance contract remains in force.                 |
+
+::: {.callout-note}
+
+## Insured and Policyholder Are Not Always the Same Person
+
+In many life insurance contracts, the **policyholder** and the **insured** are the same person. However, they may differ. For example, a parent may purchase a life insurance policy on the life of a child, making the parent the policyholder and the child the insured.
+:::
+
+
+
+### Insurance Regulation in Thailand
+
+Insurance companies operating in Thailand are supervised by the **Office of Insurance Commission (OIC)**, the national regulatory authority responsible for overseeing both life and non-life insurance businesses.
+
+The OIC's primary responsibilities include
+
+* licensing insurance companies,
+* protecting the interests of policyholders,
+* supervising insurers' financial soundness,
+* promoting fair market conduct, and
+* supporting the stable development of the insurance industry.
+
+Life insurance and non-life insurance businesses are governed under separate legislation.
+
+| Insurance Business     | Governing Law                                                       |
+| ---------------------- | ------------------------------------------------------------------- |
+| **Life insurance**     | *Life Insurance Act B.E. 2535 (1992)* and subsequent amendments     |
+| **Non-life insurance** | *Non-Life Insurance Act B.E. 2535 (1992)* and subsequent amendments |
+
+These laws establish the legal framework for licensing, corporate governance, capital requirements, and the conduct of insurance business in Thailand.
+
+::: {.callout-important}
+
+## Role of the Office of Insurance Commission (OIC)
+
+The Office of Insurance Commission (OIC) is the primary regulator of Thailand's insurance industry. Its objective is to promote a stable, transparent, and trustworthy insurance market while protecting the interests of policyholders.
+:::
+
+
+
+
+
+## Mathematical Foundations of Insurance
+
+Insurance relies on mathematical principles to estimate future losses and determine appropriate premiums. Although insurers cannot predict whether an individual policyholder will experience a loss, they can estimate the expected losses of a large group of similar policyholders using probability and statistical methods.
+
+Three fundamental concepts underpin insurance operations:
+
+* probability,
+* the law of averages, and
+* the law of large numbers.
+
+Together, these concepts enable insurers to assess risks, calculate premiums, and maintain sufficient funds to pay future claims.
+
+
+### Probability
+
+**Probability** measures the likelihood that an event will occur. It is expressed as a number between 0 and 1, where
+
+* a probability of **0** indicates that the event cannot occur,
+* a probability of **1** indicates that the event is certain to occur, and
+* values between 0 and 1 represent varying degrees of likelihood.
+
+In insurance, probability is used to estimate the likelihood of insured events such as fires, motor accidents, thefts, or deaths. These probabilities form the basis for estimating expected future claims.
+
+For example, suppose historical data indicate that approximately **10 out of every 1,000 insured vehicles** are declared total losses each year. The estimated probability that an individual vehicle will suffer a total loss during the year is
+
+$$
+\frac{10}{1000}=0.01,
+$$
+
+or **1%**.
+
+This probability helps insurers estimate the expected number of claims within a portfolio and contributes to the calculation of insurance premiums.
+
+::: {.callout-note}
+
+## Probability Describes Groups, Not Individuals
+
+A probability of 1% does **not** mean that every insured vehicle has exactly a 1% chance of being involved in an accident in a particular year. Instead, it means that among many similar vehicles, approximately 1% are expected to experience the insured event.
+:::
+
+
+
+### Law of Averages
+
+The **law of averages** is the principle that losses can be shared among many policyholders through **risk pooling**. Each policyholder contributes a relatively small premium to a common fund, from which the losses of the few who experience insured events are compensated.
+
+Because individual losses are shared across many policyholders, insurance transforms uncertain and potentially large losses into relatively small and predictable premium payments.
+
+In general, increasing the number of policyholders allows the cost of losses to be spread more widely. As administrative expenses and other factors are shared across a larger portfolio, the average cost borne by each policyholder may decrease.
+
+::: {#exm-law-averages}
+
+## Risk Pooling Through the Law of Averages
+
+Suppose that 100 homeowners purchase identical fire insurance policies.
+
+During the year, only two houses are damaged by fire. Rather than requiring the two affected homeowners to bear the entire financial burden, all 100 policyholders contribute premiums that collectively cover the losses.
+
+The financial burden of the losses is therefore shared among the entire group, illustrating the principle of risk pooling.
+:::
+
+
+### Law of Large Numbers
+
+The **law of large numbers** states that as the number of similar exposure units increases, the observed average loss tends to approach the expected average loss.
+
+This principle allows insurers to estimate future claims more accurately by analysing large portfolios of similar risks. While the occurrence of losses for an individual policyholder remains uncertain, the total number of losses across thousands of policyholders becomes increasingly predictable.
+
+The law of large numbers is one of the most important mathematical foundations of insurance because it reduces the uncertainty associated with future claims.
+
+::: {#exm-law-large-numbers}
+
+## Predicting Fire Losses
+
+Suppose an insurer covers **10,000 similar houses** against fire.
+
+Although it is impossible to predict which individual houses will experience a fire during the coming year, historical data may indicate that approximately **25 houses** are expected to suffer fire damage.
+
+Because the insurer has a large portfolio of similar risks, the actual number of claims is likely to be close to the expected number. This enables the insurer to estimate future claim costs and determine appropriate premium rates.
+:::
+
+
+
+::: {.callout-important}
+
+## The Law of Averages and the Law of Large Numbers Are Different
+
+The **law of averages** explains **how losses are shared** among policyholders through risk pooling.
+
+The **law of large numbers** explains **why insurers can estimate future losses more accurately** when many similar risks are insured.
+
+Although closely related, the two principles serve different purposes in insurance.
+:::
+
+
+### Applications in Insurance
+
+The mathematical principles discussed above play complementary roles in insurance operations.
+
+**Probability** enables insurers to estimate the likelihood of insured events and the expected cost of future claims.
+
+The **law of averages** provides the foundation for risk pooling, allowing the financial consequences of individual losses to be shared among many policyholders through premium contributions.
+
+The **law of large numbers** improves the accuracy of these estimates by ensuring that actual claim experience becomes more stable as the number of similar exposure units increases.
+
+Together, these principles support many actuarial and insurance activities, including
+
+* underwriting and risk assessment,
+* premium determination,
+* reserving for future claims,
+* reinsurance decisions, and
+* capital management.
+
+::: {.callout-tip}
+
+## Why These Concepts Matter
+
+Insurance companies cannot predict **who** will experience a loss, but they can estimate **how many** losses are likely to occur within a large portfolio. This ability allows insurers to charge fair premiums while maintaining sufficient funds to meet future claim obligations.
+:::
+
+
+### Summary
+
+The three mathematical foundations of insurance are closely related but serve different purposes.
+
+| Concept                  | Main Purpose                                                    | Application in Insurance                                     |
+| ------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Probability**          | Measures the likelihood of future events.                       | Estimates claim frequency and expected losses.               |
+| **Law of averages**      | Spreads losses across many policyholders.                       | Forms the basis of risk pooling and premium sharing.         |
+| **Law of large numbers** | Improves the accuracy of loss predictions for large portfolios. | Enables reliable pricing, reserving, and financial planning. |
+
+This section naturally leads to the next topic, **Insurance Premium Determination**, where these mathematical principles are used to estimate expected losses and calculate premiums.
+
+
+
+## Insurance Premium Determination
+
+An insurance premium is the amount paid by a policyholder in exchange for insurance protection. Determining an appropriate premium is one of the insurer's most important responsibilities. A premium that is too low may leave the insurer unable to pay future claims, whereas a premium that is too high may discourage customers from purchasing insurance.
+
+To achieve a sustainable insurance system, insurers seek premiums that are **adequate**, **equitable**, and **reasonable**.
+
+
+
+### Principles of Premium Determination
+
+#### Adequacy
+
+A premium should be **adequate** to ensure that the insurer can meet its financial obligations. In particular, the premium should be sufficient to
+
+* pay future claims,
+* cover operating and administrative expenses,
+* maintain an appropriate financial reserve for unexpected losses, and
+* provide a reasonable return to the insurer.
+
+If premiums are consistently inadequate, the insurer may experience financial difficulties and be unable to satisfy future claims.
+
+#### Equity (Fairness)
+
+A premium should be **equitable**, meaning that it reflects the level of risk presented by each policyholder. Individuals or businesses with higher expected losses should generally pay higher premiums, while those with lower expected losses should pay less.
+
+This principle is sometimes referred to as **fair discrimination**, because premiums are differentiated according to measurable differences in risk rather than arbitrary factors.
+
+For example, a building constructed with fire-resistant materials may qualify for a lower fire insurance premium than an otherwise similar building with a substantially higher fire risk.
+
+#### Reasonableness
+
+A premium should also be **reasonable** from the policyholder's perspective. Although premiums must cover the insurer's expected costs, they should not be so high that insurance becomes unaffordable or uncompetitive.
+
+In a competitive insurance market, insurers must balance financial sustainability with affordability in order to attract and retain policyholders.
+
+::: {.callout-important}
+
+## Balancing the Three Principles
+
+The three principles of premium determination must be considered together.
+
+* A premium that is **too low** may be fair to customers in the short term but financially unsustainable for the insurer.
+* A premium that is **too high** may be financially adequate but discourage customers from purchasing insurance.
+* A well-designed premium achieves an appropriate balance between adequacy, equity, and reasonableness.
+:::
+
+
+### Components of an Insurance Premium
+
+The premium charged by an insurer consists of more than the expected cost of future claims. It also includes the expenses of operating the insurance business and a margin for uncertainty and profit.
+
+Conceptually, the premium may be expressed as
+
+$$
+\boxed{P = F \times S + E + C,}
+$$
+
+where
+
+* $P$ = insurance premium,
+* $F$ = expected claim frequency,
+* $S$ = expected claim severity,
+* $E$ = operating expenses, and
+* $C$ = contingency provision and profit loading.
+
+Although actual premium calculations are often more sophisticated, this expression illustrates the fundamental components of an insurance premium.
+
+#### Expected Losses
+
+The largest component of the premium is the **expected loss**, which represents the insurer's estimate of future claim payments.
+
+Expected losses depend on two quantities:
+
+* **frequency**, which measures how often claims are expected to occur, and
+* **severity**, which measures the average cost of each claim.
+
+Their product,
+
+$$
+F \times S,
+$$
+
+represents the **expected claim cost** for each insured exposure.
+
+For example, if the expected claim frequency is 2% per year and the average claim amount is THB 100,000, the expected loss per policy is
+
+$$
+0.02 \times 100,000 = \text{THB }2,000.
+$$
+
+#### Operating Expenses
+
+Insurers incur various expenses in providing insurance services. These include
+
+* underwriting expenses,
+* policy administration,
+* claim handling,
+* commissions paid to agents or brokers,
+* information technology and office operations, and
+* reinsurance costs.
+
+These expenses must be recovered through premiums to ensure the insurer can continue operating effectively.
+
+#### Contingency Provision and Profit
+
+Future losses are inherently uncertain. Even when expected losses are estimated carefully, actual claim experience may differ from expectations.
+
+To protect against this uncertainty, insurers include a **contingency provision** in the premium. This provision provides financial protection against
+
+* random fluctuations in claims,
+* estimation errors,
+* inflation in claim costs, and
+* unexpected catastrophic events.
+
+The premium also includes a **profit loading**, which compensates shareholders for providing capital and accepting the financial risks associated with the insurance business.
+
+::: {.callout-note}
+
+## Why Is a Contingency Provision Needed?
+
+Historical data provide only estimates of future losses. Actual claims may be higher than expected because of unusually severe weather, economic changes, or random fluctuations.
+
+A contingency provision strengthens the insurer's financial resilience and helps ensure that future claims can still be paid.
+:::
+
+
+### Putting the Components Together
+
+The following diagram illustrates the conceptual structure of an insurance premium.
+
+```{mermaid}
+%%| echo: false
+%%| id: fig-premium-calculation
+%%| fig-cap: "The mathematical components of an insurance premium."
+%%| fig-width: 6
+flowchart LR
+    F[Expected Frequency] --> mult((x))
+    S[Expected Severity]  --> mult
+    
+    mult -->|Equals| L(Expected Loss)
+    
+    L -->|Pure Premium| P(Gross Premium)
+    E[Operating Expenses] -->|Expense Load| P
+    C[Contingency & Profit] -->|Risk/Profit Load| P
+
+    style L fill:#f9f,stroke:#333,stroke-width:2px
+    style P fill:#bbf,stroke:#333,stroke-width:2px
+    style mult fill:#fff,stroke:#333,stroke-width:1px
+```
+
+
+The premium therefore consists of three broad components:
+
+| Component                            | Purpose                                                             |
+| ------------------------------------ | ------------------------------------------------------------------- |
+| **Expected losses**                  | Pays future claims.                                                 |
+| **Operating expenses**               | Covers the cost of conducting insurance business.                   |
+| **Contingency provision and profit** | Provides financial resilience and an appropriate return on capital. |
+
+
+
+::: {#exm-premium-components}
+
+## Components of an Insurance Premium
+
+Suppose an insurer estimates the following values for a motor insurance policy.
+
+| Component                        | Amount (THB) |
+| -------------------------------- | -----------: |
+| Expected claim frequency         |           2% |
+| Expected claim severity          |      100,000 |
+| Expected losses ($F \times S$)   |        2,000 |
+| Operating expenses               |          600 |
+| Contingency provision and profit |          400 |
+
+The premium is therefore estimated as
+
+$$
+P = 2,000 + 600 + 400 = \text{THB }3,000.
+$$
+
+This example illustrates that only part of the premium is used to pay claims. The remainder supports the operation and financial stability of the insurer.
+:::
+
+::: {.callout-tip}
+
+## Looking Ahead
+
+In this chapter, the premium formula is presented as a **conceptual framework** for understanding the main components of an insurance premium. In later chapters, we will develop more rigorous actuarial methods for estimating expected losses and determining premiums using statistical models and insurance rating techniques.
+:::

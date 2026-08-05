@@ -1,0 +1,120 @@
+---
+title: "01 Introduction Workbook"
+format:
+  pdf:
+    toc: false
+---
+
+# Chapter 1 Workbook
+
+Complete this workbook by hand during or after the lecture. Write your answers clearly  and submit  the completed workbook through Google Classroom by the specified deadline. All responses should be your own work.
+
+## Explain the following terms.
+
+1. Risk
+
+
+
+2. Uncertainty
+
+
+
+3. Peril
+
+
+
+4. Hazard
+
+
+
+## Explain the following insurance concepts.
+
+1. Risk transfer
+
+
+
+2. Risk pooling
+
+
+
+3. Indemnity
+
+
+
+## Identifying Perils and Hazards
+
+Complete the following table.
+
+| Situation                                                                          | Peril                | Hazard                         |
+| ---------------------------------------------------------------------------------- | -------------------- | ------------------------------ |
+| A warehouse catches fire because of faulty wiring.                                 |                      |                                      |
+| A policyholder deliberately burns an insured building to receive compensation.     |                      |                                      |
+| A driver leaves a car unlocked because it is fully insured, and the car is stolen. |                      |                                      |
+| Heavy rainfall causes a river to overflow and damage nearby houses.                |                      |                                      |
+
+: Risk Assessment Matrix {tbl-colwidths="[60,20,20]"}
+
+
+
+## Analysing the Components of Risk
+
+Consider a homeowner living in an area prone to flooding. Complete the table.
+
+| Component       | Description                                       |
+| --------------- | ------------------------------------------------- |
+| **Peril**       |                                                   |
+| **Hazard**      |                                                   |
+| **Frequency**   | Flooding is expected once every 10 years          |
+| **Severity**    | Each flood may cause substantial damage to the property |
+| **Uncertainty** |                                                   |
+
+: Components of Risk {tbl-colwidths="[30,70]"}
+
+## Pure and Speculative Risks
+
+Classify each situation as either **Pure Risk** or **Speculative Risk**.
+
+| Situation                                 | Type of Risk       |
+| ----------------------------------------- | ------------------ |
+| A house is damaged by fire.               |                    |
+| A driver is involved in a motor accident. |                    |
+| An investor purchases company shares.     |                    |
+| A business launches a new product.        |                    |
+
+: Risk classification {tbl-colwidths="[40,60]"}
+
+## Characteristics of Normally Insurable Risks
+
+List the characteristics that a risk should generally possess to be considered insurable.
+
+
+
+
+## Assessing Whether a Risk Is Insurable
+
+Complete the following table.
+
+| Risk                                  | Normally Insurable? | Reason                                         |
+| ------------------------------------- | :-----------------: | ---------------------------------------------- |
+| Fire damage to a residential house    |                     |                                                |
+| Motor vehicle collision               |         Yes         | Large numbers of similar exposure units allow reliable estimation of claims.  |
+| Loss from investing in company shares |                     |                                                |
+| Losses caused by war                  |                     |                                                |
+| Damage to a neighbour's house         |                     |                                                |
+
+: Risk Insurability {tbl-colwidths="[40,20,40]"}
+
+## Short Answer
+
+### Why are speculative risks generally not insurable?
+
+
+### Why do insurers require a large number of similar exposure units?
+
+
+### Why is insurable interest necessary in an insurance contract?
+
+
+### Explain the relationship between a **peril** and a **hazard** using one example.
+
+

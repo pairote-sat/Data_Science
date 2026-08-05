@@ -1,0 +1,35 @@
+# R
+.Rhistory
+.RData
+.Ruserdata
+
+# RStudio
+.Rproj.user/
+
+# Quarto output
+_book/
+_site/
+
+# Rendered documents
+*.html
+*.pdf
+*.docx
+*.pptx
+
+# Quarto cache
+_cache/
+*_cache/
+
+# renv
+renv/library/
+renv/staging/
+
+# macOS
+.DS_Store
+/.quarto/
+**/*.quarto_ipynb
+
+# Draft Chapters
+# Temporary rendered output for draft chapters
+drafts/_output/
+

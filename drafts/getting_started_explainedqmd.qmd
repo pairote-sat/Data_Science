@@ -1,0 +1,251 @@
+---
+title: "Getting-started: explained"
+format: html
+---
+Sources: 
+
+- https://notebook.google.com/notebook/ee0c3089-642d-4b8d-bc3d-200e239ce01e?authuser=2
+
+- https://chatgpt.com/share/6a70086b-1844-83ec-9859-fc72335da661
+
+## Getting-started: explained
+
+Source: https://mharinga.github.io/insurancerating/articles/getting-started.html
+
+In the context of the **insurancerating** package, **experience** and **volume** are actuarial terms that summarize the observed data for each level of a rating factor before fitting a multivariate model.
+
+* **Experience** refers to the **observed insurance outcome** for a group. Depending on the type of model, this may be:
+
+  * claim frequency (claims per exposure),
+  * claim severity (average claim amount),
+  * pure premium (claim cost per exposure), or
+  * loss ratio, etc.
+
+  For example, if the rating factor is `VehicleType`:
+
+  | VehicleType | Claims | Exposure | Experience (Frequency) |
+  | ----------- | ------ | -------- | ---------------------- |
+  | Sedan       | 120    | 2,000    | 0.060                  |
+  | SUV         | 180    | 2,500    | 0.072                  |
+
+  Here, the experience is the **observed claim frequency**.
+
+* **Volume** refers to the **amount of data** supporting that experience. It is typically measured by:
+
+  * exposure (most common),
+  * number of policies,
+  * earned car-years,
+  * insured value, or
+  * claim count, depending on the context.
+
+  In the table above, the exposure (2,000 and 2,500) is the volume.
+
+### Why the documentation says this
+
+> "They show the observed experience and volume by level, but do not control for correlations with other risk factors."
+
+This means that the summaries are **univariate**. For each level of a rating factor, they simply report
+
+* the observed experience (e.g., claim frequency), and
+* the volume (e.g., exposure)
+
+without adjusting for other rating variables.
+
+For example, suppose young drivers mostly drive sports cars. A summary by `AgeGroup` may show:
+
+| AgeGroup | Exposure | Frequency |
+| -------- | -------- | --------- |
+| Young    | 800      | 0.10      |
+| Older    | 3,200    | 0.05      |
+
+This does **not** imply that age alone doubles the risk. Part of the difference may actually be due to vehicle type, territory, or other correlated factors. A generalized linear model (GLM) estimates the effect of each rating factor **while controlling for the others**, whereas these summaries do not.
+
+### Rule of thumb
+
+In the **insurancerating** package:
+
+* **Experience** = the observed insurance metric you are trying to model (frequency, severity, pure premium, etc.).
+* **Volume** = the amount of data underlying that estimate (usually exposure or policy count), indicating how credible the observed experience is.
+
+The larger the volume, the more reliable the observed experience is likely to be. A high claim frequency based on only 20 policy-years is much less credible than the same frequency based on 20,000 policy-years.
+
+
+--- 
+
+This paragraph describes a common workflow in insurance rating, where continuous risk characteristics are ultimately converted into tariff tables for practical implementation.
+
+### Why continuous variables are treated separately
+
+Continuous variables (e.g., age, vehicle value, engine size, annual mileage) differ from categorical variables because they have many possible values. There are two common approaches:
+
+1. **Model them directly as continuous variables**, allowing the model to estimate a smooth relationship.
+2. **Group them into intervals (segments or bands)** and treat each interval as a category.
+
+For example, instead of modelling
+
+* Driver age = 37,
+
+we may define tariff bands:
+
+| Age   | Tariff segment |
+| ----- | -------------- |
+| 17–24 | Young          |
+| 25–39 | Adult          |
+| 40–59 | Mature         |
+| 60+   | Senior         |
+
+The GLM then uses these four categories rather than the original ages.
+
+### The sequence in this example
+
+The workflow consists of three steps.
+
+1. **Analysed as continuous variables**
+
+   First, the relationship between the response and the continuous variable is explored using the raw values. This helps determine whether the effect is approximately linear or whether there are natural breakpoints.
+
+2. **Translated into tariff segments**
+
+   Based on the exploratory analysis, the continuous variable is divided into a small number of intervals. These intervals become tariff segments.
+
+   For example:
+
+   | Vehicle value   | Tariff segment |
+   | --------------- | -------------- |
+   | < $20,000       | Low            |
+   | $20,000–$50,000 | Medium         |
+   | > $50,000       | High           |
+
+3. **Used in a GLM as categorical rating factors**
+
+   The tariff segments are treated as ordinary categorical predictors in the GLM, just like vehicle type or territory. The model estimates one relativity for each segment.
+
+### Why group continuous variables?
+
+Grouping has an important practical advantage: the tariff becomes easy to implement.
+
+For example, instead of calculating
+
+$$
+\exp(0.0132 \times \text{Age}),
+$$
+
+the rating engine simply looks up the appropriate age band:
+
+| Age band | Relativity |
+| -------- | ---------: |
+| 17–24    |       1.45 |
+| 25–39    |       1.15 |
+| 40–59    |       1.00 |
+| 60+      |       1.20 |
+
+This is easier to communicate, audit, and implement in policy administration systems.
+
+### The drawback: segmentation choice
+
+Grouping introduces an additional modelling decision: **where should the cut-points be placed?**
+
+Different groupings can produce different tariffs. For example,
+
+* 17–24, 25–39, 40–59, 60+, or
+* 17–20, 21–30, 31–50, 51+
+
+may lead to different estimated relativities.
+
+This process inevitably loses some information because all values within a segment receive the same relativity. Consequently, the chosen segmentation should be reviewed to ensure it adequately reflects the underlying relationship while remaining practical for implementation.
+
+### Summary
+
+Continuous variables are often analysed using their original values to understand how risk changes. They are then grouped into tariff segments and included in the GLM as categorical rating factors. This produces a simple, implementable tariff, but the choice of segment boundaries affects the resulting relativities and should therefore be made carefully.
+
+
+---
+
+Yes, you can obtain the pure premium—which the `insurancerating` package refers to as the **risk premium**—by groups using the `factor_analysis()` function,.
+
+When you perform a factor analysis, the output table automatically includes several commonly used portfolio metrics calculated for each level (group) of your specified risk factors,. One of these metrics is the **risk_premium**, which is defined in the sources as **loss divided by exposure**. 
+
+### Example of `factor_analysis()` Output
+In the provided example, when the function is run on a "zip" factor, it generates a table that displays the risk premium for each zip code group:
+
+| zip | amount | nclaims | exposure | frequency | average_severity | **risk_premium** |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | 116178669 | 1593 | 11080.6274 | 0.1437644 | 72930.74 | **10484.846** |
+| 2 | 59751985 | 1008 | 7782.6301 | 0.1295192 | 59277.76 | **7677.608** |
+
+
+
+### Key Considerations
+*   **Definition:** The risk premium in this context represents the observed experience: **risk premium = loss / exposure**.
+*   **Univariate Analysis:** These results are **descriptive and univariate**, meaning they show the variation in risk premium across levels but do not control for correlations with other risk factors.
+*   **Visualisation:** You can also visualize these grouped premiums by using `autoplot(fa, metrics = "risk_premium")`, which provides a direct view of how the risk premium varies across different levels.
+
+
+---
+
+In the `insurancerating` package, these assessments are primarily conducted through **portfolio analysis** using the `factor_analysis()` function and visual diagnostics. This stage is crucial for transitioning from raw data to a reviewed actuarial tariff structure.
+
+### 1. How Experience Differs Across Factor Levels
+This assessment involves a descriptive review of how key insurance metrics vary between different groups within a risk factor (e.g., comparing different zip codes).
+*   **Purpose:** To identify the univariate relationship between a factor and its risk.
+*   **Metrics:** The `factor_analysis()` function calculates **frequency** (claims / exposure), **average severity** (loss / claims), and **risk premium** (loss / exposure) for every level.
+*   **Visualization:** Using `autoplot()` allows you to directly see the variation in these metrics, helping you understand which levels are historically more expensive or prone to claims.
+
+### 2. Whether Differences are Supported by Sufficient Exposure and Claim Volume
+Even if one group appears to have a much higher risk premium than another, that difference may not be statistically significant if it is based on very little data.
+*   **Assessment:** By looking at the `nclaims` (claim volume) and `exposure` columns in the `factor_analysis()` output, you can determine if the observed experience in a specific level is credible. 
+*   **Stability:** If a level has very few claims, its observed experience is highly sensitive to "noise" or random large losses, making it an unreliable basis for a pricing model without further adjustment.
+
+### 3. Whether Exposure is Sufficient
+This focuses specifically on the "amount of risk" present in each category to ensure the portfolio is not too thin in certain areas.
+*   **Baseline Selection:** In modeling, it is often useful to set the **reference level** to the group with the highest exposure, as this provides a stable baseline supported by a substantial part of the portfolio.
+*   **Identifying Weak Spots:** Tools like `risk_factor_gam()` and `autoplot()` help identify "areas with low exposure" where the data might be too sparse to support a reliable estimate.
+
+### 4. Whether the Observed Pattern is Plausible
+This is an actuarial "sanity check" to ensure the data aligns with expert knowledge and logical expectations.
+*   **Pattern Inspection:** For continuous variables, you use Generalized Additive Models (GAMs) to inspect for **non-linear patterns** and **local volatility**.
+*   **Actuarial Review:** You must assess if the resulting segments and coefficients follow an expected pattern (e.g., does risk increase or decrease with age as expected?). If patterns are irregular or counter-intuitive, they may require **expert-driven adjustments**, monotonicity requirements, or refinement before being implemented in a final tariff.
+
+
+---
+
+In the context of the provided sources, there are two key reasons why the author likely chose the name **`burn_unrestricted`** for this specific model output:
+
+### 1. "Burn" refers to the "Burning Cost"
+In actuarial terms, a **"burn"** or "burning cost" is a common synonym for the **expected loss** or **pure premium**. 
+*   Earlier in the workflow, the author constructs a `premium` variable by multiplying predicted frequency and predicted severity. 
+*   This variable is explicitly described as an **"expected-loss proxy"** or a **"technical risk-premium structure"**. 
+*   Naming the model "burn" signifies that it is estimating this underlying technical cost of risk, excluding commercial loadings or other non-technical premium components.
+
+### 2. "Unrestricted" denotes the absence of Actuarial Refinements
+The term **"unrestricted"** highlights that this model is a raw, purely data-driven fit that has not yet undergone the **refinement process**.
+*   The author notes that before a model can become a final tariff, a "further step is required" to address issues like **irregular coefficient patterns**, **monotonicity requirements**, or **externally imposed restrictions**.
+*   By labeling this initial model `unrestricted`, the author distinguishes it from later versions that might be "restricted" or "refined" using tools like `prepare_refinement()` to ensure the results follow a logical or expert-driven pattern.
+
+Essentially, **`burn_unrestricted`** represents the **initial, unadjusted technical risk premium** before any actuarial "sanity checks" or smoothing constraints are applied to turn it into a practical tariff.
+
+
+---
+
+
+The results from `rating_table(burn_unrestricted)` represent the **fitted coefficients** of your model, but they are transformed into a format that is much easier to interpret for actuarial pricing, known as **tariff relativities**.
+
+Here is how you interpret the specific columns and values in the resulting table:
+
+### 1. Intercept vs. Factor Levels
+*   **The Intercept:** The value for the `(Intercept)` (e.g., 9370.40) represents the **base risk premium**. This is the starting dollar amount (or expected loss) for a "standard" risk that falls into all the reference categories of your model.
+*   **Factor Levels (Relativities):** For all other rows (like different zip codes or age categories), the values represent **multiplicative relativities** relative to a reference level. 
+
+### 2. Interpreting the Relativities
+The source shows that the function expresses these effects in terms of the original factor levels, including the reference level itself:
+*   **Reference Level:** Notice that for `zip` level 1 and `age_cat` (39, 51], the value is exactly **1.0000000**. This indicates these are the reference levels (baselines) against which others are compared.
+*   **Higher/Lower Risk:** 
+    *   A value **greater than 1** (e.g., `age_cat`  = 2.3041) means that specific group has a higher expected loss than the reference group—in this case, roughly 2.3 times higher.
+    *   A value **less than 1** (e.g., `age_cat` (51,58] = 0.5699) means the group is lower risk than the reference, costing only about 57% of the baseline premium.
+
+### 3. The Role of Exposure
+The `rating_table()` output also includes an **exposure** column. This is critical for interpreting the stability of the coefficients:
+*   If a relativity looks extremely high or low but is supported by very **low exposure** (e.g., `age_cat` (84,95] with only 72 units of exposure), the estimate may be unstable or driven by random fluctuations rather than a true underlying trend.
+*   Actuaries use this to decide if a level needs further **refinement** or smoothing to ensure the final tariff is practical and logical.
+
+In summary, while these values are derived from the model's coefficients, they are presented as **multipliers** that show how much the premium should increase or decrease for each specific risk factor level.

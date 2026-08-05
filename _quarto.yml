@@ -1,0 +1,32 @@
+project:
+  type: book
+
+book:
+  title: "Introduction to Data Science in Non-Life Insurance"
+  author: "Pairote Satiracoo"
+  chapters:
+    - index.qmd
+    - chapters/01_Introduction_to_Risk_and_Insurance.qmd
+    
+format:
+  html:
+    toc: true
+    number-sections: true
+    number-depth: 3
+    code-fold: true
+
+  pdf:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    number-depth: 3
+    colorlinks: true
+    geometry:
+      - margin=1in
+      
+execute:
+  echo: true
+  warning: false
+  message: false
+
+editor: source
