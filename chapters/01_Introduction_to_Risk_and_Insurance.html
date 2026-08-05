@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1&nbsp; Chapter 1: Introduction to Risk and Insurance – Introduction to Data Science in Non-Life Insurance</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-87aed0b8589e23e45aa8556edf37a91b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/01_Introduction_to_Risk_and_Insurance.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Introduction to Risk and Insurance</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Introduction to Data Science in Non-Life Insurance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome to My Book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01_Introduction_to_Risk_and_Insurance.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Introduction to Risk and Insurance</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning Outcomes</a></li>
+  <li><a href="#understanding-risk" id="toc-understanding-risk" class="nav-link" data-scroll-target="#understanding-risk"><span class="header-section-number">1.1</span> Understanding Risk</a></li>
+  <li><a href="#perils-and-hazards" id="toc-perils-and-hazards" class="nav-link" data-scroll-target="#perils-and-hazards"><span class="header-section-number">1.2</span> Perils and Hazards</a>
+  <ul class="collapse">
+  <li><a href="#peril" id="toc-peril" class="nav-link" data-scroll-target="#peril"><span class="header-section-number">1.2.1</span> Peril</a></li>
+  <li><a href="#hazard" id="toc-hazard" class="nav-link" data-scroll-target="#hazard"><span class="header-section-number">1.2.2</span> Hazard</a></li>
+  <li><a href="#physical-hazard" id="toc-physical-hazard" class="nav-link" data-scroll-target="#physical-hazard"><span class="header-section-number">1.2.3</span> Physical Hazard</a></li>
+  <li><a href="#moral-hazard" id="toc-moral-hazard" class="nav-link" data-scroll-target="#moral-hazard"><span class="header-section-number">1.2.4</span> Moral Hazard</a></li>
+  <li><a href="#morale-hazard" id="toc-morale-hazard" class="nav-link" data-scroll-target="#morale-hazard"><span class="header-section-number">1.2.5</span> Morale Hazard</a></li>
+  </ul></li>
+  <li><a href="#components-of-risk" id="toc-components-of-risk" class="nav-link" data-scroll-target="#components-of-risk"><span class="header-section-number">1.3</span> Components of Risk</a>
+  <ul class="collapse">
+  <li><a href="#peril-1" id="toc-peril-1" class="nav-link" data-scroll-target="#peril-1"><span class="header-section-number">1.3.1</span> Peril</a></li>
+  <li><a href="#hazard-1" id="toc-hazard-1" class="nav-link" data-scroll-target="#hazard-1"><span class="header-section-number">1.3.2</span> Hazard</a></li>
+  <li><a href="#degree-of-risk" id="toc-degree-of-risk" class="nav-link" data-scroll-target="#degree-of-risk"><span class="header-section-number">1.3.3</span> Degree of Risk</a></li>
+  <li><a href="#uncertainty" id="toc-uncertainty" class="nav-link" data-scroll-target="#uncertainty"><span class="header-section-number">1.3.4</span> Uncertainty</a></li>
+  <li><a href="#relationship-among-the-components" id="toc-relationship-among-the-components" class="nav-link" data-scroll-target="#relationship-among-the-components"><span class="header-section-number">1.3.5</span> Relationship among the Components</a></li>
+  </ul></li>
+  <li><a href="#classification-of-risks" id="toc-classification-of-risks" class="nav-link" data-scroll-target="#classification-of-risks"><span class="header-section-number">1.4</span> Classification of Risks</a>
+  <ul class="collapse">
+  <li><a href="#pure-and-speculative-risks" id="toc-pure-and-speculative-risks" class="nav-link" data-scroll-target="#pure-and-speculative-risks"><span class="header-section-number">1.4.1</span> Pure and Speculative Risks</a></li>
+  <li><a href="#particular-and-fundamental-risks" id="toc-particular-and-fundamental-risks" class="nav-link" data-scroll-target="#particular-and-fundamental-risks"><span class="header-section-number">1.4.2</span> Particular and Fundamental Risks</a></li>
+  <li><a href="#static-and-dynamic-risks" id="toc-static-and-dynamic-risks" class="nav-link" data-scroll-target="#static-and-dynamic-risks"><span class="header-section-number">1.4.3</span> Static and Dynamic Risks</a></li>
+  <li><a href="#insurable-and-uninsurable-risks" id="toc-insurable-and-uninsurable-risks" class="nav-link" data-scroll-target="#insurable-and-uninsurable-risks"><span class="header-section-number">1.4.4</span> Insurable and Uninsurable Risks</a></li>
+  </ul></li>
+  <li><a href="#characteristics-of-normally-insurable-risks" id="toc-characteristics-of-normally-insurable-risks" class="nav-link" data-scroll-target="#characteristics-of-normally-insurable-risks"><span class="header-section-number">1.5</span> Characteristics of Normally Insurable Risks</a>
+  <ul class="collapse">
+  <li><a href="#large-number-of-homogeneous-exposure-units" id="toc-large-number-of-homogeneous-exposure-units" class="nav-link" data-scroll-target="#large-number-of-homogeneous-exposure-units"><span class="header-section-number">1.5.1</span> Large Number of Homogeneous Exposure Units</a></li>
+  <li><a href="#accidental-and-unintentional-loss" id="toc-accidental-and-unintentional-loss" class="nav-link" data-scroll-target="#accidental-and-unintentional-loss"><span class="header-section-number">1.5.2</span> Accidental and Unintentional Loss</a></li>
+  <li><a href="#determinable-and-measurable-loss" id="toc-determinable-and-measurable-loss" class="nav-link" data-scroll-target="#determinable-and-measurable-loss"><span class="header-section-number">1.5.3</span> Determinable and Measurable Loss</a></li>
+  <li><a href="#non-catastrophic-loss" id="toc-non-catastrophic-loss" class="nav-link" data-scroll-target="#non-catastrophic-loss"><span class="header-section-number">1.5.4</span> Non-Catastrophic Loss</a></li>
+  <li><a href="#pure-and-particular-risk" id="toc-pure-and-particular-risk" class="nav-link" data-scroll-target="#pure-and-particular-risk"><span class="header-section-number">1.5.5</span> Pure and Particular Risk</a></li>
+  <li><a href="#calculable-probability-of-loss" id="toc-calculable-probability-of-loss" class="nav-link" data-scroll-target="#calculable-probability-of-loss"><span class="header-section-number">1.5.6</span> Calculable Probability of Loss</a></li>
+  <li><a href="#financial-loss-requirement" id="toc-financial-loss-requirement" class="nav-link" data-scroll-target="#financial-loss-requirement"><span class="header-section-number">1.5.7</span> Financial Loss Requirement</a></li>
+  <li><a href="#reasonable-premium" id="toc-reasonable-premium" class="nav-link" data-scroll-target="#reasonable-premium"><span class="header-section-number">1.5.8</span> Reasonable Premium</a></li>
+  <li><a href="#risks-typically-not-insurable" id="toc-risks-typically-not-insurable" class="nav-link" data-scroll-target="#risks-typically-not-insurable"><span class="header-section-number">1.5.9</span> Risks Typically Not Insurable</a></li>
+  </ul></li>
+  <li><a href="#what-is-insurance" id="toc-what-is-insurance" class="nav-link" data-scroll-target="#what-is-insurance"><span class="header-section-number">1.6</span> What Is Insurance?</a>
+  <ul class="collapse">
+  <li><a href="#risk-transfer" id="toc-risk-transfer" class="nav-link" data-scroll-target="#risk-transfer"><span class="header-section-number">1.6.1</span> Risk Transfer</a></li>
+  <li><a href="#risk-pooling" id="toc-risk-pooling" class="nav-link" data-scroll-target="#risk-pooling"><span class="header-section-number">1.6.2</span> Risk Pooling</a></li>
+  <li><a href="#indemnity" id="toc-indemnity" class="nav-link" data-scroll-target="#indemnity"><span class="header-section-number">1.6.3</span> Indemnity</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">1.6.4</span> Summary</a></li>
+  </ul></li>
+  <li><a href="#insurance-mechanism" id="toc-insurance-mechanism" class="nav-link" data-scroll-target="#insurance-mechanism"><span class="header-section-number">1.7</span> Insurance Mechanism</a>
+  <ul class="collapse">
+  <li><a href="#step-1-risk-assessment" id="toc-step-1-risk-assessment" class="nav-link" data-scroll-target="#step-1-risk-assessment"><span class="header-section-number">1.7.1</span> Step 1: Risk Assessment</a></li>
+  <li><a href="#step-2-premium-collection" id="toc-step-2-premium-collection" class="nav-link" data-scroll-target="#step-2-premium-collection"><span class="header-section-number">1.7.2</span> Step 2: Premium Collection</a></li>
+  <li><a href="#step-3-loss-occurrence-and-claim-settlement" id="toc-step-3-loss-occurrence-and-claim-settlement" class="nav-link" data-scroll-target="#step-3-loss-occurrence-and-claim-settlement"><span class="header-section-number">1.7.3</span> Step 3: Loss Occurrence and Claim Settlement</a></li>
+  <li><a href="#step-4-risk-sharing" id="toc-step-4-risk-sharing" class="nav-link" data-scroll-target="#step-4-risk-sharing"><span class="header-section-number">1.7.4</span> Step 4: Risk Sharing</a></li>
+  <li><a href="#the-insurance-mechanism" id="toc-the-insurance-mechanism" class="nav-link" data-scroll-target="#the-insurance-mechanism"><span class="header-section-number">1.7.5</span> The Insurance Mechanism</a></li>
+  <li><a href="#connection-to-actuarial-science" id="toc-connection-to-actuarial-science" class="nav-link" data-scroll-target="#connection-to-actuarial-science"><span class="header-section-number">1.7.6</span> Connection to Actuarial Science</a></li>
+  </ul></li>
+  <li><a href="#insurance-contracts" id="toc-insurance-contracts" class="nav-link" data-scroll-target="#insurance-contracts"><span class="header-section-number">1.8</span> Insurance Contracts</a>
+  <ul class="collapse">
+  <li><a href="#the-insured" id="toc-the-insured" class="nav-link" data-scroll-target="#the-insured"><span class="header-section-number">1.8.1</span> The Insured</a></li>
+  <li><a href="#the-insurer" id="toc-the-insurer" class="nav-link" data-scroll-target="#the-insurer"><span class="header-section-number">1.8.2</span> The Insurer</a></li>
+  <li><a href="#the-beneficiary" id="toc-the-beneficiary" class="nav-link" data-scroll-target="#the-beneficiary"><span class="header-section-number">1.8.3</span> The Beneficiary</a></li>
+  </ul></li>
+  <li><a href="#benefits-of-insurance" id="toc-benefits-of-insurance" class="nav-link" data-scroll-target="#benefits-of-insurance"><span class="header-section-number">1.9</span> Benefits of Insurance</a></li>
+  <li><a href="#insurance-in-thailand" id="toc-insurance-in-thailand" class="nav-link" data-scroll-target="#insurance-in-thailand"><span class="header-section-number">1.10</span> Insurance in Thailand</a>
+  <ul class="collapse">
+  <li><a href="#overview-of-the-thai-insurance-industry" id="toc-overview-of-the-thai-insurance-industry" class="nav-link" data-scroll-target="#overview-of-the-thai-insurance-industry"><span class="header-section-number">1.10.1</span> Overview of the Thai Insurance Industry</a></li>
+  <li><a href="#types-of-insurance" id="toc-types-of-insurance" class="nav-link" data-scroll-target="#types-of-insurance"><span class="header-section-number">1.10.2</span> Types of Insurance</a></li>
+  <li><a href="#characteristics-of-life-insurance" id="toc-characteristics-of-life-insurance" class="nav-link" data-scroll-target="#characteristics-of-life-insurance"><span class="header-section-number">1.10.3</span> Characteristics of Life Insurance</a></li>
+  <li><a href="#characteristics-of-non-life-insurance" id="toc-characteristics-of-non-life-insurance" class="nav-link" data-scroll-target="#characteristics-of-non-life-insurance"><span class="header-section-number">1.10.4</span> Characteristics of Non-Life Insurance</a></li>
+  <li><a href="#common-terminology-in-life-insurance" id="toc-common-terminology-in-life-insurance" class="nav-link" data-scroll-target="#common-terminology-in-life-insurance"><span class="header-section-number">1.10.5</span> Common Terminology in Life Insurance</a></li>
+  <li><a href="#insurance-regulation-in-thailand" id="toc-insurance-regulation-in-thailand" class="nav-link" data-scroll-target="#insurance-regulation-in-thailand"><span class="header-section-number">1.10.6</span> Insurance Regulation in Thailand</a></li>
+  </ul></li>
+  <li><a href="#mathematical-foundations-of-insurance" id="toc-mathematical-foundations-of-insurance" class="nav-link" data-scroll-target="#mathematical-foundations-of-insurance"><span class="header-section-number">1.11</span> Mathematical Foundations of Insurance</a>
+  <ul class="collapse">
+  <li><a href="#probability" id="toc-probability" class="nav-link" data-scroll-target="#probability"><span class="header-section-number">1.11.1</span> Probability</a></li>
+  <li><a href="#law-of-averages" id="toc-law-of-averages" class="nav-link" data-scroll-target="#law-of-averages"><span class="header-section-number">1.11.2</span> Law of Averages</a></li>
+  <li><a href="#law-of-large-numbers" id="toc-law-of-large-numbers" class="nav-link" data-scroll-target="#law-of-large-numbers"><span class="header-section-number">1.11.3</span> Law of Large Numbers</a></li>
+  <li><a href="#applications-in-insurance" id="toc-applications-in-insurance" class="nav-link" data-scroll-target="#applications-in-insurance"><span class="header-section-number">1.11.4</span> Applications in Insurance</a></li>
+  <li><a href="#summary-1" id="toc-summary-1" class="nav-link" data-scroll-target="#summary-1"><span class="header-section-number">1.11.5</span> Summary</a></li>
+  </ul></li>
+  <li><a href="#insurance-premium-determination" id="toc-insurance-premium-determination" class="nav-link" data-scroll-target="#insurance-premium-determination"><span class="header-section-number">1.12</span> Insurance Premium Determination</a>
+  <ul class="collapse">
+  <li><a href="#principles-of-premium-determination" id="toc-principles-of-premium-determination" class="nav-link" data-scroll-target="#principles-of-premium-determination"><span class="header-section-number">1.12.1</span> Principles of Premium Determination</a></li>
+  <li><a href="#components-of-an-insurance-premium" id="toc-components-of-an-insurance-premium" class="nav-link" data-scroll-target="#components-of-an-insurance-premium"><span class="header-section-number">1.12.2</span> Components of an Insurance Premium</a></li>
+  <li><a href="#putting-the-components-together" id="toc-putting-the-components-together" class="nav-link" data-scroll-target="#putting-the-components-together"><span class="header-section-number">1.12.3</span> Putting the Components Together</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Introduction to Risk and Insurance</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- # Chapter 1: Introduction to Risk and Insurance -->
+<section id="learning-outcomes" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning Outcomes</h2>
+<p>After studying this chapter, students should be able to:</p>
+<p><strong>Remember</strong></p>
+<ol type="1">
+<li><strong>Define</strong> the fundamental concepts of risk, peril, hazard, insurance, and insurance premiums.</li>
+<li><strong>Identify</strong> the main types of insurance, the parties to an insurance contract, and the characteristics of normally insurable risks.</li>
+</ol>
+<p><strong>Understand</strong></p>
+<ol start="3" type="1">
+<li><strong>Explain</strong> the classifications of risk and the principles of risk transfer, risk pooling, and indemnity.</li>
+<li><strong>Describe</strong> the insurance mechanism, the benefits of insurance, and the structure and regulation of the insurance industry in Thailand.</li>
+<li><strong>Explain</strong> the roles of probability, the law of averages, and the law of large numbers in insurance.</li>
+</ol>
+<p><strong>Apply</strong></p>
+<ol start="6" type="1">
+<li><strong>Classify</strong> risks according to their characteristics and determine whether they are normally insurable.</li>
+<li><strong>Interpret</strong> the basic components and principles of insurance premium determination in simple insurance scenarios.</li>
+</ol>
+<hr>
+<p>In everyday life, individuals, businesses, and governments face uncertainty regarding future events. Some of these events may result in financial losses, while others may create opportunities. Insurance is one of the most important mechanisms for managing the financial consequences of uncertain losses by pooling risks across many policyholders.</p>
+<p>This chapter introduces the concept of risk, the causes of loss, the characteristics of insurable risks, and the role of insurance in modern society.</p>
+</section>
+<section id="understanding-risk" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="understanding-risk"><span class="header-section-number">1.1</span> Understanding Risk</h2>
+<p>Risk refers to the possibility that the actual outcome of an event differs from the expected outcome. In insurance, the focus is primarily on outcomes that lead to financial loss.</p>
+<p>More formally, <strong>risk</strong> is the uncertainty surrounding future outcomes together with the possibility that these outcomes may cause adverse financial consequences.</p>
+<p>Two perspectives of risk are commonly encountered.</p>
+<ul>
+<li><strong>Negative perspective (downside risk):</strong> Risk represents the possibility of loss or harm.</li>
+<li><strong>Positive perspective (upside risk):</strong> Risk also creates opportunities for gain when uncertainty is managed appropriately.</li>
+</ul>
+<p>Insurance primarily deals with <strong>downside risk</strong>, whereas investment and business decisions often consider both downside and upside risk.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Risk versus Uncertainty
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The terms <em>risk</em> and <em>uncertainty</em> are often used interchangeably, but they are not identical.</p>
+<ul>
+<li><strong>Risk</strong> refers to uncertainty that can be measured or estimated using probability.</li>
+<li><strong>Uncertainty</strong> refers to situations where probabilities are unknown or difficult to estimate.</li>
+</ul>
+<p>Insurance relies on measurable risks rather than complete uncertainty.</p>
+</div>
+</div>
+<div id="exm-risk-perspectives" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.1 (Negative and Positive Perspectives of Risk)</strong></span> Consider a farmer deciding whether to plant a new drought-resistant crop.</p>
+<ul>
+<li>From a <strong>negative perspective</strong>, the farmer may suffer financial losses if the crop fails.</li>
+<li>From a <strong>positive perspective</strong>, adopting the new crop may increase future profits if market demand is high.</li>
+</ul>
+<p>Insurance can protect the farmer against certain losses (such as crop damage due to insured perils), but it cannot guarantee higher profits.</p>
+</div>
+</section>
+<section id="perils-and-hazards" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="perils-and-hazards"><span class="header-section-number">1.2</span> Perils and Hazards</h2>
+<p>A loss does not occur randomly without a cause. In insurance, it is useful to distinguish between the <strong>peril</strong> that directly causes a loss and the <strong>hazards</strong> that increase the likelihood or severity of that loss.</p>
+<section id="peril" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="peril"><span class="header-section-number">1.2.1</span> Peril</h3>
+<p>A <strong>peril</strong> is the direct cause of a loss. It is the event that triggers damage or financial loss.</p>
+<p>Common examples of perils include</p>
+<ul>
+<li>fire,</li>
+<li>lightning,</li>
+<li>flood,</li>
+<li>windstorm,</li>
+<li>theft,</li>
+<li>motor vehicle collision, and</li>
+<li>earthquake.</li>
+</ul>
+<p>For example, if a house is damaged by a fire, the <strong>fire</strong> is the peril.</p>
+</section>
+<section id="hazard" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="hazard"><span class="header-section-number">1.2.2</span> Hazard</h3>
+<p>A <strong>hazard</strong> is a condition or circumstance that increases either</p>
+<ul>
+<li>the probability that a loss will occur (<strong>loss frequency</strong>), or</li>
+<li>the expected size of the loss (<strong>loss severity</strong>).</li>
+</ul>
+<p>A hazard does <strong>not</strong> directly cause a loss. Instead, it makes a peril more likely to occur or increases the damage if the peril occurs.</p>
+<p>Hazards are commonly classified into three categories.</p>
+</section>
+<section id="physical-hazard" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="physical-hazard"><span class="header-section-number">1.2.3</span> Physical Hazard</h3>
+<p>A <strong>physical hazard</strong> is a tangible characteristic of a person, property, or environment that increases the likelihood or severity of loss.</p>
+<p>Examples include</p>
+<ul>
+<li>faulty electrical wiring,</li>
+<li>worn vehicle tyres,</li>
+<li>storing flammable materials improperly,</li>
+<li>poor building maintenance, and</li>
+<li>slippery floors.</li>
+</ul>
+<p>For example, faulty electrical wiring increases the likelihood of a fire occurring.</p>
+</section>
+<section id="moral-hazard" class="level3" data-number="1.2.4">
+<h3 data-number="1.2.4" class="anchored" data-anchor-id="moral-hazard"><span class="header-section-number">1.2.4</span> Moral Hazard</h3>
+<p>A <strong>moral hazard</strong> arises when a person intentionally behaves dishonestly because insurance provides financial protection.</p>
+<p>Examples include</p>
+<ul>
+<li>intentionally damaging insured property,</li>
+<li>staging a motor vehicle accident,</li>
+<li>inflating the value of stolen property, and</li>
+<li>submitting fraudulent insurance claims.</li>
+</ul>
+<p>Because these actions are intentional, moral hazards increase expected losses and are an important concern in underwriting and claims management.</p>
+</section>
+<section id="morale-hazard" class="level3" data-number="1.2.5">
+<h3 data-number="1.2.5" class="anchored" data-anchor-id="morale-hazard"><span class="header-section-number">1.2.5</span> Morale Hazard</h3>
+<p>A <strong>morale hazard</strong> arises when a person becomes less careful because insurance reduces the financial consequences of a loss. Unlike a moral hazard, there is <strong>no intention to commit fraud</strong>.</p>
+<p>Examples include</p>
+<ul>
+<li>leaving a vehicle unlocked,</li>
+<li>neglecting routine maintenance of insured property,</li>
+<li>failing to install recommended safety devices, and</li>
+<li>driving less cautiously because comprehensive insurance is available.</li>
+</ul>
+<p>Morale hazards often increase the frequency of accidental losses.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Distinguishing Moral and Morale Hazards
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Although their names are similar, <strong>moral hazard</strong> and <strong>morale hazard</strong> describe different behaviours.</p>
+<ul>
+<li>A <strong>moral hazard</strong> involves <strong>intentional dishonesty</strong> or fraud.</li>
+<li>A <strong>morale hazard</strong> involves <strong>carelessness or indifference</strong>, but without fraudulent intent.</li>
+</ul>
+<p>This distinction is important because insurers use different methods to manage each type of hazard.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Cause-and-Effect Relationship
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The relationship among these concepts can be summarized as</p>
+<p><span class="math display">\[
+\text{Hazard} \longrightarrow \text{Peril} \longrightarrow \text{Loss}.
+\]</span></p>
+<p>A hazard increases the likelihood or severity of a peril, while the peril is the event that directly causes the loss.</p>
+<p>For example,</p>
+<ul>
+<li><strong>Hazard:</strong> Faulty electrical wiring</li>
+<li><strong>Peril:</strong> Fire</li>
+<li><strong>Loss:</strong> Damage to the building and its contents</li>
+</ul>
+</div>
+</div>
+<div id="exm-perils-hazards" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.2 (Identifying Perils and Hazards)</strong></span> Consider the following situations.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 58%">
+<col style="width: 3%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Peril</th>
+<th>Hazard</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A warehouse catches fire because of faulty wiring.</td>
+<td>Fire</td>
+<td>Faulty electrical wiring (physical hazard)</td>
+</tr>
+<tr class="even">
+<td>A policyholder deliberately burns an insured building to receive compensation.</td>
+<td>Fire</td>
+<td>Intentional fraud (moral hazard)</td>
+</tr>
+<tr class="odd">
+<td>A driver leaves a car unlocked because it is fully insured, and the car is stolen.</td>
+<td>Theft</td>
+<td>Carelessness due to insurance (morale hazard)</td>
+</tr>
+<tr class="even">
+<td>Heavy rainfall causes a river to overflow and damage nearby houses.</td>
+<td>Flood</td>
+<td>Houses located in a flood-prone area (physical hazard)</td>
+</tr>
+</tbody>
+</table>
+<p>In each case, the <strong>peril</strong> is the immediate cause of the loss, while the <strong>hazard</strong> is the condition that increases the likelihood or severity of that loss.</p>
+</div>
+</section>
+</section>
+<section id="components-of-risk" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="components-of-risk"><span class="header-section-number">1.3</span> Components of Risk</h2>
+<p>Insurers assess a risk by considering several related components. Together, these components help answer four fundamental questions:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 56%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Question</th>
+<th>Component</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>What can cause a loss?</strong></td>
+<td>Peril</td>
+</tr>
+<tr class="even">
+<td><strong>What makes the loss more likely or more severe?</strong></td>
+<td>Hazard</td>
+</tr>
+<tr class="odd">
+<td><strong>How often and how large might losses be?</strong></td>
+<td>Degree of risk (frequency and severity)</td>
+</tr>
+<tr class="even">
+<td><strong>How certain are these estimates?</strong></td>
+<td>Uncertainty</td>
+</tr>
+</tbody>
+</table>
+<p>This framework forms the basis of underwriting and premium determination.</p>
+<section id="peril-1" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="peril-1"><span class="header-section-number">1.3.1</span> Peril</h3>
+<p>The <strong>peril</strong> identifies the event that may result in a loss. Recognising the relevant peril helps insurers determine the appropriate policy coverage, exclusions, and methods of loss prevention.</p>
+</section>
+<section id="hazard-1" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="hazard-1"><span class="header-section-number">1.3.2</span> Hazard</h3>
+<p>The <strong>hazard</strong> describes the conditions that influence the likelihood or severity of the peril. During underwriting, insurers evaluate hazards to estimate the expected level of risk and determine appropriate premiums or policy conditions.</p>
+</section>
+<section id="degree-of-risk" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" class="anchored" data-anchor-id="degree-of-risk"><span class="header-section-number">1.3.3</span> Degree of Risk</h3>
+<p>The <strong>degree of risk</strong> describes the overall level of risk associated with a particular exposure. It is commonly assessed using two measures:</p>
+<ul>
+<li><strong>Frequency:</strong> How often losses are expected to occur.</li>
+<li><strong>Severity:</strong> The average financial impact of each loss.</li>
+</ul>
+<p>These two measures provide valuable information for insurers because risks with similar expected losses may have very different patterns of claims.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Frequency</th>
+<th style="text-align: left;">Severity</th>
+<th style="text-align: left;">Typical Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">Minor motor insurance claims</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">Large industrial fire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">Poorly maintained commercial building</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">Theft of inexpensive household items</td>
+</tr>
+</tbody>
+</table>
+<p>For example, a portfolio of motor insurance policies may generate many small claims each year, whereas a commercial property portfolio may experience only a few claims but with very large losses.</p>
+</section>
+<section id="uncertainty" class="level3" data-number="1.3.4">
+<h3 data-number="1.3.4" class="anchored" data-anchor-id="uncertainty"><span class="header-section-number">1.3.4</span> Uncertainty</h3>
+<p>Even after identifying the peril, hazard, frequency, and severity, insurers cannot predict exactly</p>
+<ul>
+<li>whether a loss will occur,</li>
+<li>when it will occur, or</li>
+<li>how large the loss will be.</li>
+</ul>
+<p>This lack of certainty is referred to as <strong>uncertainty</strong>.</p>
+<p>Insurance companies reduce uncertainty by analysing historical claims data, identifying patterns, and applying statistical and actuarial methods. However, uncertainty can never be eliminated completely.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Risk Has More Than One Dimension
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Two risks may have the same expected loss but require different premiums because their <strong>frequency</strong>, <strong>severity</strong>, or <strong>uncertainty</strong> differs.</p>
+<p>Understanding these dimensions is fundamental to underwriting, pricing, and risk management.</p>
+</div>
+</div>
+<div id="exm-risk-components" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.3 (Analysing the Components of Risk)</strong></span> Consider a homeowner living in an area prone to flooding.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 81%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Peril</strong></td>
+<td style="text-align: left;">Flood</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Hazard</strong></td>
+<td style="text-align: left;">House located near a river with inadequate flood protection</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Frequency</strong></td>
+<td style="text-align: left;">Flooding is expected once every 10 years</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Severity</strong></td>
+<td style="text-align: left;">Each flood may cause substantial damage to the property</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Uncertainty</strong></td>
+<td style="text-align: left;">The exact timing and extent of the next flood cannot be predicted</td>
+</tr>
+</tbody>
+</table>
+<p>Although the homeowner knows that flooding is possible, the occurrence and magnitude of the next loss remain uncertain. Insurers use historical flood data and catastrophe models to estimate the likelihood and potential cost of future claims.</p>
+</div>
+</section>
+<section id="relationship-among-the-components" class="level3" data-number="1.3.5">
+<h3 data-number="1.3.5" class="anchored" data-anchor-id="relationship-among-the-components"><span class="header-section-number">1.3.5</span> Relationship among the Components</h3>
+<p>The components of risk are closely related and can be viewed as a sequence:</p>
+<div class="cell" data-layout-align="default">
+<div id="fig-risk-flow" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="default">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-risk-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    H[Hazard]
+    P[Peril]
+    L[Loss]
+    R[Risk Assessment]
+    U[Uncertainty]
+
+    H --&gt;|Increases the likelihood or severity of| P
+    P --&gt;|Causes| L
+    L --&gt; R
+    R --&gt; F[Frequency]
+    R --&gt; S[Severity]
+    R --&gt; U
+</pre>
+</div>
+<p></p><figcaption> The relationship between Hazards, Perils, and Risk Assessment.</figcaption> </figure><p></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-risk-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.1
+</figcaption>
+</figure>
+</div>
+</div>
+<p>This framework highlights how insurers assess risks. They identify the <strong>peril</strong>, evaluate the <strong>hazards</strong>, estimate the <strong>frequency</strong> and <strong>severity</strong> of potential losses, and quantify the remaining <strong>uncertainty</strong> before deciding whether to insure the risk and how much premium to charge.</p>
+</section>
+</section>
+<section id="classification-of-risks" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="classification-of-risks"><span class="header-section-number">1.4</span> Classification of Risks</h2>
+<p>Not all risks have the same characteristics. Classifying risks helps insurers understand the nature of potential losses, determine whether a risk can be insured, and select appropriate methods of risk management. Several common classifications are used in insurance.</p>
+<section id="pure-and-speculative-risks" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="pure-and-speculative-risks"><span class="header-section-number">1.4.1</span> Pure and Speculative Risks</h3>
+<p>A <strong>pure risk</strong> is a situation in which the possible outcomes are either <strong>loss</strong> or <strong>no loss</strong>. There is no opportunity to make a profit from the occurrence of the risk. Most risks encountered in personal and commercial insurance, such as fire, theft, illness, and motor accidents, belong to this category.</p>
+<p>In contrast, a <strong>speculative risk</strong> involves the possibility of either a <strong>gain</strong> or a <strong>loss</strong>. Investing in stocks, starting a business, or trading foreign currencies are examples of speculative risks. Although these activities may generate profits, they may also result in financial losses.</p>
+<p>Because insurance is intended to compensate accidental losses rather than guarantee profits, private insurers generally insure <strong>pure risks</strong> but not <strong>speculative risks</strong>.</p>
+<div id="exm-pure-speculative" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.4 (Pure and Speculative Risks)</strong></span> The following situations illustrate the difference between pure and speculative risks.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Type of Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A house is damaged by fire.</td>
+<td>Pure</td>
+</tr>
+<tr class="even">
+<td>A driver is involved in a motor accident.</td>
+<td>Pure</td>
+</tr>
+<tr class="odd">
+<td>An investor purchases company shares.</td>
+<td>Speculative</td>
+</tr>
+<tr class="even">
+<td>A business launches a new product.</td>
+<td>Speculative</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="particular-and-fundamental-risks" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="particular-and-fundamental-risks"><span class="header-section-number">1.4.2</span> Particular and Fundamental Risks</h3>
+<p>Risks may also be classified according to the number of people affected.</p>
+<p>A <strong>particular risk</strong> affects a single individual, household, or business. Examples include the theft of a vehicle, damage to a factory caused by fire, or injuries resulting from a traffic accident. Since these losses are generally independent across policyholders, they can often be pooled effectively through insurance.</p>
+<p>A <strong>fundamental risk</strong>, on the other hand, affects large groups of people or even entire economies. Examples include war, widespread inflation, pandemics, and severe economic recessions. Because many losses occur simultaneously, these risks are difficult for private insurers to diversify and often require government involvement or special insurance arrangements.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why Fundamental Risks Are Difficult to Insure
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Insurance relies on pooling many independent risks. When a single event causes losses to a large number of policyholders at the same time, the insurer may face claims that exceed its financial capacity. This is one reason why risks such as war and widespread economic disruption are usually excluded from standard insurance policies.</p>
+</div>
+</div>
+</section>
+<section id="static-and-dynamic-risks" class="level3" data-number="1.4.3">
+<h3 data-number="1.4.3" class="anchored" data-anchor-id="static-and-dynamic-risks"><span class="header-section-number">1.4.3</span> Static and Dynamic Risks</h3>
+<p>Another useful classification distinguishes between <strong>static</strong> and <strong>dynamic</strong> risks.</p>
+<p>A <strong>static risk</strong> exists regardless of changes in the economy or society. Many traditional insurance risks, such as fire, theft, and natural hazards, remain present over time even though their frequency may fluctuate.</p>
+<p>A <strong>dynamic risk</strong> arises from changes in economic conditions, technological developments, social behaviour, or government policy. For example, advances in technology have increased exposure to cyber attacks, while climate change has altered the frequency and severity of certain natural hazards. Dynamic risks evolve over time and often require insurers to update their underwriting practices and pricing models.</p>
+</section>
+<section id="insurable-and-uninsurable-risks" class="level3" data-number="1.4.4">
+<h3 data-number="1.4.4" class="anchored" data-anchor-id="insurable-and-uninsurable-risks"><span class="header-section-number">1.4.4</span> Insurable and Uninsurable Risks</h3>
+<p>Not every risk can be transferred to an insurer. In general, an <strong>insurable risk</strong> has characteristics that allow its expected losses to be estimated with reasonable accuracy and its financial consequences to be shared among many policyholders.</p>
+<p>Examples of insurable risks include damage to motor vehicles, residential property, and commercial buildings, as well as liability arising from accidents.</p>
+<p>By contrast, <strong>uninsurable risks</strong> typically lack one or more of these characteristics. They may involve highly uncertain outcomes, affect many policyholders simultaneously, or depend primarily on business or investment decisions rather than accidental events. Examples include fluctuations in stock prices, changes in exchange rates, normal business competition, and reputational damage.</p>
+<p>The characteristics of insurable risks will be discussed in greater detail later in this chapter.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Key Point
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The classifications introduced in this section are not independent. For example, most risks covered by general insurance are <strong>pure</strong>, <strong>particular</strong>, and <strong>insurable</strong>. Understanding these classifications helps explain why some risks are readily insured while others must be managed using alternative risk management techniques.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="characteristics-of-normally-insurable-risks" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="characteristics-of-normally-insurable-risks"><span class="header-section-number">1.5</span> Characteristics of Normally Insurable Risks</h2>
+<p>Although many risks exist, not all of them are suitable for insurance. To operate sustainably, insurers must be able to estimate future losses with reasonable accuracy and charge premiums that are both fair and affordable. Consequently, a risk is normally considered <strong>insurable</strong> only if it possesses several desirable characteristics.</p>
+<p>The following characteristics are commonly associated with risks that can be insured by private insurers.</p>
+<section id="large-number-of-homogeneous-exposure-units" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="large-number-of-homogeneous-exposure-units"><span class="header-section-number">1.5.1</span> Large Number of Homogeneous Exposure Units</h3>
+<p>Insurance relies on the <strong>law of large numbers</strong>, which states that the average outcome of many similar exposure units becomes more predictable as the number of observations increases.</p>
+<p>To estimate future claims accurately, insurers require a large portfolio of policyholders with similar risk characteristics. The larger and more homogeneous the portfolio, the more reliable the estimates of claim frequency and severity.</p>
+<p>For example, an insurer can estimate the expected number of motor insurance claims from thousands of similar vehicles more accurately than from only a few vehicles.</p>
+</section>
+<section id="accidental-and-unintentional-loss" class="level3" data-number="1.5.2">
+<h3 data-number="1.5.2" class="anchored" data-anchor-id="accidental-and-unintentional-loss"><span class="header-section-number">1.5.2</span> Accidental and Unintentional Loss</h3>
+<p>Insurance is designed to protect against losses that occur <strong>fortuitously</strong>, that is, by chance or accicent from the perspective of the insured.</p>
+<p>If policyholders could deliberately cause insured losses, insurance would encourage fraud and become financially unsustainable. Consequently, losses resulting from intentional acts are generally excluded from insurance coverage.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Accidental Does Not Mean Unexpected
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An accidental loss does not necessarily mean that the event is impossible to anticipate. For example, insurers know that some houses will be damaged by fire each year. What is uncertain is <strong>which</strong> house will suffer the loss and <strong>when</strong> it will occur.</p>
+</div>
+</div>
+</section>
+<section id="determinable-and-measurable-loss" class="level3" data-number="1.5.3">
+<h3 data-number="1.5.3" class="anchored" data-anchor-id="determinable-and-measurable-loss"><span class="header-section-number">1.5.3</span> Determinable and Measurable Loss</h3>
+<p>For a claim to be settled fairly, the occurrence and amount of the loss must be objectively verifiable.</p>
+<p>This means that insurers should be able to determine</p>
+<ul>
+<li>whether the loss occurred,</li>
+<li>when it occurred,</li>
+<li>what caused the loss, and</li>
+<li>the financial value of the loss.</li>
+</ul>
+<p>For example, the repair cost of a damaged vehicle can usually be estimated by an assessor, whereas emotional distress is often much more difficult to measure objectively.</p>
+</section>
+<section id="non-catastrophic-loss" class="level3" data-number="1.5.4">
+<h3 data-number="1.5.4" class="anchored" data-anchor-id="non-catastrophic-loss"><span class="header-section-number">1.5.4</span> Non-Catastrophic Loss</h3>
+<p>Insurance works best when losses occur independently across policyholders. If a single event causes losses to a large proportion of insureds simultaneously, the insurer may be unable to meet all claim obligations.</p>
+<p>Examples of catastrophic events include major earthquakes, widespread flooding, pandemics, and war.</p>
+<p>Modern insurers manage catastrophic risks through geographical diversification, policy limits, and reinsurance. Nevertheless, some catastrophic risks remain difficult or impossible to insure in the private market.</p>
+</section>
+<section id="pure-and-particular-risk" class="level3" data-number="1.5.5">
+<h3 data-number="1.5.5" class="anchored" data-anchor-id="pure-and-particular-risk"><span class="header-section-number">1.5.5</span> Pure and Particular Risk</h3>
+<p>As discussed earlier, insurance primarily covers <strong>pure risks</strong>, where the possible outcomes are loss or no loss, rather than gain.</p>
+<p>In addition, insured risks are usually <strong>particular risks</strong>, affecting individual policyholders rather than society as a whole. Risks such as house fires, theft, and motor accidents satisfy these characteristics and can therefore be pooled effectively.</p>
+<p>By contrast, speculative investments and widespread economic recessions generally do not satisfy these conditions.</p>
+</section>
+<section id="calculable-probability-of-loss" class="level3" data-number="1.5.6">
+<h3 data-number="1.5.6" class="anchored" data-anchor-id="calculable-probability-of-loss"><span class="header-section-number">1.5.6</span> Calculable Probability of Loss</h3>
+<p>An insurer must be able to estimate the probability and expected cost of future losses using historical data, statistical analysis, and actuarial models.</p>
+<p>Reliable estimation allows insurers to determine appropriate premiums and maintain adequate reserves for future claims.</p>
+<p>When little or no historical data are available, estimating future losses becomes highly uncertain, making insurance difficult or prohibitively expensive.</p>
+</section>
+<section id="financial-loss-requirement" class="level3" data-number="1.5.7">
+<h3 data-number="1.5.7" class="anchored" data-anchor-id="financial-loss-requirement"><span class="header-section-number">1.5.7</span> Financial Loss Requirement</h3>
+<p>Insurance provides compensation only for <strong>financial losses</strong>. The insured must have an <strong>insurable interest</strong>, meaning that they would suffer a genuine financial loss if the insured event occurred.</p>
+<p>For example, a homeowner has an insurable interest in their own house because its destruction would result in financial loss. However, the homeowner generally cannot insure a neighbour’s house because they would not suffer a direct financial loss if it were damaged.</p>
+</section>
+<section id="reasonable-premium" class="level3" data-number="1.5.8">
+<h3 data-number="1.5.8" class="anchored" data-anchor-id="reasonable-premium"><span class="header-section-number">1.5.8</span> Reasonable Premium</h3>
+<p>Finally, the premium must be affordable relative to the protection provided.</p>
+<p>If the expected loss is extremely high or highly uncertain, the premium required may become so expensive that few people are willing to purchase the insurance. In such cases, the risk is technically insurable but may not be commercially viable.</p>
+<p>For example, a house located in an area with an exceptionally high probability of flooding may require a premium that exceeds what most homeowners are willing to pay.</p>
+<div id="exm-insurable-risk" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.5 (Assessing Whether a Risk Is Insurable)</strong></span> Consider the following situations.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 12%">
+<col style="width: 61%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Risk</th>
+<th style="text-align: center;">Normally Insurable?</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Fire damage to a residential house</td>
+<td style="text-align: center;">✓</td>
+<td>Losses are accidental, measurable, and supported by extensive historical data.</td>
+</tr>
+<tr class="even">
+<td>Motor vehicle collision</td>
+<td style="text-align: center;">✓</td>
+<td>Large numbers of similar exposure units allow reliable estimation of claims.</td>
+</tr>
+<tr class="odd">
+<td>Loss from investing in company shares</td>
+<td style="text-align: center;">✗</td>
+<td>This is a speculative risk with the possibility of gain or loss.</td>
+</tr>
+<tr class="even">
+<td>Losses caused by war</td>
+<td style="text-align: center;">✗</td>
+<td>A single event may produce catastrophic losses affecting many policyholders simultaneously.</td>
+</tr>
+<tr class="odd">
+<td>Damage to a neighbour’s house</td>
+<td style="text-align: center;">✗</td>
+<td>The policyholder has no insurable interest in the property.</td>
+</tr>
+</tbody>
+</table>
+<p>This example illustrates that a risk is considered insurable only when it satisfies several characteristics simultaneously, rather than any single criterion alone.</p>
+</div>
+</section>
+<section id="risks-typically-not-insurable" class="level3" data-number="1.5.9">
+<h3 data-number="1.5.9" class="anchored" data-anchor-id="risks-typically-not-insurable"><span class="header-section-number">1.5.9</span> Risks Typically Not Insurable</h3>
+<p>Some risks do not satisfy the characteristics described above and are therefore not normally covered by general insurers.</p>
+<p><strong>Market risk</strong> arises from fluctuations in market prices, such as changes in stock prices or commodity prices. <strong>Financial risk</strong> includes changes in interest rates, exchange rates, or credit conditions. <strong>Production risk</strong> refers to uncertainties associated with business operations, including changes in demand, production costs, or technological failures. <strong>Political risk</strong> arises from government actions or political instability, such as changes in legislation, expropriation of assets, or civil unrest.</p>
+<p>These risks are generally excluded because they often possess one or more of the following characteristics:</p>
+<ul>
+<li>they are speculative rather than pure risks;</li>
+<li>they may affect many policyholders simultaneously, making diversification difficult;</li>
+<li>reliable historical data may be limited or unavailable;</li>
+<li>losses are difficult to measure objectively; or</li>
+<li>insuring such risks may create undesirable incentives or conflict with public policy.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Not Absolutely Uninsurable
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Some risks traditionally regarded as uninsurable can be transferred through specialised insurance products or alternative risk transfer mechanisms. For example, political risk insurance, trade credit insurance, and weather derivatives are available in certain markets, although they typically involve specialised underwriting and pricing.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="what-is-insurance" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="what-is-insurance"><span class="header-section-number">1.6</span> What Is Insurance?</h2>
+<p>Insurance is a financial arrangement in which an insurer agrees to compensate an insured for specified financial losses in exchange for the payment of a premium. By transferring individual risks to an insurer and pooling similar risks across many policyholders, insurance reduces the financial consequences of uncertain future events.</p>
+<p>Insurance does not prevent losses from occurring. Instead, it provides financial protection by replacing the possibility of a large and uncertain loss with a relatively small and predictable premium.</p>
+<p>Three fundamental principles underpin the operation of insurance: <strong>risk transfer</strong>, <strong>risk pooling</strong>, and <strong>indemnity</strong>.</p>
+<section id="risk-transfer" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="risk-transfer"><span class="header-section-number">1.6.1</span> Risk Transfer</h3>
+<p>The primary purpose of insurance is <strong>risk transfer</strong>. Individuals and businesses face many risks that could result in substantial financial losses. By purchasing insurance, they transfer the financial consequences of specified risks to an insurer in exchange for a premium.</p>
+<p>For example, a homeowner purchases fire insurance to protect against the financial consequences of damage caused by fire. Although the risk of fire remains, the insurer assumes responsibility for compensating covered losses according to the policy terms.</p>
+</section>
+<section id="risk-pooling" class="level3" data-number="1.6.2">
+<h3 data-number="1.6.2" class="anchored" data-anchor-id="risk-pooling"><span class="header-section-number">1.6.2</span> Risk Pooling</h3>
+<p>Insurance operates by <strong>pooling risks</strong> from many policyholders who are exposed to similar types of risk. Each policyholder contributes a relatively small premium to a common fund. Since only a small proportion of policyholders are expected to experience losses during any policy period, the accumulated premiums are sufficient to compensate those who suffer covered losses.</p>
+<p>Risk pooling enables uncertain and potentially large individual losses to be shared across many participants. The effectiveness of this mechanism depends on having a sufficiently large number of similar exposure units, allowing insurers to estimate future losses with reasonable accuracy.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why Does Risk Pooling Work?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Insurance does not require every policyholder to experience a loss. Instead, premiums collected from the many who do <strong>not</strong> suffer losses are used to compensate the relatively few who do. This principle enables insurers to spread financial losses across a large group of policyholders.</p>
+</div>
+</div>
+</section>
+<section id="indemnity" class="level3" data-number="1.6.3">
+<h3 data-number="1.6.3" class="anchored" data-anchor-id="indemnity"><span class="header-section-number">1.6.3</span> Indemnity</h3>
+<p>Most general insurance contracts are based on the <strong>principle of indemnity</strong>. The objective is to restore the insured, as nearly as possible, to the same financial position they occupied immediately before the loss.</p>
+<p>Consequently, insurance is intended to compensate for financial loss rather than provide an opportunity for profit. If a vehicle worth THB 600,000 is completely destroyed in an accident, the insurer compensates the insured for the financial value of the loss, subject to the policy terms and conditions. The insured should not receive compensation exceeding the actual loss.</p>
+<p>Certain types of insurance, such as life insurance and personal accident insurance, are <strong>not</strong> contracts of indemnity because the amount payable is specified in advance rather than determined by the actual financial loss.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Insurance Does Not Eliminate Risk
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Insurance transfers the <strong>financial consequences</strong> of specified losses; it does not eliminate the underlying risk itself. For example, purchasing fire insurance does not reduce the probability that a fire will occur. Instead, it protects the insured against the financial impact of a covered fire loss.</p>
+</div>
+</div>
+<div id="exm-home-insurance" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.6 (Insurance in Practice)</strong></span> Suppose a homeowner purchases fire insurance for a house valued at THB 5 million.</p>
+<p>If no fire occurs during the policy period, the homeowner receives no claim payment but benefits from financial protection throughout the year.</p>
+<p>If a covered fire damages the house, the insurer compensates the homeowner according to the policy terms. The financial burden of the loss is therefore transferred from the homeowner to the insurer, while the cost of providing this protection is shared among many policyholders through risk pooling.</p>
+</div>
+</section>
+<section id="summary" class="level3" data-number="1.6.4">
+<h3 data-number="1.6.4" class="anchored" data-anchor-id="summary"><span class="header-section-number">1.6.4</span> Summary</h3>
+<p>Insurance can be viewed as a system based on three interconnected principles:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 84%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Principle</th>
+<th>Role in Insurance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Risk transfer</strong></td>
+<td>Transfers the financial consequences of specified losses from the insured to the insurer.</td>
+</tr>
+<tr class="even">
+<td><strong>Risk pooling</strong></td>
+<td>Spreads the cost of losses among many policyholders through the collection of premiums.</td>
+</tr>
+<tr class="odd">
+<td><strong>Indemnity</strong></td>
+<td>Restores the insured to approximately the same financial position occupied before the loss.</td>
+</tr>
+</tbody>
+</table>
+<p>This understanding provides the foundation for the next section, which explains how these principles are implemented through the insurance mechanism.</p>
+</section>
+</section>
+<section id="insurance-mechanism" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="insurance-mechanism"><span class="header-section-number">1.7</span> Insurance Mechanism</h2>
+<p>Insurance functions as a <strong>risk-sharing mechanism</strong> that enables individuals and businesses to protect themselves against uncertain financial losses. Instead of each person bearing the full cost of a potential loss, many policyholders contribute premiums to a common fund. Those who experience covered losses are then compensated from this fund.</p>
+<p>This mechanism allows policyholders to replace an uncertain and potentially large financial loss with a relatively small and predictable premium.</p>
+<p>The insurance mechanism operates through four basic steps.</p>
+<section id="step-1-risk-assessment" class="level3" data-number="1.7.1">
+<h3 data-number="1.7.1" class="anchored" data-anchor-id="step-1-risk-assessment"><span class="header-section-number">1.7.1</span> Step 1: Risk Assessment</h3>
+<p>Before issuing an insurance policy, the insurer evaluates the risk presented by the applicant. This process, known as <strong>underwriting</strong>, considers factors that affect the likelihood and severity of future losses, such as the type of property being insured, its location, and the applicant’s claims history.</p>
+<p>Based on this assessment, the insurer determines whether to accept the risk and calculates an appropriate premium.</p>
+</section>
+<section id="step-2-premium-collection" class="level3" data-number="1.7.2">
+<h3 data-number="1.7.2" class="anchored" data-anchor-id="step-2-premium-collection"><span class="header-section-number">1.7.2</span> Step 2: Premium Collection</h3>
+<p>Policyholders who face similar risks pay premiums to the insurer. These premiums are pooled to form a common insurance fund that is used to pay future claims.</p>
+<p>Although individual policyholders may pay different premiums according to their level of risk, all premiums contribute to the same risk-sharing mechanism.</p>
+</section>
+<section id="step-3-loss-occurrence-and-claim-settlement" class="level3" data-number="1.7.3">
+<h3 data-number="1.7.3" class="anchored" data-anchor-id="step-3-loss-occurrence-and-claim-settlement"><span class="header-section-number">1.7.3</span> Step 3: Loss Occurrence and Claim Settlement</h3>
+<p>During the policy period, some policyholders experience covered losses while others do not. When a covered loss occurs, the insured submits a claim to the insurer.</p>
+<p>The insurer investigates the claim to verify that</p>
+<ul>
+<li>the loss is covered by the policy,</li>
+<li>the amount of the loss can be determined, and</li>
+<li>the claim satisfies the policy terms and conditions.</li>
+</ul>
+<p>If the claim is valid, the insurer compensates the insured according to the policy provisions.</p>
+</section>
+<section id="step-4-risk-sharing" class="level3" data-number="1.7.4">
+<h3 data-number="1.7.4" class="anchored" data-anchor-id="step-4-risk-sharing"><span class="header-section-number">1.7.4</span> Step 4: Risk Sharing</h3>
+<p>Because only a relatively small proportion of policyholders experience losses during any policy period, the premiums collected from all policyholders are generally sufficient to compensate those who suffer covered losses.</p>
+<p>This sharing of losses among many policyholders is the fundamental principle that makes insurance economically feasible.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why Insurance Requires Many Policyholders
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Insurance relies on the fact that losses occur randomly and independently across a large number of similar exposure units. If every policyholder suffered a loss at the same time, the insurer would be unable to spread the financial burden effectively.</p>
+</div>
+</div>
+</section>
+<section id="the-insurance-mechanism" class="level3" data-number="1.7.5">
+<h3 data-number="1.7.5" class="anchored" data-anchor-id="the-insurance-mechanism"><span class="header-section-number">1.7.5</span> The Insurance Mechanism</h3>
+<p>The operation of insurance can be summarized as follows.</p>
+<div class="cell" data-fig-width="6" data-layout-align="default">
+<div id="fig-insurance-flow" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="default" data-fig-width="6">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-insurance-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    A[Policyholders] --&gt;|Pay premiums| B(Insurance Fund)
+    B --&gt;|Pay covered claims| C[Claimants]
+</pre>
+</div>
+<p></p><figcaption> The mechanism of risk pooling in insurance.</figcaption> </figure><p></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-insurance-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.2
+</figcaption>
+</figure>
+</div>
+</div>
+<p>Although all policyholders contribute premiums, only those who experience covered losses receive compensation. In effect, the losses of the few are financed by the premiums collected from the many.</p>
+<div id="exm-insurance-mechanism" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.7 (How the Insurance Mechanism Works)</strong></span> Suppose an insurer provides fire insurance to <strong>10,000 homeowners</strong>.</p>
+<p>Each homeowner pays an annual premium of <strong>THB 4,000</strong>, creating a total premium fund of <strong>THB 40 million</strong>.</p>
+<p>During the year, only <strong>80 homeowners</strong> experience covered fire losses. After investigating the claims, the insurer compensates these policyholders from the premium fund.</p>
+<p>Although most policyholders do not make claims, they benefit from knowing that financial protection is available should a covered loss occur. By pooling risks across many homeowners, the insurer is able to compensate the relatively few who suffer losses while charging each policyholder only a small fraction of the potential loss.</p>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Insurance Is Based on Probability, Not Certainty
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Insurers cannot predict which individual policyholders will experience losses. Instead, they estimate the <strong>expected number</strong> and <strong>expected cost</strong> of claims for a large group of similar policyholders using statistical and actuarial methods.</p>
+<p>This reliance on probability is one of the fundamental differences between insurance and savings.</p>
+</div>
+</div>
+</section>
+<section id="connection-to-actuarial-science" class="level3" data-number="1.7.6">
+<h3 data-number="1.7.6" class="anchored" data-anchor-id="connection-to-actuarial-science"><span class="header-section-number">1.7.6</span> Connection to Actuarial Science</h3>
+<p>The insurance mechanism depends on accurate estimation of future claims. Actuaries use probability, statistics, and historical claims data to estimate claim frequency and severity, determine premiums, and ensure that insurers maintain sufficient funds to meet future claim obligations.</p>
+</section>
+</section>
+<section id="insurance-contracts" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="insurance-contracts"><span class="header-section-number">1.8</span> Insurance Contracts</h2>
+<p>An insurance policy is a legally enforceable contract between the insurer and the insured. The contract specifies the risks covered, the amount of insurance, the premium payable, the rights and obligations of each party, and the circumstances under which claims will be paid.</p>
+<p>Under Section 862 of the Thai Civil and Commercial Code, an insurance contract may involve three parties.</p>
+<section id="the-insured" class="level3" data-number="1.8.1">
+<h3 data-number="1.8.1" class="anchored" data-anchor-id="the-insured"><span class="header-section-number">1.8.1</span> The Insured</h3>
+<p>The <strong>insured</strong> is the person whose financial interest is protected by the insurance contract. The insured is responsible for paying premiums and disclosing material facts that may affect the insurer’s assessment of the risk.</p>
+</section>
+<section id="the-insurer" class="level3" data-number="1.8.2">
+<h3 data-number="1.8.2" class="anchored" data-anchor-id="the-insurer"><span class="header-section-number">1.8.2</span> The Insurer</h3>
+<p>The <strong>insurer</strong> accepts the transferred risk and agrees to compensate the insured for covered losses in accordance with the policy terms. In Thailand, an insurer must be a public limited company licensed to conduct insurance business under the relevant legislation.</p>
+</section>
+<section id="the-beneficiary" class="level3" data-number="1.8.3">
+<h3 data-number="1.8.3" class="anchored" data-anchor-id="the-beneficiary"><span class="header-section-number">1.8.3</span> The Beneficiary</h3>
+<p>The <strong>beneficiary</strong> is the person entitled to receive policy proceeds. Depending on the type of insurance, the beneficiary may be</p>
+<ul>
+<li>the insured,</li>
+<li>another person designated in the policy, or</li>
+<li>a third party legally entitled to compensation.</li>
+</ul>
+<div id="exm-contract-parties" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.8 (Parties to an Insurance Contract)</strong></span> A homeowner purchases fire insurance on a house financed by a bank.</p>
+<ul>
+<li>The homeowner is the <strong>insured</strong>.</li>
+<li>The insurance company is the <strong>insurer</strong>.</li>
+<li>If the house is mortgaged, the bank may be named as the <strong>beneficiary</strong> (or loss payee) to protect its financial interest.</li>
+</ul>
+</div>
+</section>
+</section>
+<section id="benefits-of-insurance" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="benefits-of-insurance"><span class="header-section-number">1.9</span> Benefits of Insurance</h2>
+<p>Insurance provides benefits that extend beyond individual policyholders. By reducing financial uncertainty, it contributes to economic stability and supports business development.</p>
+<p>For <strong>individuals and households</strong>, insurance provides financial protection against unexpected losses and promotes peace of mind. Instead of facing potentially devastating financial consequences, policyholders exchange uncertain losses for predictable premium payments.</p>
+<p>For <strong>businesses</strong>, insurance protects assets, supports business continuity, and enables firms to undertake productive activities that might otherwise involve unacceptable levels of financial risk.</p>
+<p>For <strong>society and the economy</strong>, insurance facilitates investment, encourages entrepreneurship, promotes long-term savings through certain life insurance products, and assists communities in recovering more quickly after major disasters.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Insurance Supports Economic Growth
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Insurance does more than compensate individual losses. By reducing uncertainty, it encourages households and businesses to invest, borrow, and undertake economic activities that contribute to overall economic development.</p>
+</div>
+</div>
+</section>
+<section id="insurance-in-thailand" class="level2" data-number="1.10">
+<h2 data-number="1.10" class="anchored" data-anchor-id="insurance-in-thailand"><span class="header-section-number">1.10</span> Insurance in Thailand</h2>
+<section id="overview-of-the-thai-insurance-industry" class="level3" data-number="1.10.1">
+<h3 data-number="1.10.1" class="anchored" data-anchor-id="overview-of-the-thai-insurance-industry"><span class="header-section-number">1.10.1</span> Overview of the Thai Insurance Industry</h3>
+<p>The insurance industry plays an important role in Thailand’s financial system by providing financial protection to individuals, businesses, and public organizations against uncertain losses. Through risk pooling and risk transfer, insurers help reduce the financial impact of accidents, property damage, illness, disability, and death.</p>
+<p>In Thailand, insurance is governed by the <strong>Civil and Commercial Code</strong>, which recognizes two main categories of insurance contracts:</p>
+<ul>
+<li><strong>Life insurance</strong>, and</li>
+<li><strong>Non-life insurance</strong>.</li>
+</ul>
+<p>These two sectors operate under separate legislation and are supervised by the <strong>Office of Insurance Commission (OIC)</strong>.</p>
+</section>
+<section id="types-of-insurance" class="level3" data-number="1.10.2">
+<h3 data-number="1.10.2" class="anchored" data-anchor-id="types-of-insurance"><span class="header-section-number">1.10.2</span> Types of Insurance</h3>
+<p>Thai insurance is broadly classified into <strong>life insurance</strong> and <strong>non-life insurance</strong>, reflecting the nature of the risks being insured and the contractual benefits provided.</p>
+<section id="life-insurance" class="level4">
+<h4 class="anchored" data-anchor-id="life-insurance">Life Insurance</h4>
+<p>Life insurance provides financial protection against risks associated with human life. The payment of benefits depends on the survival or death of the insured person, as specified in the insurance contract.</p>
+<p>The term <strong>life insurance</strong> is widely used in the United States and many other countries. Historically, the United Kingdom used the term <strong>life assurance</strong>, reflecting the certainty that death will eventually occur. Today, however, the term <em>life insurance</em> has become the more widely accepted international terminology.</p>
+<p>Common examples of life insurance products include</p>
+<ul>
+<li>term life insurance,</li>
+<li>whole life insurance,</li>
+<li>endowment insurance, and</li>
+<li>annuity contracts.</li>
+</ul>
+</section>
+<section id="non-life-insurance" class="level4">
+<h4 class="anchored" data-anchor-id="non-life-insurance">Non-Life Insurance</h4>
+<p>Non-life insurance includes all forms of insurance other than life insurance. It protects policyholders against financial losses arising from damage to property, legal liability, or other specified risks.</p>
+<p>Different countries use different terminology for this sector.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Commonly Used In</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Non-life insurance</strong></td>
+<td>Thailand and many Asian countries</td>
+</tr>
+<tr class="even">
+<td><strong>General insurance</strong></td>
+<td>United Kingdom and Commonwealth countries</td>
+</tr>
+<tr class="odd">
+<td><strong>Property and casualty (P&amp;C) insurance</strong></td>
+<td>United States and Japan</td>
+</tr>
+</tbody>
+</table>
+<p>Examples of non-life insurance include</p>
+<ul>
+<li>motor insurance,</li>
+<li>fire insurance,</li>
+<li>marine insurance,</li>
+<li>engineering insurance,</li>
+<li>travel insurance, and</li>
+<li>liability insurance.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Different Names, Similar Concepts
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Although the terms <em>non-life insurance</em>, <em>general insurance</em>, and <em>property and casualty insurance</em> differ across countries, they all refer broadly to insurance that is <strong>not</strong> life insurance. The scope of coverage may vary slightly among jurisdictions, but the underlying concept is the same.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="characteristics-of-life-insurance" class="level3" data-number="1.10.3">
+<h3 data-number="1.10.3" class="anchored" data-anchor-id="characteristics-of-life-insurance"><span class="header-section-number">1.10.3</span> Characteristics of Life Insurance</h3>
+<p>Life insurance differs from non-life insurance because the insured event is linked to the life of an individual rather than to damage or loss of property.</p>
+<p>Some important characteristics of life insurance are:</p>
+<ul>
+<li>Benefits are payable upon the death or survival of the insured, depending on the policy.</li>
+<li>Policies are generally long-term contracts that may remain in force for many years.</li>
+<li>Premiums are determined using mortality assumptions together with interest rates and expense provisions.</li>
+<li>Many policies accumulate a cash value or provide savings and investment features.</li>
+<li>The policy benefit is specified in advance and is generally <strong>not</strong> based on the actual financial loss suffered.</li>
+</ul>
+<p>Because the amount payable is predetermined, life insurance is generally <strong>not</strong> a contract of indemnity.</p>
+<div id="exm-life-insurance" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.9 (Example of a Life Insurance Policy)</strong></span> A person purchases a 20-year term life insurance policy with a sum insured of THB 2 million.</p>
+<p>If the insured dies during the policy term, the insurer pays THB 2 million to the designated beneficiary. If the insured survives beyond the policy term, no death benefit is payable unless otherwise specified by the policy.</p>
+</div>
+</section>
+<section id="characteristics-of-non-life-insurance" class="level3" data-number="1.10.4">
+<h3 data-number="1.10.4" class="anchored" data-anchor-id="characteristics-of-non-life-insurance"><span class="header-section-number">1.10.4</span> Characteristics of Non-Life Insurance</h3>
+<p>Non-life insurance protects against accidental losses affecting property, liability, or other financial interests. Unlike life insurance, these contracts are generally short-term and are renewed periodically.</p>
+<p>Typical characteristics include:</p>
+<ul>
+<li>Coverage applies only to specified accidental losses.</li>
+<li>Policies are usually written for one year and renewed if continued protection is required.</li>
+<li>Most contracts follow the <strong>principle of indemnity</strong>, compensating the insured for the actual financial loss up to the policy limits.</li>
+<li>Premiums are determined primarily from expected claim frequency and claim severity.</li>
+</ul>
+<p>Since losses depend on uncertain events such as accidents, fires, or thefts, claims are paid only when a covered loss occurs.</p>
+<div id="exm-motor-insurance" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.10 (Example of Non-Life Insurance)</strong></span> A motor insurance policy provides coverage for accidental damage to a vehicle during a one-year policy period.</p>
+<p>If the insured vehicle is damaged in a covered collision, the insurer compensates the policyholder for the repair cost, subject to the policy conditions, deductible, and policy limit.</p>
+</div>
+</section>
+<section id="common-terminology-in-life-insurance" class="level3" data-number="1.10.5">
+<h3 data-number="1.10.5" class="anchored" data-anchor-id="common-terminology-in-life-insurance"><span class="header-section-number">1.10.5</span> Common Terminology in Life Insurance</h3>
+<p>Several terms are commonly used in life insurance and differ slightly from those used in non-life insurance.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 73%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Insured</strong></td>
+<td>The person whose life is covered by the policy.</td>
+</tr>
+<tr class="even">
+<td><strong>Policyholder</strong></td>
+<td>The person who owns the insurance policy and is responsible for paying premiums.</td>
+</tr>
+<tr class="odd">
+<td><strong>Beneficiary</strong></td>
+<td>The person designated to receive the policy proceeds upon the insured’s death.</td>
+</tr>
+<tr class="even">
+<td><strong>Sum insured (sum assured)</strong></td>
+<td>The amount payable under the policy upon the occurrence of the insured event.</td>
+</tr>
+<tr class="odd">
+<td><strong>Premium</strong></td>
+<td>The amount paid to obtain insurance coverage.</td>
+</tr>
+<tr class="even">
+<td><strong>Policy term</strong></td>
+<td>The period during which the insurance contract remains in force.</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Insured and Policyholder Are Not Always the Same Person
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In many life insurance contracts, the <strong>policyholder</strong> and the <strong>insured</strong> are the same person. However, they may differ. For example, a parent may purchase a life insurance policy on the life of a child, making the parent the policyholder and the child the insured.</p>
+</div>
+</div>
+</section>
+<section id="insurance-regulation-in-thailand" class="level3" data-number="1.10.6">
+<h3 data-number="1.10.6" class="anchored" data-anchor-id="insurance-regulation-in-thailand"><span class="header-section-number">1.10.6</span> Insurance Regulation in Thailand</h3>
+<p>Insurance companies operating in Thailand are supervised by the <strong>Office of Insurance Commission (OIC)</strong>, the national regulatory authority responsible for overseeing both life and non-life insurance businesses.</p>
+<p>The OIC’s primary responsibilities include</p>
+<ul>
+<li>licensing insurance companies,</li>
+<li>protecting the interests of policyholders,</li>
+<li>supervising insurers’ financial soundness,</li>
+<li>promoting fair market conduct, and</li>
+<li>supporting the stable development of the insurance industry.</li>
+</ul>
+<p>Life insurance and non-life insurance businesses are governed under separate legislation.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 75%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Insurance Business</th>
+<th>Governing Law</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Life insurance</strong></td>
+<td><em>Life Insurance Act B.E. 2535 (1992)</em> and subsequent amendments</td>
+</tr>
+<tr class="even">
+<td><strong>Non-life insurance</strong></td>
+<td><em>Non-Life Insurance Act B.E. 2535 (1992)</em> and subsequent amendments</td>
+</tr>
+</tbody>
+</table>
+<p>These laws establish the legal framework for licensing, corporate governance, capital requirements, and the conduct of insurance business in Thailand.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Role of the Office of Insurance Commission (OIC)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The Office of Insurance Commission (OIC) is the primary regulator of Thailand’s insurance industry. Its objective is to promote a stable, transparent, and trustworthy insurance market while protecting the interests of policyholders.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="mathematical-foundations-of-insurance" class="level2" data-number="1.11">
+<h2 data-number="1.11" class="anchored" data-anchor-id="mathematical-foundations-of-insurance"><span class="header-section-number">1.11</span> Mathematical Foundations of Insurance</h2>
+<p>Insurance relies on mathematical principles to estimate future losses and determine appropriate premiums. Although insurers cannot predict whether an individual policyholder will experience a loss, they can estimate the expected losses of a large group of similar policyholders using probability and statistical methods.</p>
+<p>Three fundamental concepts underpin insurance operations:</p>
+<ul>
+<li>probability,</li>
+<li>the law of averages, and</li>
+<li>the law of large numbers.</li>
+</ul>
+<p>Together, these concepts enable insurers to assess risks, calculate premiums, and maintain sufficient funds to pay future claims.</p>
+<section id="probability" class="level3" data-number="1.11.1">
+<h3 data-number="1.11.1" class="anchored" data-anchor-id="probability"><span class="header-section-number">1.11.1</span> Probability</h3>
+<p><strong>Probability</strong> measures the likelihood that an event will occur. It is expressed as a number between 0 and 1, where</p>
+<ul>
+<li>a probability of <strong>0</strong> indicates that the event cannot occur,</li>
+<li>a probability of <strong>1</strong> indicates that the event is certain to occur, and</li>
+<li>values between 0 and 1 represent varying degrees of likelihood.</li>
+</ul>
+<p>In insurance, probability is used to estimate the likelihood of insured events such as fires, motor accidents, thefts, or deaths. These probabilities form the basis for estimating expected future claims.</p>
+<p>For example, suppose historical data indicate that approximately <strong>10 out of every 1,000 insured vehicles</strong> are declared total losses each year. The estimated probability that an individual vehicle will suffer a total loss during the year is</p>
+<p><span class="math display">\[
+\frac{10}{1000}=0.01,
+\]</span></p>
+<p>or <strong>1%</strong>.</p>
+<p>This probability helps insurers estimate the expected number of claims within a portfolio and contributes to the calculation of insurance premiums.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Probability Describes Groups, Not Individuals
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A probability of 1% does <strong>not</strong> mean that every insured vehicle has exactly a 1% chance of being involved in an accident in a particular year. Instead, it means that among many similar vehicles, approximately 1% are expected to experience the insured event.</p>
+</div>
+</div>
+</section>
+<section id="law-of-averages" class="level3" data-number="1.11.2">
+<h3 data-number="1.11.2" class="anchored" data-anchor-id="law-of-averages"><span class="header-section-number">1.11.2</span> Law of Averages</h3>
+<p>The <strong>law of averages</strong> is the principle that losses can be shared among many policyholders through <strong>risk pooling</strong>. Each policyholder contributes a relatively small premium to a common fund, from which the losses of the few who experience insured events are compensated.</p>
+<p>Because individual losses are shared across many policyholders, insurance transforms uncertain and potentially large losses into relatively small and predictable premium payments.</p>
+<p>In general, increasing the number of policyholders allows the cost of losses to be spread more widely. As administrative expenses and other factors are shared across a larger portfolio, the average cost borne by each policyholder may decrease.</p>
+<div id="exm-law-averages" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.11 (Risk Pooling Through the Law of Averages)</strong></span> Suppose that 100 homeowners purchase identical fire insurance policies.</p>
+<p>During the year, only two houses are damaged by fire. Rather than requiring the two affected homeowners to bear the entire financial burden, all 100 policyholders contribute premiums that collectively cover the losses.</p>
+<p>The financial burden of the losses is therefore shared among the entire group, illustrating the principle of risk pooling.</p>
+</div>
+</section>
+<section id="law-of-large-numbers" class="level3" data-number="1.11.3">
+<h3 data-number="1.11.3" class="anchored" data-anchor-id="law-of-large-numbers"><span class="header-section-number">1.11.3</span> Law of Large Numbers</h3>
+<p>The <strong>law of large numbers</strong> states that as the number of similar exposure units increases, the observed average loss tends to approach the expected average loss.</p>
+<p>This principle allows insurers to estimate future claims more accurately by analysing large portfolios of similar risks. While the occurrence of losses for an individual policyholder remains uncertain, the total number of losses across thousands of policyholders becomes increasingly predictable.</p>
+<p>The law of large numbers is one of the most important mathematical foundations of insurance because it reduces the uncertainty associated with future claims.</p>
+<div id="exm-law-large-numbers" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.12 (Predicting Fire Losses)</strong></span> Suppose an insurer covers <strong>10,000 similar houses</strong> against fire.</p>
+<p>Although it is impossible to predict which individual houses will experience a fire during the coming year, historical data may indicate that approximately <strong>25 houses</strong> are expected to suffer fire damage.</p>
+<p>Because the insurer has a large portfolio of similar risks, the actual number of claims is likely to be close to the expected number. This enables the insurer to estimate future claim costs and determine appropriate premium rates.</p>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>The Law of Averages and the Law of Large Numbers Are Different
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <strong>law of averages</strong> explains <strong>how losses are shared</strong> among policyholders through risk pooling.</p>
+<p>The <strong>law of large numbers</strong> explains <strong>why insurers can estimate future losses more accurately</strong> when many similar risks are insured.</p>
+<p>Although closely related, the two principles serve different purposes in insurance.</p>
+</div>
+</div>
+</section>
+<section id="applications-in-insurance" class="level3" data-number="1.11.4">
+<h3 data-number="1.11.4" class="anchored" data-anchor-id="applications-in-insurance"><span class="header-section-number">1.11.4</span> Applications in Insurance</h3>
+<p>The mathematical principles discussed above play complementary roles in insurance operations.</p>
+<p><strong>Probability</strong> enables insurers to estimate the likelihood of insured events and the expected cost of future claims.</p>
+<p>The <strong>law of averages</strong> provides the foundation for risk pooling, allowing the financial consequences of individual losses to be shared among many policyholders through premium contributions.</p>
+<p>The <strong>law of large numbers</strong> improves the accuracy of these estimates by ensuring that actual claim experience becomes more stable as the number of similar exposure units increases.</p>
+<p>Together, these principles support many actuarial and insurance activities, including</p>
+<ul>
+<li>underwriting and risk assessment,</li>
+<li>premium determination,</li>
+<li>reserving for future claims,</li>
+<li>reinsurance decisions, and</li>
+<li>capital management.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Why These Concepts Matter
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Insurance companies cannot predict <strong>who</strong> will experience a loss, but they can estimate <strong>how many</strong> losses are likely to occur within a large portfolio. This ability allows insurers to charge fair premiums while maintaining sufficient funds to meet future claim obligations.</p>
+</div>
+</div>
+</section>
+<section id="summary-1" class="level3" data-number="1.11.5">
+<h3 data-number="1.11.5" class="anchored" data-anchor-id="summary-1"><span class="header-section-number">1.11.5</span> Summary</h3>
+<p>The three mathematical foundations of insurance are closely related but serve different purposes.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 42%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Concept</th>
+<th>Main Purpose</th>
+<th>Application in Insurance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Probability</strong></td>
+<td>Measures the likelihood of future events.</td>
+<td>Estimates claim frequency and expected losses.</td>
+</tr>
+<tr class="even">
+<td><strong>Law of averages</strong></td>
+<td>Spreads losses across many policyholders.</td>
+<td>Forms the basis of risk pooling and premium sharing.</td>
+</tr>
+<tr class="odd">
+<td><strong>Law of large numbers</strong></td>
+<td>Improves the accuracy of loss predictions for large portfolios.</td>
+<td>Enables reliable pricing, reserving, and financial planning.</td>
+</tr>
+</tbody>
+</table>
+<p>This section naturally leads to the next topic, <strong>Insurance Premium Determination</strong>, where these mathematical principles are used to estimate expected losses and calculate premiums.</p>
+</section>
+</section>
+<section id="insurance-premium-determination" class="level2" data-number="1.12">
+<h2 data-number="1.12" class="anchored" data-anchor-id="insurance-premium-determination"><span class="header-section-number">1.12</span> Insurance Premium Determination</h2>
+<p>An insurance premium is the amount paid by a policyholder in exchange for insurance protection. Determining an appropriate premium is one of the insurer’s most important responsibilities. A premium that is too low may leave the insurer unable to pay future claims, whereas a premium that is too high may discourage customers from purchasing insurance.</p>
+<p>To achieve a sustainable insurance system, insurers seek premiums that are <strong>adequate</strong>, <strong>equitable</strong>, and <strong>reasonable</strong>.</p>
+<section id="principles-of-premium-determination" class="level3" data-number="1.12.1">
+<h3 data-number="1.12.1" class="anchored" data-anchor-id="principles-of-premium-determination"><span class="header-section-number">1.12.1</span> Principles of Premium Determination</h3>
+<section id="adequacy" class="level4">
+<h4 class="anchored" data-anchor-id="adequacy">Adequacy</h4>
+<p>A premium should be <strong>adequate</strong> to ensure that the insurer can meet its financial obligations. In particular, the premium should be sufficient to</p>
+<ul>
+<li>pay future claims,</li>
+<li>cover operating and administrative expenses,</li>
+<li>maintain an appropriate financial reserve for unexpected losses, and</li>
+<li>provide a reasonable return to the insurer.</li>
+</ul>
+<p>If premiums are consistently inadequate, the insurer may experience financial difficulties and be unable to satisfy future claims.</p>
+</section>
+<section id="equity-fairness" class="level4">
+<h4 class="anchored" data-anchor-id="equity-fairness">Equity (Fairness)</h4>
+<p>A premium should be <strong>equitable</strong>, meaning that it reflects the level of risk presented by each policyholder. Individuals or businesses with higher expected losses should generally pay higher premiums, while those with lower expected losses should pay less.</p>
+<p>This principle is sometimes referred to as <strong>fair discrimination</strong>, because premiums are differentiated according to measurable differences in risk rather than arbitrary factors.</p>
+<p>For example, a building constructed with fire-resistant materials may qualify for a lower fire insurance premium than an otherwise similar building with a substantially higher fire risk.</p>
+</section>
+<section id="reasonableness" class="level4">
+<h4 class="anchored" data-anchor-id="reasonableness">Reasonableness</h4>
+<p>A premium should also be <strong>reasonable</strong> from the policyholder’s perspective. Although premiums must cover the insurer’s expected costs, they should not be so high that insurance becomes unaffordable or uncompetitive.</p>
+<p>In a competitive insurance market, insurers must balance financial sustainability with affordability in order to attract and retain policyholders.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Balancing the Three Principles
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The three principles of premium determination must be considered together.</p>
+<ul>
+<li>A premium that is <strong>too low</strong> may be fair to customers in the short term but financially unsustainable for the insurer.</li>
+<li>A premium that is <strong>too high</strong> may be financially adequate but discourage customers from purchasing insurance.</li>
+<li>A well-designed premium achieves an appropriate balance between adequacy, equity, and reasonableness.</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="components-of-an-insurance-premium" class="level3" data-number="1.12.2">
+<h3 data-number="1.12.2" class="anchored" data-anchor-id="components-of-an-insurance-premium"><span class="header-section-number">1.12.2</span> Components of an Insurance Premium</h3>
+<p>The premium charged by an insurer consists of more than the expected cost of future claims. It also includes the expenses of operating the insurance business and a margin for uncertainty and profit.</p>
+<p>Conceptually, the premium may be expressed as</p>
+<p><span class="math display">\[
+\boxed{P = F \times S + E + C,}
+\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(P\)</span> = insurance premium,</li>
+<li><span class="math inline">\(F\)</span> = expected claim frequency,</li>
+<li><span class="math inline">\(S\)</span> = expected claim severity,</li>
+<li><span class="math inline">\(E\)</span> = operating expenses, and</li>
+<li><span class="math inline">\(C\)</span> = contingency provision and profit loading.</li>
+</ul>
+<p>Although actual premium calculations are often more sophisticated, this expression illustrates the fundamental components of an insurance premium.</p>
+<section id="expected-losses" class="level4">
+<h4 class="anchored" data-anchor-id="expected-losses">Expected Losses</h4>
+<p>The largest component of the premium is the <strong>expected loss</strong>, which represents the insurer’s estimate of future claim payments.</p>
+<p>Expected losses depend on two quantities:</p>
+<ul>
+<li><strong>frequency</strong>, which measures how often claims are expected to occur, and</li>
+<li><strong>severity</strong>, which measures the average cost of each claim.</li>
+</ul>
+<p>Their product,</p>
+<p><span class="math display">\[
+F \times S,
+\]</span></p>
+<p>represents the <strong>expected claim cost</strong> for each insured exposure.</p>
+<p>For example, if the expected claim frequency is 2% per year and the average claim amount is THB 100,000, the expected loss per policy is</p>
+<p><span class="math display">\[
+0.02 \times 100,000 = \text{THB }2,000.
+\]</span></p>
+</section>
+<section id="operating-expenses" class="level4">
+<h4 class="anchored" data-anchor-id="operating-expenses">Operating Expenses</h4>
+<p>Insurers incur various expenses in providing insurance services. These include</p>
+<ul>
+<li>underwriting expenses,</li>
+<li>policy administration,</li>
+<li>claim handling,</li>
+<li>commissions paid to agents or brokers,</li>
+<li>information technology and office operations, and</li>
+<li>reinsurance costs.</li>
+</ul>
+<p>These expenses must be recovered through premiums to ensure the insurer can continue operating effectively.</p>
+</section>
+<section id="contingency-provision-and-profit" class="level4">
+<h4 class="anchored" data-anchor-id="contingency-provision-and-profit">Contingency Provision and Profit</h4>
+<p>Future losses are inherently uncertain. Even when expected losses are estimated carefully, actual claim experience may differ from expectations.</p>
+<p>To protect against this uncertainty, insurers include a <strong>contingency provision</strong> in the premium. This provision provides financial protection against</p>
+<ul>
+<li>random fluctuations in claims,</li>
+<li>estimation errors,</li>
+<li>inflation in claim costs, and</li>
+<li>unexpected catastrophic events.</li>
+</ul>
+<p>The premium also includes a <strong>profit loading</strong>, which compensates shareholders for providing capital and accepting the financial risks associated with the insurance business.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why Is a Contingency Provision Needed?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Historical data provide only estimates of future losses. Actual claims may be higher than expected because of unusually severe weather, economic changes, or random fluctuations.</p>
+<p>A contingency provision strengthens the insurer’s financial resilience and helps ensure that future claims can still be paid.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="putting-the-components-together" class="level3" data-number="1.12.3">
+<h3 data-number="1.12.3" class="anchored" data-anchor-id="putting-the-components-together"><span class="header-section-number">1.12.3</span> Putting the Components Together</h3>
+<p>The following diagram illustrates the conceptual structure of an insurance premium.</p>
+<div class="cell" data-fig-width="6" data-layout-align="default">
+<div id="fig-premium-calculation" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-layout-align="default" data-fig-width="6">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-premium-calculation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    F[Expected Frequency] --&gt; mult((x))
+    S[Expected Severity]  --&gt; mult
+    
+    mult --&gt;|Equals| L(Expected Loss)
+    
+    L --&gt;|Pure Premium| P(Gross Premium)
+    E[Operating Expenses] --&gt;|Expense Load| P
+    C[Contingency &amp; Profit] --&gt;|Risk/Profit Load| P
+
+    style L fill:#f9f,stroke:#333,stroke-width:2px
+    style P fill:#bbf,stroke:#333,stroke-width:2px
+    style mult fill:#fff,stroke:#333,stroke-width:1px
+</pre>
+</div>
+<p></p><figcaption> The mathematical components of an insurance premium.</figcaption> </figure><p></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-premium-calculation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.3
+</figcaption>
+</figure>
+</div>
+</div>
+<p>The premium therefore consists of three broad components:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 65%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Expected losses</strong></td>
+<td>Pays future claims.</td>
+</tr>
+<tr class="even">
+<td><strong>Operating expenses</strong></td>
+<td>Covers the cost of conducting insurance business.</td>
+</tr>
+<tr class="odd">
+<td><strong>Contingency provision and profit</strong></td>
+<td>Provides financial resilience and an appropriate return on capital.</td>
+</tr>
+</tbody>
+</table>
+<div id="exm-premium-components" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1.13 (Components of an Insurance Premium)</strong></span> Suppose an insurer estimates the following values for a motor insurance policy.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Component</th>
+<th style="text-align: right;">Amount (THB)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Expected claim frequency</td>
+<td style="text-align: right;">2%</td>
+</tr>
+<tr class="even">
+<td>Expected claim severity</td>
+<td style="text-align: right;">100,000</td>
+</tr>
+<tr class="odd">
+<td>Expected losses (<span class="math inline">\(F \times S\)</span>)</td>
+<td style="text-align: right;">2,000</td>
+</tr>
+<tr class="even">
+<td>Operating expenses</td>
+<td style="text-align: right;">600</td>
+</tr>
+<tr class="odd">
+<td>Contingency provision and profit</td>
+<td style="text-align: right;">400</td>
+</tr>
+</tbody>
+</table>
+<p>The premium is therefore estimated as</p>
+<p><span class="math display">\[
+P = 2,000 + 600 + 400 = \text{THB }3,000.
+\]</span></p>
+<p>This example illustrates that only part of the premium is used to pay claims. The remainder supports the operation and financial stability of the insurer.</p>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Looking Ahead
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this chapter, the premium formula is presented as a <strong>conceptual framework</strong> for understanding the main components of an insurance premium. In later chapters, we will develop more rigorous actuarial methods for estimating expected losses and determining premiums using statistical models and insurance rating techniques.</p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../index.html" class="pagination-link" aria-label="Welcome to My Book">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Welcome to My Book</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
