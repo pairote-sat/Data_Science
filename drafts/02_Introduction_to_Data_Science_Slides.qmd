@@ -1,0 +1,1941 @@
+---
+title: "02_Introduction_to_Data_Science_Slides"
+
+format:
+  beamer:
+    theme: Boadilla
+    colortheme: default
+    fonttheme: professionalfonts
+    aspectratio: 169
+    pdf-engine: xelatex
+    keep-tex: true
+---
+
+## Part I — From Insurance to Data Science
+
+### Why Data Science in Insurance?
+
+Insurance is fundamentally concerned with making decisions under uncertainty.
+
+As actuaries, we use probability, statistics, and insurance principles to assess risk. In practice, these decisions also require reliable data and systematic methods for analysing it.
+
+For example, a motor insurer may want to determine whether claim frequency differs according to:
+
+- age;
+- geographical area;
+- vehicle characteristics; or
+- other characteristics of policyholders.
+
+Data science provides a framework for investigating such questions.
+
+### Data-Driven Insurance Decisions
+
+An insurance decision is **data-driven** when relevant data are used systematically to support the decision.
+
+Data do not replace actuarial judgement. They provide evidence that can be combined with:
+
+- statistical methods;
+- insurance knowledge; and
+- professional judgement.
+
+Insurers use data to:
+
+- assess and classify risks during underwriting;
+- estimate claim frequency and claim severity;
+- determine appropriate premiums;
+- monitor claims and identify unusual patterns;
+- evaluate portfolio experience; and
+- support risk-management decisions.
+
+### From Data to Decision
+
+Consider a motor insurance portfolio.
+
+Suppose an insurer observes that policyholders in different age groups have different claim frequencies.
+
+The insurer needs to determine whether this difference is supported by sufficient data and whether age should be considered when assessing risk.
+
+$$
+\text{Insurance problem}
+\rightarrow
+\text{Data}
+\rightarrow
+\text{Analysis}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Decision}.
+$$
+
+The purpose of data science is therefore to transform data into useful information and evidence for decision-making.
+
+### Data Do Not Speak for Themselves
+
+Observed patterns in insurance data must be interpreted in context.
+
+A difference between two groups does not necessarily imply that the corresponding risk factor causes the difference.
+
+When interpreting an observed pattern, we should consider:
+
+- data quality;
+- exposure;
+- other relevant risk factors; and
+- the method of analysis.
+
+::: {.callout-note}
+
+## Key idea
+
+**An observed pattern is evidence, not automatically an explanation.**
+
+Data science helps us identify and quantify patterns, while actuarial judgement is needed to interpret those patterns in context.
+
+:::
+
+### From Risk to Data
+
+The concepts of risk introduced in Chapter 1 are theoretical.
+
+In practice, quantities such as probabilities and expected losses must be estimated from observations.
+
+Suppose an insurer wants to estimate claim frequency from historical data.
+
+A simple estimate is
+
+$$
+\widehat{\lambda}
+=
+\frac{\text{Number of claims}}
+{\text{Exposure}}.
+$$
+
+The estimate is obtained from observed insurance experience.
+
+### Estimating Claim Severity
+
+Suppose the observed claim amounts are
+
+$$
+X_1,\ldots,X_n.
+$$
+
+A basic estimate of the average claim amount is
+
+$$
+\widehat{\mu}
+=
+\frac{1}{n}\sum_{i=1}^{n}X_i.
+$$
+
+More advanced statistical methods can then be used to investigate how claim severity varies with different risk characteristics.
+
+### From Risk to Risk Assessment
+
+The transition from actuarial theory to data analysis can be summarised as
+
+$$
+\boxed{
+\text{Risk}
+\rightarrow
+\text{Observable outcomes}
+\rightarrow
+\text{Data}
+\rightarrow
+\text{Statistical analysis}
+\rightarrow
+\text{Risk assessment}
+}
+$$
+
+Data science provides a systematic framework for the stages involving:
+
+- data collection;
+- data preparation;
+- exploration;
+- analysis and modelling; and
+- communication.
+
+### Exposure Matters
+
+Insurance experience cannot always be compared using raw claim counts.
+
+A portfolio with more policies or a longer observation period will generally produce more claims simply because there is more opportunity for claims to occur.
+
+Therefore, insurance experience is often measured relative to an appropriate measure of **exposure**.
+
+For example,
+
+$$
+\text{Claim frequency}
+=
+\frac{\text{Number of claims}}
+{\text{Exposure}}.
+$$
+
+::: {.callout-important}
+
+## Key idea
+
+**Raw claim counts are not sufficient for comparing insurance risk.**
+
+The amount of exposure must be considered when measuring claim experience.
+
+:::
+
+### Why Data Science Matters to Actuaries
+
+Modern insurance problems often involve large and complex datasets.
+
+An actuary may need to:
+
+- combine information from different sources;
+- identify data-quality problems;
+- explore relationships between variables;
+- develop statistical models; and
+- communicate analytical results.
+
+However, applying an algorithm to a dataset is not sufficient.
+
+Actuarial knowledge is needed to formulate the problem, select meaningful variables, recognise appropriate exposure measures, assess assumptions, and interpret the results.
+
+### Data Science and Actuarial Science
+
+| Data science | Actuarial science |
+|---|---|
+| Collects and prepares data | Understands the insurance problem |
+| Explores and visualises data | Interprets risk and uncertainty |
+| Develops statistical and predictive models | Assesses actuarial assumptions and implications |
+| Communicates analytical results | Applies professional judgement to decisions |
+
+The two disciplines are complementary.
+
+$$
+\boxed{
+\text{Data}
++
+\text{Statistical methods}
++
+\text{Computing}
++
+\text{Actuarial judgement}
+}
+$$
+
+provides a framework for making better-informed insurance decisions.
+
+## Part II — What Is Data Science?
+
+### What Is Data Science?
+
+Data science is concerned with extracting useful information and knowledge from data to support:
+
+- understanding;
+- prediction; and
+- decision-making.
+
+It combines:
+
+- statistical methods;
+- computational tools; and
+- knowledge of the subject area in which the data arise.
+
+There is no single method that defines data science.
+
+Different problems require different combinations of data management, statistical analysis, programming, visualisation, and modelling.
+
+### Data Science in Insurance
+
+For an insurer, data science can be used to investigate questions such as:
+
+- How does claim frequency vary across different groups of policyholders?
+- Which characteristics are associated with larger claims?
+- Can future claims be predicted from available information?
+- Are there unusual patterns in claims that require further investigation?
+
+These questions require more than calculating statistics.
+
+They require:
+
+- an understanding of the insurance problem;
+- appropriate data;
+- suitable analytical methods; and
+- computational tools.
+
+### Four Foundations of Data Science
+
+Data science brings together four closely related components:
+
+1. **Data**
+2. **Statistics**
+3. **Computing**
+4. **Domain knowledge**
+
+Each component contributes something different to the analysis.
+
+### The Four Foundations
+
+![The Four Foundations of Data Science](figures/Four_Foundations_of_Data_Science.png){#fig-foundations-slides fig-align="center" width=85%}
+
+### Data
+
+**Data** provide the observations from which information can be obtained.
+
+In insurance, data may include:
+
+- policy characteristics;
+- exposure;
+- claims;
+- claim amounts;
+- premiums; and
+- other information relevant to risk.
+
+Without appropriate data, statistical analysis cannot provide useful evidence about the insurance problem.
+
+### Statistics
+
+**Statistics** provides methods for:
+
+- describing data;
+- identifying patterns;
+- quantifying uncertainty; and
+- drawing conclusions from observations.
+
+For example, an insurer may use statistical methods to estimate claim frequency or compare the experience of different groups.
+
+### Computing
+
+**Computing** provides tools for:
+
+- storing data;
+- manipulating data;
+- analysing data; and
+- visualising data.
+
+Modern datasets may contain thousands or millions of observations.
+
+Computational tools make it possible to carry out analyses efficiently and reproducibly.
+
+### Domain Knowledge
+
+**Domain knowledge** provides an understanding of the context in which the data arise.
+
+For an actuary, this includes knowledge of:
+
+- insurance products;
+- risk;
+- exposure;
+- claims;
+- premiums; and
+- the business decisions that the analysis is intended to support.
+
+### The Four Components Are Complementary
+
+The four components work together.
+
+Suppose an insurer observes that one group of policyholders has a higher claim frequency than another.
+
+- **Statistics** can quantify the difference.
+- **Computing** can process the underlying data.
+- **Domain knowledge** can determine whether the comparison is meaningful.
+- **Data** provide the observations on which the analysis is based.
+
+The analysis may also need to account for exposure and other characteristics that differ between the groups.
+
+### Data Science Is More Than Programming
+
+Programming is an important tool in data science.
+
+However, data science is not simply programming with data.
+
+A successful analysis requires:
+
+- an appropriate question;
+- reliable data;
+- suitable statistical methods; and
+- an understanding of the context in which the results will be used.
+
+| Component | Main purpose | Example in insurance |
+|---|---|---|
+| Data | Provide observations | Policy and claims records |
+| Statistics | Quantify and analyse patterns | Estimate claim frequency |
+| Computing | Process and analyse data efficiently | Use R to manipulate and model data |
+| Domain knowledge | Interpret results in context | Understand exposure and insurance risk |
+
+### Data Science and Decision-Making
+
+The ultimate purpose of data science is not to produce tables, graphs, or models for their own sake.
+
+Its purpose is to provide evidence that can improve decisions.
+
+A useful framework is
+
+$$
+\text{Question}
+\rightarrow
+\text{Data}
+\rightarrow
+\text{Analysis}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Decision}.
+$$
+
+For example, an insurer may investigate whether a particular characteristic should be used in pricing.
+
+The analysis may involve historical policy and claims data, data preparation, exploration, and statistical modelling.
+
+The resulting evidence can then be considered as part of the pricing decision.
+
+### From Analysis to Action
+
+A useful data-science result should answer three questions:
+
+1. **What did the data show?**
+2. **How reliable is the evidence?**
+3. **What decision, if any, should follow from it?**
+
+The quality of a decision depends on more than the predictive performance of a model.
+
+We must also consider:
+
+- the quality and relevance of the data; assumptions underlying the analysis;
+- uncertainty in the results; and the consequences of using the results.
+
+::: {.callout-note}
+
+## Key idea
+
+**Data science provides analytical evidence; actuarial judgement provides the insurance context needed to interpret and use that evidence.**
+
+:::
+
+
+## Part III — The Role of Data in Insurance
+
+### The Role of Data in Insurance
+
+Data provide the empirical foundation for many insurance activities.
+
+Insurers collect and maintain information about:
+
+- policies and policyholders;
+- exposure;
+- premiums;
+- claims; and
+- payments.
+
+These data support decisions about:
+
+- underwriting;
+- pricing;
+- claims management; and
+- risk management.
+
+### What Makes Insurance Data Useful?
+
+The usefulness of insurance data depends on more than the amount of information available.
+
+Data should be:
+
+- relevant to the problem;
+- recorded consistently;
+- sufficiently complete; and
+- sufficiently accurate for the intended analysis.
+
+Insurance data must also be interpreted in relation to **exposure** and the characteristics of the insurance portfolio.
+
+### Why Claim Counts Are Not Enough
+
+Suppose two portfolios have:
+
+- Portfolio A: 1,000 claims;
+- Portfolio B: 500 claims.
+
+We cannot conclude that Portfolio A has twice the claim risk.
+
+Portfolio A may simply have substantially more exposure.
+
+A more meaningful comparison is often based on **claim frequency**:
+
+$$
+\text{Claim frequency}
+=
+\frac{\text{Number of claims}}
+{\text{Exposure}}.
+$$
+
+::: {.callout-important}
+
+## Key idea
+
+**Insurance experience should be interpreted relative to the amount of exposure.**
+
+Raw counts alone may give a misleading comparison between portfolios.
+
+:::
+
+### Insurance Data Sources
+
+Insurance data come from both **internal** and **external** sources.
+
+Common internal sources include:
+
+- **Policy data** — policy type, coverage, dates, insured characteristics, and premium.
+- **Exposure data** — the amount of time or risk exposure associated with a policy.
+- **Claims data** — claim dates, types, status, and amounts.
+- **Payment data** — premiums, claim payments, expenses, and other transactions.
+- **Customer data** — policyholder characteristics and interactions with the insurer.
+
+### External Data
+
+External sources may provide information relevant to risk assessment.
+
+Examples include:
+
+- geographical information;
+- demographic information;
+- weather data;
+- economic indicators; and
+- other publicly or commercially available data.
+
+These data may provide information that is not available from the insurer's own records.
+
+### Combining Data Sources
+
+Insurance information is often stored in different systems.
+
+For example:
+
+$$
+\text{Policy system}
+\qquad
+\text{Claims system}
+\qquad
+\text{Payment system}
+$$
+
+may contain different parts of the information required for an analysis.
+
+These sources may need to be linked using a common identifier, such as a policy number or claim number.
+
+$$
+\text{Policy data}
++
+\text{Exposure data}
++
+\text{Claims data}
+\longrightarrow
+\text{Insurance analysis}.
+$$
+
+### Start with the Question
+
+The objective of data collection is **not** to collect as much data as possible.
+
+The data should be:
+
+- relevant to the question;
+- measured appropriately; and
+- suitable for the intended analysis.
+
+The question should determine which data are required.
+
+::: {.callout-note}
+
+## Start with the question
+
+**Do not begin with "What data do we have?"**
+
+Begin with:
+
+> **What question are we trying to answer?**
+
+Then determine what data are needed to answer it.
+
+:::
+
+### Types of Data
+
+Insurance datasets contain variables with different characteristics.
+
+Recognising the type of each variable is important because it affects how the variable can be:
+
+- summarised;
+- visualised; and
+- analysed.
+
+A useful first distinction is between:
+
+$$
+\boxed{\text{Categorical data}}
+\qquad\text{and}\qquad
+\boxed{\text{Numerical data}}.
+$$
+
+### Categorical Data
+
+**Categorical data** describe membership in a group or category.
+
+Examples in insurance include:
+
+- type of insurance;
+- geographical area;
+- vehicle type;
+- policy status; and
+- claim type.
+
+For example:
+
+```text
+Area = Urban
+Area = Rural
+```
+
+The values identify categories rather than numerical quantities.
+
+### Numerical Data
+
+**Numerical data** represent quantities for which arithmetic operations are meaningful.
+
+Examples include:
+
+* age;
+* exposure;
+* premium;
+* number of claims; and
+* claim amount.
+
+Numerical variables can be further classified as **discrete** or **continuous**.
+
+### Discrete and Continuous Data
+
+A **discrete variable** takes values that can be counted.
+
+For example, the number of claims satisfies
+
+$$
+N \in {0,1,2,\ldots}.
+$$
+
+A **continuous variable** can take values within an interval.
+
+Examples include:
+
+* claim amount; and
+* exposure,
+
+depending on how the quantities are measured and recorded.
+
+### Structured and Unstructured Data
+
+Another useful distinction is between **structured** and **unstructured** data.
+
+**Structured data** are organised in a predefined format, such as rows and columns in a database.
+
+Examples:
+
+* policy records;
+* claims records; and
+* customer databases.
+
+**Unstructured data** do not follow a predefined tabular structure.
+
+Examples include:
+
+* documents;
+* images;
+* audio; and
+* text.
+
+For introductory actuarial analysis, structured data are particularly important.
+
+### Types of Insurance Variables
+
+| Variable         | Example | Type                  |
+| ---------------- | ------: | --------------------- |
+| Age              |      35 | Numerical             |
+| Area             |   Urban | Categorical           |
+| Exposure         |    0.75 | Numerical, continuous |
+| Number of claims |       2 | Numerical, discrete   |
+| Claim amount     |  18,500 | Numerical             |
+| Policy status    |  Active | Categorical           |
+
+The classification affects the methods that can be used.
+
+For example:
+
+* numerical distributions can be examined using histograms;
+* categorical frequencies can be displayed using bar charts.
+
+### Variable Type and Variable Role
+
+The **type** of a variable and its **role** in an analysis are different concepts.
+
+For example, `Claim Amount` may be:
+
+* an outcome variable when modelling claim severity; or
+* a variable being summarised during exploratory analysis.
+
+Therefore:
+
+$$
+\boxed{
+\text{Variable type}
+\neq
+\text{Variable role}
+}
+$$
+
+The role of a variable depends on the question being investigated.
+
+### An Insurance Dataset
+
+Consider the following simplified motor insurance dataset.
+
+Each row represents an insurance policy.
+
+| Policy | Age | Area  | Exposure | Claims | Claim Amount |
+| -----: | --: | ----- | -------: | -----: | -----------: |
+|      1 |  24 | Urban |     1.00 |      1 |       12,500 |
+|      2 |  42 | Rural |     1.00 |      0 |            0 |
+|      3 |  31 | Urban |     0.50 |      2 |        8,400 |
+|      4 |  56 | Rural |     1.00 |      0 |            0 |
+|      5 |  27 | Urban |     0.75 |      1 |       21,300 |
+|      6 |  45 | Urban |     1.00 |      0 |            0 |
+
+### Reading the Dataset
+
+Different variables describe different aspects of the insurance risk.
+
+* `Age` describes a characteristic of the policyholder.
+* `Area` describes the geographical category.
+* `Exposure` describes the amount of risk observed.
+* `Claims` records the number of observed claims.
+* `Claim Amount` records the aggregate claim amount.
+
+The same dataset can therefore be used to investigate several different questions.
+
+### Questions from the Dataset
+
+**Descriptive question**
+
+> How does claim experience vary across different areas?
+
+**Frequency question**
+
+> What is the observed claim frequency?
+
+**Severity question**
+
+> What is the average claim amount among policies with claims?
+
+**Comparative question**
+
+> Does claim experience appear to differ between younger and older policyholders?
+
+Different questions may require different summaries and analytical methods.
+
+### Frequency and Severity
+
+Two fundamental quantities in insurance analysis are **claim frequency** and **claim severity**.
+
+Claim frequency measures the number of claims relative to exposure:
+
+$$
+\text{Claim frequency}
+=\frac{\text{Number of claims}}
+{\text{Exposure}}.
+$$
+
+Average claim severity measures the average claim amount among claims:
+
+$$
+\text{Average severity}
+=\frac{\text{Total claim amount}}
+{\text{Number of claims}},
+$$
+
+provided that the denominator is positive.
+
+### Frequency x Severity
+
+The two quantities can be combined to obtain a simple measure of expected loss per unit exposure:
+
+$$
+\text{Expected loss per unit exposure}
+\approx
+\text{Claim frequency}
+\times
+\text{Average severity}.
+$$
+
+This provides a simple bridge between insurance concepts and data science.
+
+The quantities are estimated from observed data.
+
+More advanced methods can then investigate how frequency and severity vary with risk characteristics.
+
+::: {.callout-note}
+
+## Key idea
+
+Insurance data contain different types of information about a risk.
+
+**Frequency** describes how often claims occur, while **severity** describes the size of claims.
+
+Both are needed to understand insurance losses.
+
+:::
+
+## Part IV — The Data Science Life Cycle
+
+### The Data Science Life Cycle
+
+A data science project transforms a practical problem into an evidence-based decision.
+
+Although individual projects differ, most involve several common stages:
+
+<!-- $$ -->
+<!-- \text{Define} -->
+<!-- \rightarrow -->
+<!-- \text{Acquire} -->
+<!-- \rightarrow -->
+<!-- \text{Prepare} -->
+<!-- \rightarrow -->
+<!-- \text{Explore} -->
+<!-- \rightarrow -->
+<!-- \text{Model} -->
+<!-- \rightarrow -->
+<!-- \text{Communicate} -->
+<!-- \rightarrow -->
+<!-- \text{Deploy and Monitor}. -->
+<!-- $$ -->
+
+![Data Science Life Cycle](figures/Data_Science_Life_Cycle.png){#fig-lifecycle-slides fig-align="center" width=60%}
+
+### The Life Cycle Is Not Strictly Linear
+
+The stages provide a framework for organising a data science project.
+
+They should not be viewed as a strictly linear sequence.
+
+For example:
+
+* exploration may reveal data-quality problems;
+* data preparation may require returning to the data source;
+* modelling may reveal that the original question needs reconsideration; and
+* monitoring may show that a deployed model needs to be updated.
+
+$$
+\boxed{\text{Data science is a cycle, not a one-time process.}}
+$$
+
+### 1. Define the Problem
+
+A data science project should begin with a **question or decision**.
+
+It should not begin simply because a dataset or a modelling technique is available.
+
+For an insurance problem, we should establish:
+
+* what decision needs to be supported;
+* what outcome is of interest;
+* which population or portfolio is being studied;
+* what information may be relevant; and
+* how the results will be used.
+
+### Example: Defining an Insurance Problem
+
+Suppose an insurer observes differences in motor insurance claim experience.
+
+A useful question is:
+
+> **Which characteristics are associated with differences in claim frequency?**
+
+This is more informative than:
+
+> "We want to analyse the claims data."
+
+The first question identifies the outcome of interest and gives direction to the analysis.
+
+### From Question to Measurable Quantities
+
+A practical question must be translated into quantities that can be measured using data.
+
+For claim frequency, we need information about:
+
+* the number of claims; and
+* the corresponding exposure.
+
+Thus,
+
+$$
+\text{Question}
+\rightarrow
+\text{Measurable outcome}
+\rightarrow
+\text{Required data}.
+$$
+
+::: {.callout-important}
+
+## Start with the decision, not the model
+
+The choice of statistical or machine-learning method should follow from the problem.
+
+A sophisticated model is not useful if it does not answer a relevant question or support a meaningful decision.
+
+:::
+
+### 2. Acquire the Data
+
+Once the problem has been defined, the next stage is to obtain the required data.
+
+Insurance data may come from:
+
+* policy administration systems;
+* claims systems;
+* financial records;
+* customer databases; and
+* external sources.
+
+Data from different systems may need to be combined using a common identifier.
+
+### What Data Are Required?
+
+The required data depend on the question.
+
+For example, analysing claim frequency may require:
+
+* number of claims;
+* exposure;
+* policy characteristics; and
+* relevant risk characteristics.
+
+Data acquisition may involve:
+
+* importing files;
+* querying databases;
+* accessing APIs; or
+* obtaining data from external sources.
+
+### Available Data vs Appropriate Data
+
+Having a large dataset does not guarantee a useful analysis.
+
+We must distinguish between:
+
+$$
+\boxed{\text{Available data}}
+\qquad\text{and}\qquad
+\boxed{\text{Appropriate data}}.
+$$
+
+Data are appropriate when they measure quantities relevant to the problem and are suitable for the intended analysis.
+
+### 3. Prepare the Data
+
+Raw data are rarely ready for analysis.
+
+**Data preparation** involves:
+
+* checking;
+* cleaning;
+* transforming; and
+* organising the data.
+
+Common problems include:
+
+* missing values;
+* invalid or impossible values;
+* inconsistent data types;
+* duplicated observations;
+* inconsistent categories;
+* incorrect dates; and
+* observations outside the relevant period.
+
+### Data Preparation in Insurance
+
+Insurance data provide many examples.
+
+For example:
+
+* a policy may have a missing inception date;
+* an exposure period may be incorrectly recorded;
+* a claim may be linked to an inactive policy; or
+* the same geographical area may appear under different labels.
+
+These problems can affect the results of subsequent analysis.
+
+### Data Transformation
+
+Data preparation may also require transformations.
+
+For example:
+
+* converting dates into a standard format; standardising category labels; or
+* aggregating several claim records to obtain total claim amount by policy.
+
+The objective is not simply to make the dataset look tidy.
+
+Each transformation should have a clear reason based on:
+
+* the meaning of the data; and the requirements of the analysis.
+
+::: {.callout-note}
+
+## Data cleaning is part of the analysis
+
+Decisions about missing, invalid, or unusual observations can affect the results.
+
+Data preparation should therefore be documented and carried out with an understanding of the underlying insurance process.
+
+:::
+
+### 4. Explore the Data
+
+After the data have been prepared, the next stage is **exploratory data analysis (EDA)**.
+
+The purpose of EDA is to understand the main characteristics of the data before formal modelling.
+
+EDA can examine:
+
+* distributions of variables;
+* differences between groups;
+* relationships between variables;
+* unusual or extreme observations;
+* missing values; and
+* possible data-quality problems.
+
+### Numerical and Graphical Exploration
+
+EDA uses both numerical summaries and graphical methods.
+
+**Numerical summaries** include:
+
+* mean;
+* median;
+* standard deviation; and
+* other descriptive statistics.
+
+**Graphical methods** include:
+
+* histograms;
+* boxplots;
+* bar charts; and
+* scatterplots.
+
+Different methods reveal different features of the data.
+
+### EDA in Insurance
+
+Suppose an insurer wants to understand differences in claim experience.
+
+EDA might be used to:
+
+* compare claim frequency across geographical areas;
+* examine the distribution of claim amounts;
+* identify unusually large claims; and
+* investigate relationships between age and claim experience.
+
+EDA can reveal patterns that require further investigation.
+
+### EDA Before Modelling
+
+Exploration is more than a preliminary presentation of the data.
+
+It may reveal:
+
+* variables that require transformation;
+* groups that should be examined separately;
+* unusual observations; or
+* relationships that require further investigation.
+
+Thus,
+
+$$
+\boxed{
+\text{Explore}
+\rightarrow
+\text{Understand}
+\rightarrow
+\text{Model}
+}
+$$
+
+The analysis should be guided by what the data can reasonably support.
+
+### 5. Model the Data
+
+When modelling is required, an appropriate statistical or computational model can be developed.
+
+A model provides a mathematical representation of relationships in the data.
+
+Depending on the problem, the objective may be to:
+
+* explain observed patterns;
+* estimate an unknown quantity; or
+* predict future outcomes.
+
+### Insurance Modelling Examples
+
+Data science models can be used for:
+
+* claim frequency;
+* claim severity;
+* probability of a claim;
+* future claims; and
+* expected losses.
+
+The appropriate model depends on:
+
+* the nature of the outcome;
+* the available data;
+* the purpose of the analysis; and
+* the assumptions that can reasonably be made.
+
+### Different Outcomes Require Different Models
+
+The number of claims is a **count variable**.
+
+Claim amount is a **monetary variable**.
+
+These outcomes have different characteristics and may therefore require different modelling approaches.
+
+The model should follow from the problem and the nature of the data.
+
+### Model Evaluation
+
+Model development should include evaluation.
+
+A model that fits historical data well may not necessarily provide reliable predictions for new observations.
+
+Therefore, we need to assess whether the model is:
+
+* appropriate for the problem;
+* consistent with its assumptions; and
+* useful for its intended purpose.
+
+::: {.callout-important}
+
+## A model is an approximation
+
+A statistical model does not reproduce reality exactly.
+
+It provides a simplified representation of relationships observed in the data.
+
+Its usefulness depends on whether its assumptions and results are appropriate for the problem being considered.
+
+:::
+
+### 6. Communicate the Results
+
+The results of an analysis must be communicated clearly to the people who will use them.
+
+A technically correct analysis has limited value if its findings cannot be understood or connected to the original decision.
+
+Communication may involve:
+
+* tables;
+* charts and visualisations;
+* written reports;
+* presentations; or
+* interactive dashboards.
+
+### Communicate for the Audience
+
+The form of communication should reflect the audience.
+
+For example:
+
+**Actuarial report**
+
+* assumptions;
+* methodology;
+* model performance; and
+* technical interpretation.
+
+**Senior management**
+
+* main findings;
+* important limitations; and
+* implications for the decision.
+
+The same analysis may therefore require different forms of communication.
+
+### From Results to Decisions
+
+Good communication should connect the results back to the original question.
+
+For example, instead of simply reporting:
+
+> Group A has a higher observed claim frequency than Group B.
+
+the analysis should explain:
+
+* the size of the difference;
+* the evidence supporting it;
+* relevant limitations; and
+* possible implications for the insurance decision.
+
+A useful structure is:
+
+$$
+\text{Problem}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Interpretation}
+\rightarrow
+\text{Implication}.
+$$
+
+### 7. Deploy and Monitor
+
+When a model is intended for operational use, the final stage is to **deploy and monitor** it.
+
+**Deployment** means making the model available within the process for which it was developed.
+
+For example, a predictive model might be incorporated into an underwriting system to estimate risk when a new policy is quoted.
+
+### Before Deployment
+
+Deployment should normally be preceded by appropriate testing.
+
+The model should be checked in an environment that reflects its intended use before it is introduced into production.
+
+The objective is to ensure that the model behaves as expected when used in practice.
+
+### Why Monitoring Is Necessary
+
+A deployed model should not simply be left unchanged.
+
+Over time, the following may change:
+
+* insurance portfolios;
+* customer behaviour;
+* economic conditions;
+* claim patterns; and
+* data-generation processes.
+
+A model that performed well when developed may therefore become less appropriate later.
+
+### What Should Be Monitored?
+
+Monitoring may include:
+
+* predictive performance;
+* data quality;
+* unusual changes in input variables; and
+* differences between predicted and observed outcomes.
+
+For example, suppose a claim prediction model consistently underestimates claim frequency for a particular segment.
+
+The model may need to be:
+
+* investigated;
+* recalibrated; or
+* redeveloped.
+
+### The Complete Life Cycle
+
+The complete process is:
+
+$$
+\boxed{
+\text{Define}
+\rightarrow
+\text{Acquire}
+\rightarrow
+\text{Prepare}
+\rightarrow
+\text{Explore}
+\rightarrow
+\text{Model}
+\rightarrow
+\text{Communicate}
+\rightarrow
+\text{Deploy and Monitor}
+}
+$$
+
+However, the process does not end with deployment.
+
+Monitoring can lead back to earlier stages.
+
+### The Life Cycle Is Iterative {.small}
+
+For example:
+
+$$
+\text{Monitor}
+\rightarrow
+\text{New problem}
+\rightarrow
+\text{New data}
+\rightarrow
+\text{New analysis}.
+$$
+
+Similarly:
+
+$$
+\text{Explore}
+\rightarrow
+\text{Data-quality problem}
+\rightarrow
+\text{Prepare again}.
+$$
+
+$$
+\text{Model}
+\rightarrow
+\text{Poor performance}
+\rightarrow
+\text{Reconsider the model or data}.
+$$
+
+::: {.callout-note}
+
+## Key idea
+
+**Data science is a cycle, not a one-time process.**
+
+The objective is to develop solutions that remain useful as the data, environment, and decision-making requirements change.
+
+:::
+
+### From an Insurance Question to a Decision
+
+The life cycle can be viewed as a continuous process:
+
+
+$$
+\boxed{
+\text{Insurance Question}
+\rightarrow
+\text{Data}
+\rightarrow
+\text{Analysis}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Actuarial Judgement}
+\rightarrow
+\text{Decision}
+\circlearrowleft
+}
+$$
+
+Each stage contributes to turning an insurance problem into an evidence-based decision.
+
+
+
+## Part V — Roles in a Data Science Team
+
+### Roles in a Data Science Team
+
+Data science projects often involve people with different areas of expertise.
+
+The responsibilities may overlap, especially in smaller organisations, but different roles typically contribute different skills.
+
+Common roles include:
+
+- **Data analyst** — understands and communicates information in data.
+- **Data scientist** — develops analytical and predictive models.
+- **Data engineer** — builds and maintains data infrastructure.
+- **Actuary** — applies risk and insurance expertise to the problem.
+
+### Data Science Team Roles
+
+![Core Roles and Responsibilities in a Data Science Team](figures/Data_Science_Team_Roles.png){#fig-team-roles-slides fig-align="center" width=85%}
+
+The exact responsibilities depend on the organisation.
+
+In a small organisation, one person may perform several roles.
+
+In a larger organisation, responsibilities may be distributed among specialists.
+
+### Data Analyst
+
+A **data analyst** focuses on understanding and communicating information contained in data.
+
+Typical activities include:
+
+- preparing data for analysis;
+- producing descriptive statistics;
+- identifying patterns and trends;
+- creating tables and visualisations; and
+- communicating findings to stakeholders.
+
+For example, an insurance data analyst might examine claim frequency by geographical area and report differences in observed experience.
+
+The role is closely associated with the **exploration and communication** stages of the data science life cycle.
+
+### Data Scientist
+
+A **data scientist** typically works on more complex analytical and predictive problems.
+
+The role may involve:
+
+- statistical modelling;
+- predictive modelling;
+- machine learning;
+- model evaluation; and
+- translating analytical results into useful information for decision-making.
+
+For example, a data scientist might develop a model to predict the probability that a motor insurance policy will generate a claim.
+
+The distinction between a data analyst and a data scientist is not always strict.
+
+### Data Engineer
+
+A **data engineer** focuses on the infrastructure and processes required to make data available for analysis.
+
+Typical activities include:
+
+- collecting data from different systems;
+- building and maintaining data pipelines;
+- storing and organising data;
+- integrating data from multiple sources; and
+- ensuring that data can be accessed reliably.
+
+For example, an insurer may have separate systems for policies, claims, and payments.
+
+A data engineer may develop processes that extract and combine these data for analysis.
+
+### The Actuary in a Data Science Team
+
+For an actuarial student, an important question is:
+
+> **Where does the actuary fit within a data science team?**
+
+Actuaries contribute specialised knowledge of:
+
+- risk and uncertainty;
+- insurance products;
+- financial consequences;
+- actuarial methods; and
+- the decisions that analytical results are intended to support.
+
+### Actuarial Contribution to a Data Science Project
+
+For example, when developing a motor insurance pricing model, an actuary may contribute by:
+
+- defining the insurance problem;
+- identifying appropriate measures of exposure;
+- selecting relevant risk characteristics;
+- assessing whether modelling assumptions are reasonable;
+- interpreting model results in an insurance context; and
+- considering implications for pricing and risk management.
+
+### Comparing the Roles
+
+| Role | Main focus | Example in insurance |
+|---|---|---|
+| Data analyst | Describe and communicate data | Analyse claim experience |
+| Data scientist | Develop analytical and predictive models | Predict claim frequency |
+| Data engineer | Build and manage data infrastructure | Combine policy and claims data |
+| Actuary | Apply risk and insurance expertise | Interpret results for pricing |
+
+The boundaries between these roles are not fixed.
+
+An actuary may perform data analysis and statistical modelling, while a data scientist may need substantial knowledge of the insurance problem.
+
+### Skills Across the Life Cycle
+
+Different roles contribute to different stages of the data science life cycle.
+
+$$
+\begin{array}{c}
+\text{Acquire and prepare data}
+\\
+\downarrow
+\\
+\text{Explore and analyse}
+\\
+\downarrow
+\\
+\text{Model}
+\\
+\downarrow
+\\
+\text{Interpret and communicate}
+\\
+\downarrow
+\\
+\text{Decision}
+\end{array}
+$$
+
+No single role necessarily owns the entire process.
+
+### Data Science Is Collaborative
+
+A successful data science project usually requires more than one type of expertise.
+
+Technical skills are needed to:
+
+- work with data;
+- build analytical systems; and develop models.
+
+Domain knowledge is needed to:
+
+- formulate the right problem;
+- understand the meaning of the data; and
+- interpret the results appropriately.
+
+::: {.callout-note}
+
+## For actuarial students
+
+Developing data-science skills does **not** mean replacing actuarial methods with machine learning.
+
+Data science provides additional tools for applying actuarial knowledge to increasingly complex data and decision-making problems.
+
+:::
+
+## Part VI — Applications of Data Science in Insurance
+
+### Data Science in Insurance
+
+Data science can be applied throughout the insurance value chain.
+
+Insurers collect data at many stages, from:
+
+- underwriting and policy administration;
+- claims settlement;
+- customer interactions; and
+- portfolio management.
+
+These data can support decisions about risk, operations, and business performance.
+
+### Applications Across the Insurance Value Chain
+
+![Data Science Applications in the Insurance Industry](figures/Data_Science_in_Insurance_Applications.png){#fig-insurance-apps-slides fig-align="center" width=78%}
+
+The methods may differ across applications, but the underlying data-science principles remain similar.
+
+### Common Applications
+
+Major applications include:
+
+1. **Pricing and underwriting**
+2. **Claims management**
+3. **Fraud detection**
+4. **Customer analytics**
+5. **Risk management and forecasting**
+
+Each application begins with an insurance problem and uses relevant data to support a decision.
+
+### Pricing and Underwriting
+
+Pricing is one of the main applications of data science in insurance.
+
+Insurers need to estimate the expected cost of claims and determine premiums that appropriately reflect the risks being insured.
+
+Historical policy and claims data can be used to investigate how outcomes vary with:
+
+- age;
+- geographical area;
+- vehicle characteristics;
+- coverage; and
+- other risk factors.
+
+### Example: Motor Insurance Pricing
+
+Suppose an insurer wants to investigate whether claim frequency varies with policyholder age.
+
+Historical data can be used to:
+
+1. measure claim experience;
+2. explore differences between age groups;
+3. identify relevant risk characteristics; and
+4. develop a statistical model.
+
+The model can then estimate expected claim frequency for different combinations of risk characteristics.
+
+### Frequency and Severity in Pricing
+
+A simple representation of expected loss is
+
+$$
+\text{Expected loss}
+\approx
+\text{Expected frequency}
+\times
+\text{Expected severity}.
+$$
+
+Data science can support both components.
+
+Historical data can be used to model:
+
+- the number of claims; and
+- the amount of individual claims.
+
+Other variables can then be used to explain differences in risk.
+
+### Data Science Does Not Replace Actuarial Pricing
+
+A predictive model provides estimates based on data and modelling assumptions.
+
+A pricing decision may also require consideration of:
+
+- expenses;
+- capital;
+- reinsurance;
+- regulatory requirements;
+- market conditions; and
+- professional judgement.
+
+::: {.callout-note}
+
+## Key idea
+
+**A predictive model is one input into an actuarial pricing decision.**
+
+It does not determine the final premium by itself.
+
+:::
+
+### Claims Management
+
+Claims generate a substantial amount of information that can be analysed.
+
+Data science can support:
+
+- understanding claim patterns;
+- estimating expected claim costs;
+- predicting claims outcomes; and
+- claims triage.
+
+For example, claims may be classified according to:
+
+- type;
+- estimated cost;
+- complexity; or
+- likelihood of requiring further investigation.
+
+### Using Data to Prioritise Claims
+
+Predictive models can help identify claims that are likely to:
+
+- become large; or
+- require additional attention.
+
+This can help claims staff allocate resources more effectively.
+
+The objective is not necessarily to automate the entire claims process.
+
+Analytical results can instead provide additional information to claims professionals when making decisions.
+
+### Monitoring Claims Experience
+
+Data can also be used to monitor the development of claims over time.
+
+For example, observed claim experience can be compared with:
+
+- previous experience; or
+- expected outcomes.
+
+Differences may provide information for claims management and portfolio monitoring.
+
+### Fraud Detection
+
+Insurance fraud can result in financial losses and affect the overall cost of insurance.
+
+Data science can help identify claims or transactions with unusual characteristics.
+
+Relevant information may include:
+
+- policy characteristics;
+- claim characteristics;
+- claim timing;
+- claim amounts; and
+- previous claims.
+
+### Identifying Unusual Claims
+
+Statistical or machine-learning methods can identify patterns associated with claims that require further investigation.
+
+The model may identify a claim as unusual.
+
+However:
+
+$$
+\boxed{
+\text{Unusual pattern}
+\neq
+\text{Proof of fraud}
+}
+$$
+
+### Prediction Is Not Proof
+
+A model can:
+
+- identify unusual patterns;
+- estimate probabilities; or
+- rank cases according to predicted risk.
+
+It does **not** automatically establish that a particular policyholder has committed fraud.
+
+::: {.callout-important}
+
+## Prediction is not proof
+
+A data-science model can identify patterns or assign a probability to an outcome.
+
+The result should not automatically be interpreted as proof that fraud has occurred.
+
+Further investigation and appropriate professional procedures are required.
+
+:::
+
+### Customer Analytics
+
+Data science can also be used to understand customer behaviour and interactions with insurers.
+
+Examples include analysing:
+
+- policy renewals;
+- cancellations and lapses;
+- customer enquiries;
+- product preferences; and
+- interactions with digital services.
+
+### Example: Policy Lapse
+
+Suppose an insurer wants to identify policies with a high probability of not being renewed.
+
+Historical policy data can be used to:
+
+1. identify previous renewal patterns;
+2. develop a predictive model;
+3. identify characteristics associated with higher lapse rates; and
+4. support decisions about customer communication.
+
+The results may inform:
+
+- customer communication;
+- product design; and
+- service delivery.
+
+### Risk Management and Forecasting
+
+Data science can support broader risk-management and forecasting activities.
+
+Insurers need to monitor changes in their portfolios and anticipate future outcomes.
+
+Historical data can be used to identify:
+
+- trends;
+- changes in risk characteristics; and
+- unusual patterns.
+
+### Examples of Forecasting Applications
+
+Examples include:
+
+- forecasting claim volumes;
+- monitoring changes in claim severity;
+- analysing portfolio composition;
+- identifying emerging patterns of loss; and
+- supporting scenario analysis.
+
+Forecasting methods use historical patterns and other relevant information to estimate future outcomes.
+
+### Forecasts Are Uncertain
+
+A forecast is subject to uncertainty.
+
+Future insurance experience may differ from historical experience because of changes in:
+
+- economic conditions;
+- technology;
+- regulation;
+- customer behaviour; or
+- the underlying risk environment.
+
+Therefore,
+
+$$
+\boxed{
+\text{Historical pattern}
+\not\Rightarrow
+\text{Certain future outcome}
+}
+$$
+
+Forecasting requires both statistical analysis and careful interpretation.
+
+### From Data to Insurance Decisions
+
+The applications above use different methods, but they share a common process:
+
+<!-- $$ -->
+<!-- \text{Insurance problem} -->
+<!-- \rightarrow -->
+<!-- \text{Relevant data} -->
+<!-- \rightarrow -->
+<!-- \text{Analysis or model} -->
+<!-- \rightarrow -->
+<!-- \text{Evidence} -->
+<!-- \rightarrow -->
+<!-- \text{Actuarial judgement} -->
+<!-- \rightarrow -->
+<!-- \text{Decision}. -->
+<!-- $$ -->
+
+$$
+\boxed{
+\text{Problem}
+\;\rightarrow\;
+\text{Data}
+\;\rightarrow\;
+\text{Model}
+\;\rightarrow\;
+\text{Evidence}
+\;\rightarrow\;
+\text{Judgement}
+\;\rightarrow\;
+\text{Decision}
+}
+$$
+
+This is the same data-science life cycle introduced earlier.
+
+## Part VII — Putting the Ideas Together
+
+### Data Science Across Insurance
+
+Data science is not a single insurance technique.
+
+It is a collection of methods that can support different types of insurance decisions.
+
+The same general process applies to:
+
+- pricing;
+- claims management;
+- fraud detection;
+- customer analytics; and
+- risk management.
+
+### One Framework, Many Applications
+
+| Application | Main question | Example output |
+|---|---|---|
+| Pricing | How does expected loss vary with risk? | Risk estimate |
+| Claims | Which claims require attention? | Claim classification |
+| Fraud | Which cases are unusual? | Investigation priority |
+| Customer analytics | Which policies may lapse? | Lapse probability |
+| Risk management | What may happen in the future? | Forecast |
+
+The analytical methods differ, but the underlying process is similar.
+
+### The Common Process
+
+$$
+\boxed{
+\text{Question}
+\rightarrow
+\text{Data}
+\rightarrow
+\text{Analysis}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Decision}
+}
+$$
+
+The process connects technical data analysis with the original insurance problem.
+
+### Data Science and Actuarial Judgement
+
+Data science provides methods for extracting information from data.
+
+Actuarial knowledge provides the context needed to:
+
+- formulate the insurance problem;
+- understand the data;
+- assess assumptions;
+- interpret results; and
+- consider the consequences of a decision.
+
+Therefore,
+
+$$
+\boxed{
+\text{Data science}
++
+\text{Actuarial knowledge}
+\rightarrow
+\text{Better-informed insurance decisions}
+}
+$$
+
+### Key Ideas from the Chapter
+
+By the end of this chapter, you should be able to:
+
+- explain why data science is relevant to insurance;
+- describe the four foundations of data science;
+- identify common sources and types of insurance data;
+- describe the data science life cycle;
+- explain the roles of different members of a data science team;
+- identify major applications of data science in insurance; and
+- explain how data-driven evidence is combined with actuarial judgement.
+
+### The Big Picture
+
+The central idea of this chapter is:
+
+$$
+\boxed{
+\begin{array}{c}
+\text{Insurance problem}
+\\[4pt]
+\downarrow
+\\[4pt]
+\text{Relevant data}
+\\[4pt]
+\downarrow
+\\[4pt]
+\text{Data science life cycle}
+\\[4pt]
+\downarrow
+\\[4pt]
+\text{Evidence}
+\\[4pt]
+\downarrow
+\\[4pt]
+\text{Actuarial judgement}
+\\[4pt]
+\downarrow
+\\[4pt]
+\text{Insurance decision}
+\end{array}
+}
+$$
+
+Data science provides a framework for turning data into evidence.
+
+Actuarial knowledge provides the context needed to interpret that evidence and use it appropriately.
+
+### Looking Ahead
+
+The next chapters will develop the tools needed to work through this process.
+
+We will move from the general framework introduced here to practical methods for:
+
+- working with data;
+- exploring and visualising data;
+- applying statistical methods; and
+- using computational tools for data analysis.
+
+The objective is to connect these methods to actuarial and insurance problems.
+
+

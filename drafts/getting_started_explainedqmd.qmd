@@ -249,3 +249,657 @@ The `rating_table()` output also includes an **exposure** column. This is critic
 *   Actuaries use this to decide if a level needs further **refinement** or smoothing to ensure the final tariff is practical and logical.
 
 In summary, while these values are derived from the model's coefficients, they are presented as **multipliers** that show how much the premium should increase or decrease for each specific risk factor level.
+
+---
+
+These quantities are not standard actuarial statistics; they are **diagnostic summaries** produced by the **insurancerating** package to help evaluate the segmentation. Here's what each column represents.
+
+| Column               | Meaning                                                                                      |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+| `segment`            | The interval (tariff band) for the continuous variable.                                      |
+| `portfolio_records`  | Number of observations (rows) in the dataset belonging to that segment.                      |
+| `risk_factor_values` | Number of **distinct original values** of the continuous variable contained in that segment. |
+| `exposure`           | Total exposure within the segment.                                                           |
+| `claim_count`        | Total number of claims within the segment.                                                   |
+| `frequency`          | Observed claim frequency = `claim_count / exposure`.                                         |
+
+### 1. `portfolio_records`
+
+This is simply the number of policies (or observations) assigned to each segment.
+
+For example,
+
+```
+[18,25]   portfolio_records = 1543
+```
+
+means that **1,543 observations** have an age between 18 and 25.
+
+It is equivalent to
+
+```r
+sum(age >= 18 & age <= 25)
+```
+
+(or the corresponding count after applying the interval definitions).
+
+---
+
+### 2. `risk_factor_values`
+
+This is the number of **unique values** of the original continuous variable that appear within the segment.
+
+Suppose the first segment contains ages
+
+```
+18, 19, 20, 21, 22, 23, 24, 25
+```
+
+There are **8 distinct ages**, so
+
+```
+risk_factor_values = 8
+```
+
+Likewise,
+
+```
+(25,32]
+```
+
+contains
+
+```
+26, 27, 28, 29, 30, 31, 32
+```
+
+which gives
+
+```
+risk_factor_values = 7
+```
+
+Similarly,
+
+```
+(39,51]
+```
+
+contains
+
+```
+40,41,...,51
+```
+
+which consists of **12** unique ages.
+
+Your output confirms this exactly:
+
+| Segment | Distinct ages | risk_factor_values |
+| ------- | ------------- | -----------------: |
+| [18,25] | 18–25         |                  8 |
+| (25,32] | 26–32         |                  7 |
+| (32,39] | 33–39         |                  7 |
+| (39,51] | 40–51         |                 12 |
+| (51,58] | 52–58         |                  7 |
+| (58,65] | 59–65         |                  7 |
+| (65,84] | 66–84         |                 19 |
+| (84,95] | 85–94         |                 10 |
+
+Notice that these counts correspond to the **number of integer ages** in each interval, not the number of policies.
+
+---
+
+### Why is `risk_factor_values` useful?
+
+It indicates **how many original values have been grouped together**.
+
+For example,
+
+```
+(39,51]
+```
+
+combines **12 different ages** into a single tariff segment.
+
+A segment with many original values has undergone more aggregation than one with only a few values. This helps assess whether the segmentation is too coarse or too fine.
+
+---
+
+### How are these statistics calculated?
+
+Conceptually, the package performs something like
+
+```r
+age_segments |>
+  dplyr::group_by(segment) |>
+  dplyr::summarise(
+    portfolio_records = dplyr::n(),
+    risk_factor_values = dplyr::n_distinct(age),
+    exposure = sum(exposure),
+    claim_count = sum(claim_count),
+    frequency = claim_count / exposure
+  )
+```
+
+where `age` is the original continuous rating variable.
+
+### Interpretation
+
+* **`portfolio_records`** measures the **credibility of the segment** in terms of the number of observations.
+* **`risk_factor_values`** measures **how many distinct original values** (e.g., ages) have been merged into that segment.
+* The two serve different purposes: a segment can have many observations but relatively few unique values (if many policies share the same age), or many unique values but relatively few observations (if the data are sparse).
+
+
+---
+
+Yes. Once the continuous variable has been converted into tariff segments, you can estimate the **observed pure premium** (or frequency, severity, etc.) for each segment. However, it is important to distinguish between **observed** and **model-based** estimates.
+
+A clearer explanation is:
+
+> After grouping the continuous variable into tariff segments, the experience for each segment can be summarised by quantities such as claim frequency, claim severity, or pure premium. These summaries provide an initial indication of how risk varies across the segments. The grouped variable is then included in the GLM as a categorical rating factor, allowing the model to estimate adjusted relativities while accounting for the effects of the other rating variables.
+
+For example, suppose the response variable is **pure premium**. After creating age bands, we may obtain:
+
+| Age band | Exposure | Incurred claims | Observed pure premium |
+| -------- | -------: | --------------: | --------------------: |
+| 18–25    |    1,331 |        $798,600 |                  $600 |
+| 26–32    |    3,649 |      $1,824,500 |                  $500 |
+| 33–39    |    4,247 |      $1,911,200 |                  $450 |
+| 40–51    |    7,421 |      $2,968,400 |                  $400 |
+
+where
+
+$$
+\text{Observed Pure Premium}
+============================
+
+\frac{\text{Total Incurred Claims}}{\text{Exposure}}.
+$$
+
+These are **empirical estimates** based solely on the grouped data.
+
+When the grouped age variable is subsequently included in a GLM together with other rating factors (e.g., vehicle type, territory, vehicle age), the model estimates **adjusted relativities** for the age bands. The resulting indicated pure premiums differ from the observed pure premiums because they control for the influence of the other predictors.
+
+This distinction is important:
+
+* **Observed pure premium by age band:** a descriptive summary of the raw experience.
+* **GLM-estimated pure premium (or relativity):** a model-based estimate that adjusts for correlations with the other rating factors.
+
+The first is useful for understanding the data and designing the tariff segmentation; the second is used to construct the final rating structure.
+
+
+---
+
+
+The **proxy premium** is not the final tariff. It is an **estimated expected loss cost for each policy**, constructed by combining the frequency and severity models.
+
+Recall the actuarial identity
+
+$$
+\text{Pure Premium}
+===================
+
+\text{Claim Frequency}
+\times
+\text{Claim Severity}.
+$$
+
+The code
+
+```r
+premium_df <- dat |>
+  add_prediction(mod_freq, mod_sev) |>
+  mutate(
+    premium = pred_nclaims_mod_freq * pred_amount_mod_sev
+  )
+```
+
+computes, for each policy,
+
+$$
+\widehat{\text{Pure Premium}}
+=============================
+
+\widehat{\text{Frequency}}
+\times
+\widehat{\text{Severity}}.
+$$
+
+Here,
+
+* `pred_nclaims_mod_freq` is the predicted claim frequency from the frequency model.
+* `pred_amount_mod_sev` is the predicted average claim amount from the severity model.
+* `premium` is the predicted pure premium, referred to as a **proxy premium** because it approximates the expected claim cost.
+
+### Why create a proxy premium?
+
+The proxy premium provides a **single continuous measure of risk** that combines the effects of both claim frequency and claim severity. It serves as a target for analysing and designing tariff structures.
+
+### How is it used later?
+
+Once every policy has a proxy premium, it can be summarised by candidate tariff variables. For example, suppose driver age has already been grouped into tariff segments.
+
+| Age band | Average proxy premium |
+| -------- | --------------------: |
+| 18–25    |                  $720 |
+| 26–32    |                  $560 |
+| 33–39    |                  $490 |
+| 40–51    |                  $430 |
+
+These averages indicate how the expected cost varies across the age bands and provide the basis for calculating tariff relativities.
+
+For example, if the overall average proxy premium is $500, the indicated age relativities are
+
+| Age band | Average proxy premium | Relativity |
+| -------- | --------------------: | ---------: |
+| 18–25    |                  $720 |       1.44 |
+| 26–32    |                  $560 |       1.12 |
+| 33–39    |                  $490 |       0.98 |
+| 40–51    |                  $430 |       0.86 |
+
+These relativities can then be incorporated into the rating structure.
+
+### Why not use the observed pure premium directly?
+
+Observed pure premiums can be unstable, particularly for segments with limited exposure or few claims. The proxy premium is derived from fitted frequency and severity models, which smooth random variation and incorporate information from the entire portfolio. Consequently, it generally provides a more stable basis for developing tariff segments and relativities.
+
+### Where does this fit in the workflow?
+
+The proxy premium acts as an intermediate quantity in the tariff development process:
+
+1. Fit separate frequency and severity models.
+2. Compute the proxy premium for each policy:
+   $$
+   \widehat{\text{Pure Premium}}
+   =============================
+
+   \widehat{\text{Frequency}}
+   \times
+   \widehat{\text{Severity}}.
+   $$
+3. Summarise the proxy premium across candidate tariff segments.
+4. Derive tariff relativities from these summaries.
+5. Fit the final GLM using the selected grouped tariff variables.
+
+Thus, the proxy premium bridges the gap between separate frequency/severity models and the development of an implementable tariff.
+
+
+---
+
+
+This is a good question because it touches on the rationale for using a **premium model** after separately modelling frequency and severity.
+
+The response variable
+
+```r
+premium = pred_nclaims_mod_freq * pred_amount_mod_sev
+```
+
+is **not an observed premium**. It is a **proxy for the expected pure premium**, obtained by multiplying two model predictions. The question is therefore: *what type of model is appropriate for this proxy premium?*
+
+### Why use a Gamma GLM?
+
+The package fits
+
+```r
+glm(
+  premium ~ age_cat + zip,
+  weights = exposure,
+  family = Gamma(link = "log")
+)
+```
+
+because the proxy premium has the same characteristics as a pure premium:
+
+* it is strictly positive;
+* it is continuous;
+* it is typically right-skewed;
+* its variability tends to increase with its mean.
+
+These are precisely the assumptions for which a Gamma GLM with a log link is commonly used.
+
+The model assumes
+
+$$
+E(P_i)=\mu_i,
+$$
+
+and
+
+$$
+\log(\mu_i)
+===========
+
+\beta_0+\beta_1x_{i1}+\cdots+\beta_px_{ip},
+$$
+
+where (P_i) is the proxy premium.
+
+---
+
+### Why not model frequency and severity again?
+
+The purpose of this step is **different**.
+
+The frequency and severity models may contain continuous variables, splines, or many predictors. They are built to estimate expected claim frequency and expected claim severity accurately.
+
+The premium model is then used to produce a **simple tariff model** based only on the selected rating factors, for example
+
+* age category,
+* territory (ZIP),
+* vehicle group.
+
+It converts the continuous proxy premium into an implementable multiplicative tariff.
+
+---
+
+### Why use the proxy premium instead of observed losses?
+
+Using observed pure premiums,
+
+$$
+\frac{\text{Claim Amount}}{\text{Exposure}},
+$$
+
+would introduce substantial random variation, especially for policies with no claims or unusually large claims.
+
+Instead,
+
+$$
+\widehat{\text{Premium}}
+========================
+
+\widehat{\text{Frequency}}
+\times
+\widehat{\text{Severity}}
+$$
+
+is a smooth estimate of each policy's expected cost. The premium model then explains these expected costs using a simplified tariff structure.
+
+---
+
+### Could other models be used?
+
+Yes. The choice depends on the nature of the response.
+
+| Response                                                 | Typical model                               |
+| -------------------------------------------------------- | ------------------------------------------- |
+| Claim frequency                                          | Poisson or Negative Binomial GLM            |
+| Claim severity                                           | Gamma GLM                                   |
+| Pure premium (continuous, positive)                      | Gamma GLM                                   |
+| Pure premium (highly flexible modelling)                 | Gradient boosting, random forest, GAM, etc. |
+| Pure premium (approximately normal after transformation) | Gaussian GLM on (\log(\text{premium}))      |
+
+For classical actuarial ratemaking, the **Gamma GLM with a log link** is the standard choice because it preserves the multiplicative tariff interpretation.
+
+---
+
+### Why use exposure as weights?
+
+The `premium` response is a **per-unit-exposure** quantity (predicted loss cost). A policy with one year of exposure provides more information than a policy with one month of exposure. By specifying
+
+```r
+weights = exposure
+```
+
+the model gives greater influence to observations with more exposure, reflecting their greater credibility. This is analogous to fitting a pure premium model to aggregated data, where each observation represents an average over a given amount of exposure.
+
+### Interpretation
+
+The premium model is best viewed as a **tariff approximation model**. The separate frequency and severity models estimate each policy's expected loss cost. Their product becomes the proxy premium, and the Gamma GLM summarizes that proxy using a smaller set of grouped rating factors. The fitted coefficients are then converted into the relativities that form the final rating tariff.
+
+
+
+---
+
+
+These two statements describe the transition from a **predictive model** to an **insurance tariff**. This is one of the most important concepts in insurance ratemaking.
+
+---
+
+## 1. "It converts the continuous proxy premium into an implementable multiplicative tariff."
+
+### What is the proxy premium?
+
+After fitting separate frequency and severity models, each policy has an estimated expected pure premium:
+
+$$
+\widehat{\text{Pure Premium}}
+=============================
+
+\widehat{\text{Frequency}}
+\times
+\widehat{\text{Severity}}.
+$$
+
+Suppose we obtain
+
+| Policy | Age | ZIP  | Proxy premium |
+| ------ | --: | ---- | ------------: |
+| A      |  24 | 1001 |          $720 |
+| B      |  37 | 1001 |          $485 |
+| C      |  56 | 2005 |          $430 |
+| D      |  42 | 3002 |          $510 |
+
+Notice that every policy has its own predicted premium. This is **continuous**, because there are potentially thousands of different premium values.
+
+---
+
+### Why can't an insurer simply use these values?
+
+Imagine a portfolio of one million policies.
+
+A rating engine based on the proxy premium would need to store one million different premiums.
+
+That is impractical because:
+
+* it cannot be explained easily,
+* it cannot be audited,
+* customers cannot understand it,
+* regulators often require a transparent rating structure.
+
+Instead, insurers want rules such as
+
+> Premium depends on:
+>
+> * driver's age band,
+> * territory,
+> * vehicle group.
+
+rather than
+
+> Policy 183,427 has premium $513.28.
+
+---
+
+### The premium GLM compresses these predictions
+
+Instead of predicting a separate premium for every policy, we fit
+
+```r
+premium ~ age_cat + zip
+```
+
+Now every policy in the same combination receives the same expected premium.
+
+For example
+
+| Age band | ZIP   | Predicted premium |
+| -------- | ----- | ----------------: |
+| 18–25    | Urban |              $730 |
+| 18–25    | Rural |              $620 |
+| 26–39    | Urban |              $520 |
+| 26–39    | Rural |              $440 |
+
+The model has transformed thousands of individual predictions into a **small tariff table**.
+
+This is what is meant by
+
+> **"an implementable multiplicative tariff."**
+
+---
+
+### Why "multiplicative"?
+
+Because the GLM uses a **log link**,
+
+$$
+\log(\mu)
+=========
+
+\beta_0+\beta_1+\beta_2+\cdots
+$$
+
+which implies
+
+$$
+\mu
+===
+
+\exp(\beta_0)
+\times
+\exp(\beta_1)
+\times
+\exp(\beta_2)
+\times\cdots
+$$
+
+Each rating factor contributes a **multiplicative adjustment** to the premium.
+
+For example,
+
+| Rating factor | Relativity |
+| ------------- | ---------: |
+| Base premium  |       $400 |
+| Age 18–25     |      ×1.40 |
+| Urban ZIP     |      ×1.15 |
+
+Premium
+
+# $$
+
+400
+\times1.40
+\times1.15
+==========
+
+$644.
+$$
+
+This multiplication is exactly how most insurance pricing systems calculate premiums.
+
+---
+
+# 2. "The fitted coefficients are then converted into the relativities that form the final rating tariff."
+
+This sentence refers to converting the GLM coefficients into **rating relativities**.
+
+---
+
+## What is a relativity?
+
+A relativity is simply a **multiplicative factor** describing how much more (or less) risky one level is relative to a reference level.
+
+For example
+
+| Age band | Relativity |
+| -------- | ---------: |
+| 18–25    |       1.50 |
+| 26–39    |       1.20 |
+| 40–59    |       1.00 |
+| 60+      |       1.10 |
+
+Here,
+
+* 40–59 is the **reference class**.
+* Young drivers are expected to cost **50% more**.
+* Drivers aged 26–39 cost **20% more**.
+* Drivers aged 60+ cost **10% more**.
+
+A relativity therefore answers
+
+> *How much should the premium change compared with the reference category?*
+
+---
+
+## Where do the relativities come from?
+
+Suppose the GLM estimates
+
+| Coefficient | Estimate |
+| ----------- | -------: |
+| Intercept   |     5.99 |
+| Age 18–25   |    0.405 |
+| Age 26–39   |    0.182 |
+| Age 60+     |    0.095 |
+
+Because the model uses a log link,
+
+$$
+\log(\mu)=\beta_0+\beta_j.
+$$
+
+Exponentiating gives
+
+| Coefficient |       Relativity |
+| ----------- | ---------------: |
+| Age 18–25   | $e^{0.405}=1.50$ |
+| Age 26–39   | $e^{0.182}=1.20$ |
+| Age 60+     | $e^{0.095}=1.10$ |
+
+Notice that the GLM coefficients themselves are **not** used in the tariff. Instead, insurers use their exponentials:
+
+$$
+\boxed{\text{Relativity}=e^{\beta}.}
+$$
+
+---
+
+## Building the final tariff
+
+Suppose the fitted model gives
+
+| Rating factor | Relativity |
+| ------------- | ---------: |
+| Base premium  |       $400 |
+| Age 18–25     |       1.50 |
+| ZIP Urban     |       1.25 |
+| SUV           |       1.10 |
+
+Then a young driver living in an urban area with an SUV pays
+
+$$
+400
+\times1.50
+\times1.25
+\times1.10
+==========
+
+$825.
+$$
+
+Each relativity adjusts the base premium according to the policy's characteristics.
+
+---
+
+## Why are relativities preferred?
+
+Relativities have several advantages:
+
+* They are easy to interpret. A relativity of 1.30 means the expected cost is 30% higher than the reference category.
+* They can be multiplied together to calculate premiums for any combination of rating factors.
+* They provide a transparent and auditable tariff structure.
+* They are straightforward to implement in policy administration systems, where premiums are typically calculated as
+
+  $$
+  \text{Premium}
+  ==============
+
+  \text{Base Rate}
+  \times
+  \prod \text{Relativities}.
+  $$
+
+This multiplicative form is the standard representation of a GLM-based insurance tariff and is the primary reason why log-link GLMs are widely used in actuarial ratemaking.
+
