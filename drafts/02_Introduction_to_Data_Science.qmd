@@ -1,10 +1,8 @@
 ---
-title: "Chapter 2 — Introduction to Data Science"
+title: "Chapter 2: Introduction to Data Science"
 ---
 
 # Chapter 2: Introduction to Data Science
-
-For the chapter as currently structured, I would keep the learning outcomes focused on **understanding the data-science framework and its relevance to insurance**, rather than expecting students to master modelling at this stage.
 
 ## Learning Outcomes {.unnumbered}
 

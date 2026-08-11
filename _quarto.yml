@@ -7,6 +7,7 @@ book:
   chapters:
     - index.qmd
     - chapters/01_Introduction_to_Risk_and_Insurance.qmd
+    - chapters/02_Introduction_to_Data_Science.qmd
     
 format:
   html:
