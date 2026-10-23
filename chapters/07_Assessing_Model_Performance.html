@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>7&nbsp; Chapter 7: Assessing Model Performance – Introduction to Data Science in Non-Life Insurance</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/06_Regression_with_Tidymodels.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-87aed0b8589e23e45aa8556edf37a91b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/07_Assessing_Model_Performance.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Chapter 7: Assessing Model Performance</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Introduction to Data Science in Non-Life Insurance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome to My Book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01_Introduction_to_Risk_and_Insurance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Introduction to Risk and Insurance</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02_Introduction_to_Data_Science.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 2: Introduction to Data Science</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03_Transforming_and_Summarizing_Data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3: Transforming and Summarizing Data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04_Tidy_Data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Chapter 4: Tidy Data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05_Data_Visualization_with_ggplot2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Chapter 5: Data Visualization with ggplot2</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06_Regression_with_Tidymodels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Chapter 6: Linear Regression with tidymodels</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07_Assessing_Model_Performance.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Chapter 7: Assessing Model Performance</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes"><span class="header-section-number">7.1</span> Learning Outcomes</a></li>
+  <li><a href="#introduction-to-model-performance" id="toc-introduction-to-model-performance" class="nav-link" data-scroll-target="#introduction-to-model-performance"><span class="header-section-number">7.2</span> Introduction to Model Performance</a></li>
+  <li><a href="#training-performance-and-test-performance" id="toc-training-performance-and-test-performance" class="nav-link" data-scroll-target="#training-performance-and-test-performance"><span class="header-section-number">7.3</span> Training Performance and Test Performance</a>
+  <ul class="collapse">
+  <li><a href="#splitting-data-with-rsample" id="toc-splitting-data-with-rsample" class="nav-link" data-scroll-target="#splitting-data-with-rsample"><span class="header-section-number">7.3.1</span> Splitting Data with <code>rsample</code></a></li>
+  </ul></li>
+  <li><a href="#measuring-prediction-error" id="toc-measuring-prediction-error" class="nav-link" data-scroll-target="#measuring-prediction-error"><span class="header-section-number">7.4</span> Measuring Prediction Error</a>
+  <ul class="collapse">
+  <li><a href="#absolute-error" id="toc-absolute-error" class="nav-link" data-scroll-target="#absolute-error"><span class="header-section-number">7.4.1</span> Absolute Error</a></li>
+  <li><a href="#squared-error" id="toc-squared-error" class="nav-link" data-scroll-target="#squared-error"><span class="header-section-number">7.4.2</span> Squared Error</a></li>
+  </ul></li>
+  <li><a href="#common-regression-performance-metrics" id="toc-common-regression-performance-metrics" class="nav-link" data-scroll-target="#common-regression-performance-metrics"><span class="header-section-number">7.5</span> Common Regression Performance Metrics</a>
+  <ul class="collapse">
+  <li><a href="#rmse-root-mean-squared-error" id="toc-rmse-root-mean-squared-error" class="nav-link" data-scroll-target="#rmse-root-mean-squared-error"><span class="header-section-number">7.5.1</span> RMSE — Root Mean Squared Error</a></li>
+  <li><a href="#mae-mean-absolute-error" id="toc-mae-mean-absolute-error" class="nav-link" data-scroll-target="#mae-mean-absolute-error"><span class="header-section-number">7.5.2</span> MAE — Mean Absolute Error</a></li>
+  <li><a href="#r2-coefficient-of-determination" id="toc-r2-coefficient-of-determination" class="nav-link" data-scroll-target="#r2-coefficient-of-determination"><span class="header-section-number">7.5.3</span> <span class="math inline">\(R^2\)</span> — Coefficient of Determination</a></li>
+  <li><a href="#mape-mean-absolute-percentage-error" id="toc-mape-mean-absolute-percentage-error" class="nav-link" data-scroll-target="#mape-mean-absolute-percentage-error"><span class="header-section-number">7.5.4</span> MAPE — Mean Absolute Percentage Error</a></li>
+  <li><a href="#comparing-the-metrics" id="toc-comparing-the-metrics" class="nav-link" data-scroll-target="#comparing-the-metrics"><span class="header-section-number">7.5.5</span> Comparing the Metrics</a></li>
+  </ul></li>
+  <li><a href="#understanding-r2" id="toc-understanding-r2" class="nav-link" data-scroll-target="#understanding-r2"><span class="header-section-number">7.6</span> Understanding <span class="math inline">\(R^2\)</span></a></li>
+  <li><a href="#evaluating-model-predictions-with-yardstick" id="toc-evaluating-model-predictions-with-yardstick" class="nav-link" data-scroll-target="#evaluating-model-predictions-with-yardstick"><span class="header-section-number">7.7</span> Evaluating Model Predictions with <code>yardstick</code></a>
+  <ul class="collapse">
+  <li><a href="#calculating-rmse" id="toc-calculating-rmse" class="nav-link" data-scroll-target="#calculating-rmse"><span class="header-section-number">7.7.1</span> Calculating RMSE</a></li>
+  <li><a href="#calculating-mae" id="toc-calculating-mae" class="nav-link" data-scroll-target="#calculating-mae"><span class="header-section-number">7.7.2</span> Calculating MAE</a></li>
+  <li><a href="#calculating-r2" id="toc-calculating-r2" class="nav-link" data-scroll-target="#calculating-r2"><span class="header-section-number">7.7.3</span> Calculating <span class="math inline">\(R^2\)</span></a></li>
+  <li><a href="#calculating-mape" id="toc-calculating-mape" class="nav-link" data-scroll-target="#calculating-mape"><span class="header-section-number">7.7.4</span> Calculating MAPE</a></li>
+  </ul></li>
+  <li><a href="#computing-multiple-metrics-with-metric_set" id="toc-computing-multiple-metrics-with-metric_set" class="nav-link" data-scroll-target="#computing-multiple-metrics-with-metric_set"><span class="header-section-number">7.8</span> Computing Multiple Metrics with <code>metric_set()</code></a></li>
+  <li><a href="#interpreting-model-performance" id="toc-interpreting-model-performance" class="nav-link" data-scroll-target="#interpreting-model-performance"><span class="header-section-number">7.9</span> Interpreting Model Performance</a></li>
+  <li><a href="#comparing-two-models" id="toc-comparing-two-models" class="nav-link" data-scroll-target="#comparing-two-models"><span class="header-section-number">7.10</span> Comparing Two Models</a></li>
+  <li><a href="#why-test-performance-matters" id="toc-why-test-performance-matters" class="nav-link" data-scroll-target="#why-test-performance-matters"><span class="header-section-number">7.11</span> Why Test Performance Matters</a></li>
+  <li><a href="#from-model-evaluation-to-a-modelling-workflow" id="toc-from-model-evaluation-to-a-modelling-workflow" class="nav-link" data-scroll-target="#from-model-evaluation-to-a-modelling-workflow"><span class="header-section-number">7.12</span> From Model Evaluation to a Modelling Workflow</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Chapter 7: Assessing Model Performance</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- # Chapter 7: Assessing Model Performance -->
+<section id="learning-outcomes" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="learning-outcomes"><span class="header-section-number">7.1</span> Learning Outcomes</h2>
+<p>By the end of this chapter, students should be able to:</p>
+<ol type="1">
+<li>explain why predictive models need to be evaluated;</li>
+<li>distinguish between model performance on training data and test data;</li>
+<li>calculate and interpret common regression performance measures, including RMSE, MAE, <span class="math inline">\(R^2\)</span>, and MAPE;</li>
+<li>use the <code>yardstick</code> package to evaluate predictions from a fitted regression model;</li>
+<li>use <code>metric_set()</code> to calculate multiple performance metrics simultaneously; and</li>
+<li>compare the predictive performance of different regression models using appropriate performance metrics.</li>
+</ol>
+</section>
+<section id="introduction-to-model-performance" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="introduction-to-model-performance"><span class="header-section-number">7.2</span> Introduction to Model Performance</h2>
+<p>Building a statistical model is only one part of the modelling process. In the previous chapter, we used linear regression to describe the relationship between insurance charges and explanatory variables and to generate predictions. Once a model has been fitted, an important question remains:</p>
+<blockquote class="blockquote">
+<p><strong>How well does the model predict the outcome?</strong></p>
+</blockquote>
+<p>Model performance refers to how closely the predictions produced by a model agree with the actual observed outcomes. For predictive modelling, a model is useful when it can produce accurate predictions not only for the data used to fit the model, but also for new observations.</p>
+<p>Consider a model that predicts insurance charges. For a policyholder with an actual charge of $15,000, suppose the model predicts $13,000. The prediction error is</p>
+<p><span class="math display">\[
+15{,}000-13{,}000=2{,}000.
+\]</span></p>
+<p>For another policyholder, the actual charge might be $50,000 while the model predicts $30,000. Although both predictions are imperfect, the second error is much larger. A model performance measure provides a systematic way to summarize such prediction errors across many observations.</p>
+<p>Different measures emphasize different aspects of prediction accuracy. For example, some measures give greater weight to large errors, while others describe errors in relative rather than absolute terms. Therefore, evaluating a model usually involves considering more than one performance measure.</p>
+<p>In this chapter, we focus on <strong>predictive performance</strong> rather than statistical inference. We will use the <code>yardstick</code> package from the <code>tidymodels</code> ecosystem to calculate and interpret common regression performance measures. We will also consider why performance should be evaluated using observations that were not used to fit the model.</p>
+<p>You can place this at the end of the introduction as a short forward-looking note:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Looking Ahead
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this chapter, we focus on evaluating the predictive performance of regression models. In the subsequent chapter, we will extend the linear regression model to <strong>multiple regression</strong>, allowing us to use several predictors simultaneously to explain and predict insurance outcomes.</p>
+</div>
+</div>
+</section>
+<section id="training-performance-and-test-performance" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="training-performance-and-test-performance"><span class="header-section-number">7.3</span> Training Performance and Test Performance</h2>
+<p>When evaluating a predictive model, it is important to distinguish between the data used to <strong>fit the model</strong> and the data used to <strong>evaluate its predictions</strong>.</p>
+<p>The data used to fit a model are called the <strong>training data</strong>. The model learns the relationship between the predictors and the outcome from these observations. If we evaluate the model using the same data, the resulting performance measures may give an overly optimistic impression of how well the model will perform on new observations.</p>
+<p>To obtain a more realistic assessment, we can set aside part of the data before fitting the model. This is called the <strong>test data</strong>. The model is fitted using the training data, and its predictions are then evaluated using the test data.</p>
+<p>The basic idea is:</p>
+<p><span class="math display">\[
+\text{Complete dataset}
+\longrightarrow
+\begin{cases}
+\text{Training data} &amp; \text{used to fit the model}\\
+\text{Test data} &amp; \text{used to evaluate predictions}
+\end{cases}
+\]</span></p>
+<p>For example, suppose we have data on 1,000 insurance policies. We might use 80% of the observations for training and the remaining 20% for testing.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Dataset</th>
+<th>Purpose</th>
+<th style="text-align: right;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Training data</td>
+<td>Fit the model</td>
+<td style="text-align: right;">800 policies</td>
+</tr>
+<tr class="even">
+<td>Test data</td>
+<td>Evaluate predictions</td>
+<td style="text-align: right;">200 policies</td>
+</tr>
+</tbody>
+</table>
+<p>The model is fitted <strong>only using the training data</strong>. After fitting, we use the model to predict insurance charges for the test observations. Because these observations were not used to fit the model, the test performance provides information about how well the model may perform on new data.</p>
+<section id="splitting-data-with-rsample" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="splitting-data-with-rsample"><span class="header-section-number">7.3.1</span> Splitting Data with <code>rsample</code></h3>
+<p>The <strong><code>rsample</code> package</strong>, which is part of the <code>tidymodels</code> ecosystem, provides tools for creating resamples and splitting data for model evaluation.</p>
+<p>We begin by loading the data into R using <code>read_csv()</code> from the <code>readr</code> package:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>insurance <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/insuranceKaggle.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Once the data have been loaded, we can use <code>initial_split()</code> from the <code>rsample</code> package to divide the dataset into training and test sets:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>insurance_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  insurance,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop =</span> <span class="fl">0.80</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>insurance_train <span class="ot">&lt;-</span> <span class="fu">training</span>(insurance_split)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>insurance_test  <span class="ot">&lt;-</span> <span class="fu">testing</span>(insurance_split)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Here, <code>prop = 0.80</code> specifies that approximately 80% of the observations are allocated to the training set, with the remaining 20% allocated to the test set.</p>
+<p>The <code>set.seed()</code> function is used so that the same random split can be reproduced when the code is run again.</p>
+<p>We can check the number of observations in each dataset:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(insurance_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1070</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(insurance_test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 268</code></pre>
+</div>
+</div>
+<p>The important point is that the <strong>test data should remain separate from the model-fitting process</strong>. We fit the model using <code>insurance_train</code> and use <code>insurance_test</code> only after the model has been fitted to assess its predictive performance.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Keep the Test Data Separate
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The test data should not be used to fit or tune the final model. If the model is fitted using the test observations and then evaluated on those same observations, the resulting performance measures no longer provide an independent assessment of prediction performance.</p>
+</div>
+</div>
+<p>This separation between training and test data is fundamental to predictive modelling. In later sections, we will use the test predictions together with <code>yardstick</code> to measure how accurately the model predicts insurance charges.</p>
+</section>
+</section>
+<section id="measuring-prediction-error" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="measuring-prediction-error"><span class="header-section-number">7.4</span> Measuring Prediction Error</h2>
+<p>Once a model has been fitted, we can use it to generate predictions for observations in the test data. To evaluate the model, we compare these predictions with the actual observed outcomes.</p>
+<p>For observation <span class="math inline">\(i\)</span>, let</p>
+<ul>
+<li><span class="math inline">\(y_i\)</span> denote the actual observed outcome;</li>
+<li><span class="math inline">\(\hat{y}_i\)</span> denote the model’s predicted outcome; and</li>
+<li><span class="math inline">\(e_i\)</span> denote the prediction error, or <strong>residual</strong>.</li>
+</ul>
+<p>The prediction error is</p>
+<p><span class="math display">\[
+e_i = y_i-\hat{y}_i.
+\]</span></p>
+<p>For example, suppose a policyholder has an actual insurance charge of $15,000 and the model predicts $13,000. The prediction error is</p>
+<p><span class="math display">\[
+e_i = 15{,}000-13{,}000=2{,}000.
+\]</span></p>
+<p>The model has <strong>underpredicted</strong> the actual charge by $2,000.</p>
+<p>If the model instead predicts $17,000, then</p>
+<p><span class="math display">\[
+e_i = 15{,}000-17{,}000=-2{,}000,
+\]</span></p>
+<p>meaning that the model has <strong>overpredicted</strong> the actual charge by $2,000.</p>
+<p>For a test dataset containing <span class="math inline">\(n\)</span> observations, we therefore have a collection of prediction errors:</p>
+<p><span class="math display">\[
+e_1,e_2,\ldots,e_n.
+\]</span></p>
+<p>A model will usually make some predictions that are too high and others that are too low. Simply averaging the errors is therefore not a useful measure of overall prediction accuracy because positive and negative errors can cancel each other out.</p>
+<p>For example, consider three prediction errors:</p>
+<p><span class="math display">\[
+2{,}000,\quad -3{,}000,\quad 1{,}000.
+\]</span></p>
+<p>Their average is</p>
+<p><span class="math display">\[
+\frac{2{,}000-3{,}000+1{,}000}{3}=0.
+\]</span></p>
+<p>An average error of zero might suggest perfect prediction, even though all three predictions contain errors.</p>
+<p>We therefore need measures that summarize the <strong>magnitude</strong> of prediction errors rather than allowing positive and negative errors to cancel out. Two common approaches are to use the <strong>absolute error</strong> and the <strong>squared error</strong>.</p>
+<section id="absolute-error" class="level3" data-number="7.4.1">
+<h3 data-number="7.4.1" class="anchored" data-anchor-id="absolute-error"><span class="header-section-number">7.4.1</span> Absolute Error</h3>
+<p>The absolute error for observation <span class="math inline">\(i\)</span> is</p>
+<p><span class="math display">\[
+|e_i|=|y_i-\hat{y}_i|.
+\]</span></p>
+<p>It measures how far the prediction is from the actual value, regardless of whether the model overpredicts or underpredicts.</p>
+<p>For example, an error of <span class="math inline">\(-2{,}000\)</span> has an absolute error of</p>
+<p><span class="math display">\[
+|-2{,}000|=2{,}000.
+\]</span></p>
+<p>The <strong>Mean Absolute Error (MAE)</strong> takes the average of these absolute errors:</p>
+<p><span class="math display">\[
+\operatorname{MAE}
+=
+\frac{1}{n}
+\sum_{i=1}^{n}|y_i-\hat{y}_i|.
+\]</span></p>
+</section>
+<section id="squared-error" class="level3" data-number="7.4.2">
+<h3 data-number="7.4.2" class="anchored" data-anchor-id="squared-error"><span class="header-section-number">7.4.2</span> Squared Error</h3>
+<p>Another approach is to square each prediction error:</p>
+<p><span class="math display">\[
+e_i^2=(y_i-\hat{y}_i)^2.
+\]</span></p>
+<p>Squaring removes the negative sign and gives greater weight to large errors. For example,</p>
+<p><span class="math display">\[
+2{,}000^2=4{,}000{,}000
+\]</span></p>
+<p>whereas</p>
+<p><span class="math display">\[
+10{,}000^2=100{,}000{,}000.
+\]</span></p>
+<p>The squared error from the $10,000 error is therefore much larger relative to the $2,000 error.</p>
+<p>The <strong>Root Mean Squared Error (RMSE)</strong> is obtained by taking the square root of the average squared errors:</p>
+<p><span class="math display">\[
+\operatorname{RMSE}
+=
+\sqrt{
+\frac{1}{n}
+\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+}.
+\]</span></p>
+<p>Both MAE and RMSE measure prediction error on the same scale as the outcome. For insurance charges, for example, both are expressed in dollars.</p>
+<p>The difference is that <strong>MAE treats prediction errors proportionally, whereas RMSE places greater emphasis on large errors</strong>. This distinction will be important when we use these measures to evaluate insurance prediction models.</p>
+</section>
+</section>
+<section id="common-regression-performance-metrics" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="common-regression-performance-metrics"><span class="header-section-number">7.5</span> Common Regression Performance Metrics</h2>
+<p>There is no single measure that completely describes the performance of a regression model. Different metrics capture different aspects of prediction accuracy. In this chapter, we focus on four commonly used regression metrics: <strong>RMSE</strong>, <strong>MAE</strong>, <strong><span class="math inline">\(R^2\)</span></strong>, and <strong>MAPE</strong>.</p>
+<section id="rmse-root-mean-squared-error" class="level3" data-number="7.5.1">
+<h3 data-number="7.5.1" class="anchored" data-anchor-id="rmse-root-mean-squared-error"><span class="header-section-number">7.5.1</span> RMSE — Root Mean Squared Error</h3>
+<p>The <strong>Root Mean Squared Error (RMSE)</strong> measures the typical size of prediction errors, with larger errors receiving greater weight.</p>
+<p><span class="math display">\[
+\operatorname{RMSE}
+=
+\sqrt{
+\frac{1}{n}
+\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+}.
+\]</span></p>
+<p>Because the errors are squared before being averaged, a large prediction error has a greater influence on RMSE than a small prediction error.</p>
+<p>RMSE is expressed in the <strong>same units as the outcome variable</strong>. For example, if the outcome is insurance charges measured in dollars, RMSE is also measured in dollars.</p>
+<p>A <strong>smaller RMSE</strong> indicates that the model’s predictions are, on average, closer to the observed values, with particular sensitivity to large errors.</p>
+</section>
+<section id="mae-mean-absolute-error" class="level3" data-number="7.5.2">
+<h3 data-number="7.5.2" class="anchored" data-anchor-id="mae-mean-absolute-error"><span class="header-section-number">7.5.2</span> MAE — Mean Absolute Error</h3>
+<p>The <strong>Mean Absolute Error (MAE)</strong> measures the average absolute difference between the predicted and observed values.</p>
+<p><span class="math display">\[
+\operatorname{MAE}
+=
+\frac{1}{n}
+\sum_{i=1}^{n}|y_i-\hat{y}_i|.
+\]</span></p>
+<p>Unlike RMSE, MAE does not give additional weight to large errors. Each error contributes to the measure according to its absolute size.</p>
+<p>MAE is also expressed in the same units as the outcome. For example, an MAE of $4,000 means that the model’s predictions differ from the actual charges by <strong>$4,000 on average in absolute terms</strong>.</p>
+<p>A <strong>smaller MAE</strong> indicates smaller prediction errors.</p>
+</section>
+<section id="r2-coefficient-of-determination" class="level3" data-number="7.5.3">
+<h3 data-number="7.5.3" class="anchored" data-anchor-id="r2-coefficient-of-determination"><span class="header-section-number">7.5.3</span> <span class="math inline">\(R^2\)</span> — Coefficient of Determination</h3>
+<p>The <strong>coefficient of determination</strong>, denoted by <span class="math inline">\(R^2\)</span>, measures the proportion of variation in the observed outcome that is accounted for by the model.</p>
+<p><span class="math display">\[
+R^2
+=
+1-
+\frac{
+\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+}{
+\sum_{i=1}^{n}(y_i-\bar{y})^2
+}.
+\]</span></p>
+<p>Here,</p>
+<ul>
+<li><span class="math inline">\(y_i\)</span> is the observed outcome;</li>
+<li><span class="math inline">\(\hat{y}_i\)</span> is the predicted outcome; and</li>
+<li><span class="math inline">\(\bar{y}\)</span> is the mean of the observed outcomes.</li>
+</ul>
+<p>The denominator represents the total variation in the outcome around its mean, while the numerator represents the variation remaining after using the model’s predictions.</p>
+<p>For example, an <span class="math inline">\(R^2\)</span> of <span class="math inline">\(0.73\)</span> indicates that <strong>73% of the variation in the observed outcome is accounted for by the model</strong>, according to this measure.</p>
+<p>Unlike RMSE and MAE, <span class="math inline">\(R^2\)</span> does not have the units of the outcome.</p>
+</section>
+<section id="mape-mean-absolute-percentage-error" class="level3" data-number="7.5.4">
+<h3 data-number="7.5.4" class="anchored" data-anchor-id="mape-mean-absolute-percentage-error"><span class="header-section-number">7.5.4</span> MAPE — Mean Absolute Percentage Error</h3>
+<p>The <strong>Mean Absolute Percentage Error (MAPE)</strong> measures prediction error relative to the observed value.</p>
+<p><span class="math display">\[
+\operatorname{MAPE}
+=
+\frac{100}{n}
+\sum_{i=1}^{n}
+\left|
+\frac{y_i-\hat{y}_i}{y_i}
+\right|.
+\]</span></p>
+<p>MAPE expresses prediction error as a percentage. For example, a MAPE of <span class="math inline">\(20%\)</span> indicates an average absolute percentage error of 20%.</p>
+<p>However, MAPE has an important limitation: it is <strong>not defined when the observed value <span class="math inline">\(y_i\)</span> is zero</strong>, and it can become very large when <span class="math inline">\(y_i\)</span> is close to zero. Therefore, MAPE should be used with care when the outcome can contain zero or very small values.</p>
+</section>
+<section id="comparing-the-metrics" class="level3" data-number="7.5.5">
+<h3 data-number="7.5.5" class="anchored" data-anchor-id="comparing-the-metrics"><span class="header-section-number">7.5.5</span> Comparing the Metrics</h3>
+<p>The four metrics provide different perspectives on model performance:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 38%">
+<col style="width: 15%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>What it measures</th>
+<th>Units</th>
+<th>Effect of large errors</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RMSE</td>
+<td>Typical prediction error</td>
+<td>Same as outcome</td>
+<td>Greater influence</td>
+</tr>
+<tr class="even">
+<td>MAE</td>
+<td>Average absolute prediction error</td>
+<td>Same as outcome</td>
+<td>Proportional</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(R^2\)</span></td>
+<td>Proportion of variation accounted for</td>
+<td>None</td>
+<td>Based on squared errors</td>
+</tr>
+<tr class="even">
+<td>MAPE</td>
+<td>Average absolute percentage error</td>
+<td>Percentage</td>
+<td>Can be sensitive to small actual values</td>
+</tr>
+</tbody>
+</table>
+<p>These measures should therefore not be viewed as interchangeable. <strong>RMSE and MAE focus directly on prediction error, <span class="math inline">\(R^2\)</span> describes variation accounted for by the model, and MAPE expresses error relative to the observed outcome.</strong></p>
+</section>
+</section>
+<section id="understanding-r2" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="understanding-r2"><span class="header-section-number">7.6</span> Understanding <span class="math inline">\(R^2\)</span></h2>
+<p>The <span class="math inline">\(R^2\)</span> measure can be understood by comparing two types of variation: the variation in the observed outcomes around their mean and the variation that remains after using the model’s predictions.</p>
+<p>Suppose we have observed insurance charges <span class="math inline">\(y_1,\ldots,y_n\)</span>. If we did not use a regression model, a simple prediction for every policyholder would be the average charge, <span class="math inline">\(\bar{y}\)</span>. The total variation in the observed charges can therefore be measured by</p>
+<p><span class="math display">\[
+\text{Total Variation}
+=
+\sum_{i=1}^{n}(y_i-\bar{y})^2.
+\]</span></p>
+<p>When we use a regression model, each observation has a predicted value <span class="math inline">\(\hat{y}_i\)</span>. The difference between the observed and predicted values is the prediction error. The remaining, or unexplained, variation is measured by</p>
+<p><span class="math display">\[
+\text{Unexplained Variation}
+=
+\sum_{i=1}^{n}(y_i-\hat{y}_i)^2.
+\]</span></p>
+<p>The coefficient of determination is then</p>
+<p><span class="math display">\[
+R^2
+=
+1-
+\frac{\text{Unexplained Variation}}
+{\text{Total Variation}}.
+\]</span></p>
+<p>This can also be written as</p>
+<p><span class="math display">\[
+R^2
+=
+1-
+\frac{
+\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+}{
+\sum_{i=1}^{n}(y_i-\bar{y})^2
+}.
+\]</span></p>
+<p>The formula compares the variation remaining after fitting the model with the variation that existed before using the model.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Understanding <span class="math inline">\(R^2\)</span>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Think of <span class="math inline">\(R^2\)</span> as describing <strong>how much of the variation in the outcome the model can account for</strong>.</p>
+<p>Here, variation is measured in terms of how far the observed values are from their mean, using <strong>squared differences</strong>. For insurance charges, we are therefore considering how much individual charges differ from the average charge.</p>
+<p>For example, suppose the total variation in insurance charges is represented by 100 units of squared variation. If the model leaves 27 units unexplained, then</p>
+<p><span class="math display">\[
+R^2=1-\frac{27}{100}=0.73.
+\]</span></p>
+<p>Thus, the model accounts for 73 units, or <strong>73% of the variation</strong>. The remaining 27% represents variation that is not accounted for by the model.</p>
+<p>In simple terms, the model explains about 73% of the overall differences in insurance charges compared with simply using the average charge for everyone.</p>
+<p>Importantly, this does <strong>not</strong> mean that the model predicts 73% of each individual insurance charge correctly. It describes how much of the <strong>overall variation</strong> in charges is accounted for by the model.</p>
+<p>Remember that the variation is measured using <strong>squared differences from the mean</strong>, not by counting the percentage of individual predictions that are correct.</p>
+</div>
+</div>
+<p>An <span class="math inline">\(R^2\)</span> value of 1 means that all observed values are exactly reproduced by the model, so there is no unexplained variation. An <span class="math inline">\(R^2\)</span> value of 0 means that the model does not reduce the squared variation compared with using the mean outcome as the prediction.</p>
+<p>For example:</p>
+<ul>
+<li><span class="math inline">\(R^2=0\)</span> means that the model accounts for none of the variation relative to the mean-only prediction.</li>
+<li><span class="math inline">\(R^2=0.50\)</span> means that the model accounts for 50% of the variation.</li>
+<li><span class="math inline">\(R^2=0.73\)</span> means that the model accounts for 73% of the variation.</li>
+<li><span class="math inline">\(R^2=1\)</span> means that the model accounts for all of the variation.</li>
+</ul>
+<p>However, <span class="math inline">\(R^2\)</span> should not be interpreted on its own as a measure of prediction accuracy. Two models can have similar <span class="math inline">\(R^2\)</span> values but different prediction errors. For this reason, measures such as <strong>RMSE</strong> and <strong>MAE</strong> are also useful when evaluating predictive performance.</p>
+<p>In the following sections, we will examine these measures more closely and then use the <code>yardstick</code> package to calculate them for our insurance predictions.</p>
+</section>
+<section id="evaluating-model-predictions-with-yardstick" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="evaluating-model-predictions-with-yardstick"><span class="header-section-number">7.7</span> Evaluating Model Predictions with <code>yardstick</code></h2>
+<p>The <strong><code>yardstick</code> package</strong>, which is part of the <code>tidymodels</code> ecosystem, provides functions for measuring how well a model’s predictions agree with the observed outcomes.</p>
+<p>To evaluate a regression model, we need two pieces of information:</p>
+<ul>
+<li><strong>truth</strong> — the actual observed outcome; and</li>
+<li><strong>estimate</strong> — the value predicted by the model.</li>
+</ul>
+<p>In our insurance data, the actual outcome is <code>charges</code>, while the predictions generated by the model are stored in <code>.pred</code>.</p>
+<p>Suppose we have already fitted a linear regression model using the training data. We can then use the fitted model to generate predictions for the test data. The predictions can be combined with the observed <code>charges</code> in a single dataset:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model using the training data</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>lm_model <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>lm_fit <span class="ot">&lt;-</span> lm_model <span class="sc">%&gt;%</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(charges <span class="sc">~</span> age, <span class="at">data =</span> insurance_train)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate predictions for the test data</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>insurance_test_results <span class="ot">&lt;-</span> insurance_test <span class="sc">%&gt;%</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">predict</span>(lm_fit, <span class="at">new_data =</span> insurance_test)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># View the actual and predicted values</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>insurance_test_results <span class="sc">%&gt;%</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(charges, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  charges  .pred
+    &lt;dbl&gt;  &lt;dbl&gt;
+1  11091. 17566.
+2  39612. 10612.
+3  13229. 18525.
+4   4150. 11331.
+5  14452. 19244.
+6   4688.  8694.</code></pre>
+</div>
+</div>
+<p>The resulting <code>insurance_test_results</code> dataset contains both the <strong>actual insurance charges</strong> (<code>charges</code>) and the <strong>predicted charges</strong> (<code>.pred</code>). These two columns can then be supplied to <code>yardstick</code> functions to evaluate the model’s predictive performance.</p>
+<p>The resulting dataset contains the actual <code>charges</code> and the model’s <code>.pred</code> values.</p>
+<p>We can then use <code>yardstick</code> to calculate individual performance metrics.</p>
+<section id="calculating-rmse" class="level3" data-number="7.7.1">
+<h3 data-number="7.7.1" class="anchored" data-anchor-id="calculating-rmse"><span class="header-section-number">7.7.1</span> Calculating RMSE</h3>
+<p>The <code>rmse()</code> function calculates the Root Mean Squared Error:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rmse</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  insurance_test_results,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> charges,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> .pred</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard      10253.</code></pre>
+</div>
+</div>
+<p>The arguments specify which columns contain the actual values and the predictions:</p>
+<ul>
+<li><code>truth = charges</code> identifies the observed insurance charges.</li>
+<li><code>estimate = .pred</code> identifies the model’s predictions.</li>
+</ul>
+<p>The result gives the RMSE for the model’s predictions on the test data.</p>
+</section>
+<section id="calculating-mae" class="level3" data-number="7.7.2">
+<h3 data-number="7.7.2" class="anchored" data-anchor-id="calculating-mae"><span class="header-section-number">7.7.2</span> Calculating MAE</h3>
+<p>Similarly, we can calculate the Mean Absolute Error using <code>mae()</code>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mae</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  insurance_test_results,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> charges,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> .pred</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 mae     standard       8509.</code></pre>
+</div>
+</div>
+<p>The result represents the average absolute difference between the actual charges and the predicted charges.</p>
+</section>
+<section id="calculating-r2" class="level3" data-number="7.7.3">
+<h3 data-number="7.7.3" class="anchored" data-anchor-id="calculating-r2"><span class="header-section-number">7.7.3</span> Calculating <span class="math inline">\(R^2\)</span></h3>
+<p>The <code>rsq()</code> function calculates the coefficient of determination:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsq</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  insurance_test_results,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> charges,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> .pred</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rsq     standard       0.176</code></pre>
+</div>
+</div>
+<p>The resulting value describes the proportion of variation in <code>charges</code> accounted for by the model.</p>
+</section>
+<section id="calculating-mape" class="level3" data-number="7.7.4">
+<h3 data-number="7.7.4" class="anchored" data-anchor-id="calculating-mape"><span class="header-section-number">7.7.4</span> Calculating MAPE</h3>
+<p>We can also calculate the Mean Absolute Percentage Error using <code>mape()</code>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mape</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  insurance_test_results,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> charges,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> .pred</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 mape    standard        135.</code></pre>
+</div>
+</div>
+<p>The result is expressed as a proportion or percentage depending on how it is displayed. As discussed earlier, MAPE should be interpreted with care when observed outcomes are zero or close to zero.</p>
+<p>These functions follow the same basic structure:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">metric</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  data,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> actual,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> predicted</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This consistent structure makes it straightforward to evaluate different aspects of prediction performance using <code>yardstick</code>. In the next section, we will see how several metrics can be calculated together rather than calling each metric separately.</p>
+</section>
+</section>
+<section id="computing-multiple-metrics-with-metric_set" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="computing-multiple-metrics-with-metric_set"><span class="header-section-number">7.8</span> Computing Multiple Metrics with <code>metric_set()</code></h2>
+<p>When evaluating a model, it is often useful to examine several performance measures rather than relying on a single metric. For example, RMSE and MAE both measure prediction error, while <span class="math inline">\(R^2\)</span> provides information about the proportion of variation accounted for by the model.</p>
+<p>Calling each metric separately works well for a small number of calculations, but <code>yardstick</code> also provides <code>metric_set()</code> to combine several metrics into a single set.</p>
+<p>We can create a set containing the regression metrics introduced earlier:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>regression_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  rmse,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  mae,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  rsq,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  mape</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>The object <code>regression_metrics</code> can then be applied to the test results in the same way as an individual metric:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">regression_metrics</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  insurance_test_results,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> charges,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> .pred</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard   10253.   
+2 mae     standard    8509.   
+3 rsq     standard       0.176
+4 mape    standard     135.   </code></pre>
+</div>
+</div>
+<p>The result reports all four performance measures together.</p>
+<p>This is useful because each metric provides different information about the model:</p>
+<ul>
+<li><strong>RMSE</strong> shows the typical prediction error while giving greater weight to large errors.</li>
+<li><strong>MAE</strong> shows the average absolute prediction error.</li>
+<li><strong><span class="math inline">\(R^2\)</span></strong> describes the proportion of variation in the outcome accounted for by the model.</li>
+<li><strong>MAPE</strong> describes prediction error relative to the observed outcome.</li>
+</ul>
+<p>Using a metric set also provides a convenient way to evaluate and compare models consistently. For example, when we fit another regression model, we can apply the same <code>regression_metrics</code> object to its test predictions rather than writing separate calls for each metric.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Reading the <code>yardstick</code> Output
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The output from <code>metric_set()</code> includes three important columns:</p>
+<ul>
+<li><code>.metric</code> identifies the performance measure;</li>
+<li><code>.estimator</code> identifies the method used to calculate the measure; and</li>
+<li><code>.estimate</code> gives the value of the performance measure.</li>
+</ul>
+<p>For example:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>.metric</th>
+<th>.estimator</th>
+<th style="text-align: right;">.estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>rmse</td>
+<td>standard</td>
+<td style="text-align: right;">10,253.22</td>
+</tr>
+<tr class="even">
+<td>mae</td>
+<td>standard</td>
+<td style="text-align: right;">8,509.31</td>
+</tr>
+<tr class="odd">
+<td>rsq</td>
+<td>standard</td>
+<td style="text-align: right;">0.176</td>
+</tr>
+<tr class="even">
+<td>mape</td>
+<td>standard</td>
+<td style="text-align: right;">134.92</td>
+</tr>
+</tbody>
+</table>
+<p>We can interpret these results as follows:</p>
+<ul>
+<li><strong>RMSE = 10,253.22</strong>: the model’s prediction errors are relatively large, with RMSE placing greater weight on large errors.</li>
+<li><strong>MAE = 8,509.31</strong>: the model’s predictions differ from the actual charges by about $8,509 on average in absolute terms.</li>
+<li><strong><span class="math inline">\(R^2\)</span> = 0.176</strong>: the model accounts for about <strong>17.6% of the variation</strong> in insurance charges.</li>
+<li><strong>MAPE = 134.92%</strong>: the average absolute percentage error is about <strong>134.92%</strong>.</li>
+</ul>
+<p>The value <code>"standard"</code> in <code>.estimator</code> indicates the standard calculation used for this regression metric.</p>
+<p>The metrics should be interpreted according to what each measure represents rather than compared directly with one another, since they measure different aspects of model performance.</p>
+</div>
+</div>
+</section>
+<section id="interpreting-model-performance" class="level2" data-number="7.9">
+<h2 data-number="7.9" class="anchored" data-anchor-id="interpreting-model-performance"><span class="header-section-number">7.9</span> Interpreting Model Performance</h2>
+<p>A model’s performance should be interpreted by considering the performance measures together. Each metric describes a different aspect of prediction error, so no single measure provides a complete picture of how well a model performs.</p>
+<p>For example, suppose the <code>charges ~ age</code> model produces the following results on the test data:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th style="text-align: right;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RMSE</td>
+<td style="text-align: right;">10,253.22</td>
+</tr>
+<tr class="even">
+<td>MAE</td>
+<td style="text-align: right;">8,509.31</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(R^2\)</span></td>
+<td style="text-align: right;">0.176</td>
+</tr>
+<tr class="even">
+<td>MAPE</td>
+<td style="text-align: right;">134.92%</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>RMSE of $10,253.22</strong> indicates that the model has relatively large prediction errors, with larger errors receiving greater weight. The <strong>MAE of $8,509.31</strong> indicates that the predictions differ from the actual insurance charges by about $8,509 on average in absolute terms.</p>
+<p>The <strong><span class="math inline">\(R^2\)</span> value of 0.176</strong> indicates that the model accounts for about 17.6% of the variation in insurance charges. Thus, age alone accounts for only part of the differences in charges among individuals.</p>
+<p>The <strong>MAPE of 134.92%</strong> indicates a large average percentage error. Percentage-based measures should be interpreted carefully because they can become large when actual outcome values are relatively small.</p>
+<p>These results suggest that the <code>charges ~ age</code> model does not provide highly accurate individual predictions. However, this does not mean that the model is useless. A simple model with one predictor can be useful for demonstrating the modelling process and for understanding the relationship between age and insurance charges. Prediction performance may improve when additional relevant predictors are included.</p>
+<blockquote class="blockquote">
+<p><strong>Important:</strong> Performance measures should be interpreted in the context of the modelling objective and the scale of the outcome. A metric value is not meaningful by itself without considering what is being predicted and how the model will be used.</p>
+</blockquote>
+<p>When comparing models, the same performance measures should be calculated on the <strong>same test data</strong>. This allows us to determine whether a more complex model provides better predictive performance than a simpler model.</p>
+<p>In the next section, we will compare two regression models using the same test data and performance measures.</p>
+</section>
+<section id="comparing-two-models" class="level2" data-number="7.10">
+<h2 data-number="7.10" class="anchored" data-anchor-id="comparing-two-models"><span class="header-section-number">7.10</span> Comparing Two Models</h2>
+<p>Model performance becomes more useful when we compare different models for the same prediction task. Suppose we want to predict insurance charges using age. We can first consider a simple model using only <code>age</code>, and then examine whether adding <code>bmi</code> improves predictive performance.</p>
+<p>The two models are</p>
+<p><span class="math display">\[
+\text{Model 1:}\qquad \text{charges} = \beta_0+\beta_1\text{age}+\varepsilon
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\text{Model 2:}\qquad \text{charges} = \beta_0+\beta_1\text{age}+\beta_2\text{bmi}+\varepsilon.
+\]</span></p>
+<p>Both models are fitted using the same training data. We then use each model to generate predictions for the same test data.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model 1: age only</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>model_age <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(charges <span class="sc">~</span> age, <span class="at">data =</span> insurance_train)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Model 2: age and BMI</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>model_age_bmi <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(charges <span class="sc">~</span> age <span class="sc">+</span> bmi, <span class="at">data =</span> insurance_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>We can generate predictions for the test data:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>test_age <span class="ot">&lt;-</span> insurance_test <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">predict</span>(model_age, <span class="at">new_data =</span> insurance_test)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>test_age_bmi <span class="ot">&lt;-</span> insurance_test <span class="sc">%&gt;%</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">predict</span>(model_age_bmi, <span class="at">new_data =</span> insurance_test)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>We can then use the same <code>regression_metrics</code> object introduced earlier to evaluate both models:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">regression_metrics</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  test_age,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> charges,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> .pred</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard   10253.   
+2 mae     standard    8509.   
+3 rsq     standard       0.176
+4 mape    standard     135.   </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">regression_metrics</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  test_age_bmi,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> charges,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> .pred</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard   10157.   
+2 mae     standard    8351.   
+3 rsq     standard       0.178
+4 mape    standard     132.   </code></pre>
+</div>
+</div>
+<p>To make the comparison easier, we can combine the results into a single table:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>model_comparison <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">regression_metrics</span>(</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    test_age,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">truth =</span> charges,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">estimate =</span> .pred</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">"Age only"</span>),</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">regression_metrics</span>(</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    test_age_bmi,</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">truth =</span> charges,</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">estimate =</span> .pred</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">"Age + BMI"</span>)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>model_comparison <span class="sc">%&gt;%</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(model, .metric, .estimate)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 3
+  model     .metric .estimate
+  &lt;chr&gt;     &lt;chr&gt;       &lt;dbl&gt;
+1 Age only  rmse    10253.   
+2 Age only  mae      8509.   
+3 Age only  rsq         0.176
+4 Age only  mape      135.   
+5 Age + BMI rmse    10157.   
+6 Age + BMI mae      8351.   
+7 Age + BMI rsq         0.178
+8 Age + BMI mape      132.   </code></pre>
+</div>
+</div>
+<p>The resulting table allows us to compare the predictive performance of the two models on the same test data. The model using <code>age + bmi</code> has a slightly lower RMSE and MAE than the model using <code>age</code> alone. Its <span class="math inline">\(R^2\)</span> is also slightly higher, while its MAPE is lower.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th style="text-align: right;">Age only</th>
+<th style="text-align: right;">Age + BMI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RMSE</td>
+<td style="text-align: right;">10,253.22</td>
+<td style="text-align: right;">10,156.70</td>
+</tr>
+<tr class="even">
+<td>MAE</td>
+<td style="text-align: right;">8,509.31</td>
+<td style="text-align: right;">8,351.08</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(R^2\)</span></td>
+<td style="text-align: right;">0.176</td>
+<td style="text-align: right;">0.178</td>
+</tr>
+<tr class="even">
+<td>MAPE</td>
+<td style="text-align: right;">134.92%</td>
+<td style="text-align: right;">132.23%</td>
+</tr>
+</tbody>
+</table>
+<p>These results show that adding <code>bmi</code> produces a <strong>small improvement in predictive performance</strong> on the test data. The RMSE decreases from $10,253.22 to $10,156.70, while the MAE decreases from $8,509.31 to $8,351.08. The <span class="math inline">\(R^2\)</span> increases from 0.176 to 0.178, indicating that the model accounts for a slightly greater proportion of the variation in insurance charges. MAPE also decreases from 134.92% to 132.23%.</p>
+<p>Although the second model performs better according to these measures, the differences are relatively small. This illustrates an important point: <strong>adding a predictor does not necessarily produce a substantial improvement in predictive performance</strong>. The usefulness of an additional predictor should therefore be assessed using model performance on data that were not used to fit the model.</p>
+<blockquote class="blockquote">
+<p><strong>Key idea:</strong> When comparing predictive models, use the <strong>same test data</strong> and the <strong>same performance measures</strong> for each model. This provides a consistent basis for evaluating whether a change in the model improves its predictions.</p>
+</blockquote>
+<p>This comparison also prepares us for the next chapter, where we will extend the linear regression model to include several predictors simultaneously. Before doing so, it is important to understand why performance on test data is more informative about prediction on new observations than performance on the training data alone.</p>
+<p>In the next section, we examine <strong>why test performance matters</strong>.</p>
+</section>
+<section id="why-test-performance-matters" class="level2" data-number="7.11">
+<h2 data-number="7.11" class="anchored" data-anchor-id="why-test-performance-matters"><span class="header-section-number">7.11</span> Why Test Performance Matters</h2>
+<p>A model is fitted using the training data, so it is natural for the model to perform well on those observations. However, good performance on the training data does not necessarily mean that the model will make accurate predictions for new observations.</p>
+<p>The purpose of the test data is to provide an independent assessment of predictive performance. Because the test observations were not used to fit the model, their outcomes provide information about how well the model generalizes beyond the data used for fitting.</p>
+<p>For example, suppose a model has an RMSE of $8,000 on the training data but an RMSE of $12,000 on the test data. The difference indicates that the model performs better on the data used to fit it than on previously unseen observations.</p>
+<p>This distinction can be illustrated as follows:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 56%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Data</th>
+<th>Purpose</th>
+<th>Performance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Training data</td>
+<td>Fit the model</td>
+<td>Training performance</td>
+</tr>
+<tr class="even">
+<td>Test data</td>
+<td>Evaluate predictions on unseen observations</td>
+<td>Test performance</td>
+</tr>
+</tbody>
+</table>
+<p>Training performance is still useful for understanding how well the model fits the data. However, when the objective is prediction, <strong>test performance is more informative about how the model may perform on new data</strong>.</p>
+<p>A large difference between training and test performance can indicate that the model has fitted patterns in the training data that do not generalize well to new observations. This issue is commonly referred to as <strong>overfitting</strong>.</p>
+<blockquote class="blockquote">
+<p><strong>Key idea:</strong> A predictive model should not be judged only by how well it fits the data used to build it. Test data provide a more independent assessment of how well the model can generalize to new observations.</p>
+</blockquote>
+<p>The separation between training and test data should therefore be maintained throughout the modelling process. The training data are used to fit the model, while the test data are kept separate until the model is ready to be evaluated.</p>
+<p>The next section brings these ideas together by considering how model evaluation fits into the overall modelling workflow.</p>
+</section>
+<section id="from-model-evaluation-to-a-modelling-workflow" class="level2" data-number="7.12">
+<h2 data-number="7.12" class="anchored" data-anchor-id="from-model-evaluation-to-a-modelling-workflow"><span class="header-section-number">7.12</span> From Model Evaluation to a Modelling Workflow</h2>
+<p>Model evaluation is not a separate step that is performed only after a model has been built. It is part of an overall modelling workflow. A useful predictive modelling process can be summarized as</p>
+<p><span class="math display">\[
+\text{Explore}
+\rightarrow
+\text{Prepare}
+\rightarrow
+\text{Fit}
+\rightarrow
+\text{Predict}
+\rightarrow
+\text{Evaluate}
+\rightarrow
+\text{Compare}.
+\]</span></p>
+<p>First, we <strong>explore</strong> the data to understand the variables, distributions, relationships, and unusual observations. We then <strong>prepare</strong> the data for modelling. The model is fitted using the training data, and predictions are generated for observations that were not used to fit the model.</p>
+<p>The predictions are then <strong>evaluated</strong> using appropriate performance measures. For regression models, measures such as RMSE, MAE, <span class="math inline">\(R^2\)</span>, and MAPE provide different information about prediction performance. When several models are available, their performance can be <strong>compared</strong> using the same test data and performance measures.</p>
+<p>For the insurance example in this chapter, the process can be represented as follows:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Explore</td>
+<td>Examine <code>charges</code>, <code>age</code>, and <code>bmi</code></td>
+</tr>
+<tr class="even">
+<td>Prepare</td>
+<td>Split the data into training and test sets</td>
+</tr>
+<tr class="odd">
+<td>Fit</td>
+<td>Fit a regression model using the training data</td>
+</tr>
+<tr class="even">
+<td>Predict</td>
+<td>Predict <code>charges</code> for the test data</td>
+</tr>
+<tr class="odd">
+<td>Evaluate</td>
+<td>Calculate RMSE, MAE, <span class="math inline">\(R^2\)</span>, and MAPE</td>
+</tr>
+<tr class="even">
+<td>Compare</td>
+<td>Compare the performance of different models</td>
+</tr>
+</tbody>
+</table>
+<p>The workflow is iterative. Evaluation may show that a model does not provide sufficiently accurate predictions, or that adding another predictor produces only a small improvement. We can then return to the modelling process, consider alternative predictors or model specifications, and evaluate the revised model again.</p>
+<blockquote class="blockquote">
+<p><strong>Key idea:</strong> Model evaluation helps us determine whether a model provides useful predictions on data that were not used to fit it. It is therefore an essential part of the modelling process, not simply a final calculation.</p>
+</blockquote>
+<p>In this chapter, we focused on evaluating the performance of regression models using test data. We examined prediction errors, introduced RMSE, MAE, <span class="math inline">\(R^2\)</span>, and MAPE, used <code>yardstick</code> to calculate these measures, and compared the predictive performance of two models.</p>
+<p>The models considered so far have used only one or two predictors. In the next chapter, we extend linear regression to <strong>multiple regression</strong>, where several predictors can be used simultaneously to explain and predict an insurance outcome.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/06_Regression_with_Tidymodels.html" class="pagination-link" aria-label="Chapter 6: Linear Regression with tidymodels">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Chapter 6: Linear Regression with tidymodels</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
