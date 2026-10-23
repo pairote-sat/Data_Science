@@ -1,0 +1,2571 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Chapter 3: Transforming and Summarizing Data – Introduction to Data Science in Non-Life Insurance</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/02_Introduction_to_Data_Science.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-87aed0b8589e23e45aa8556edf37a91b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/03_Transforming_and_Summarizing_Data.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3: Transforming and Summarizing Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Introduction to Data Science in Non-Life Insurance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome to My Book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01_Introduction_to_Risk_and_Insurance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Introduction to Risk and Insurance</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02_Introduction_to_Data_Science.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 2: Introduction to Data Science</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03_Transforming_and_Summarizing_Data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3: Transforming and Summarizing Data</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning Outcomes</a></li>
+  <li><a href="#why-data-transformation-matters" id="toc-why-data-transformation-matters" class="nav-link" data-scroll-target="#why-data-transformation-matters"><span class="header-section-number">3.1</span> Why Data Transformation Matters</a></li>
+  <li><a href="#inspecting-data" id="toc-inspecting-data" class="nav-link" data-scroll-target="#inspecting-data"><span class="header-section-number">3.2</span> Inspecting Data</a>
+  <ul class="collapse">
+  <li><a href="#observations-and-variables" id="toc-observations-and-variables" class="nav-link" data-scroll-target="#observations-and-variables"><span class="header-section-number">3.2.1</span> Observations and variables</a></li>
+  <li><a href="#variable-types" id="toc-variable-types" class="nav-link" data-scroll-target="#variable-types"><span class="header-section-number">3.2.2</span> Variable types</a></li>
+  <li><a href="#inspecting-the-values" id="toc-inspecting-the-values" class="nav-link" data-scroll-target="#inspecting-the-values"><span class="header-section-number">3.2.3</span> Inspecting the values</a></li>
+  <li><a href="#tidy-data" id="toc-tidy-data" class="nav-link" data-scroll-target="#tidy-data"><span class="header-section-number">3.2.4</span> Tidy data</a></li>
+  <li><a href="#from-inspection-to-transformation" id="toc-from-inspection-to-transformation" class="nav-link" data-scroll-target="#from-inspection-to-transformation"><span class="header-section-number">3.2.5</span> From inspection to transformation</a></li>
+  </ul></li>
+  <li><a href="#the-claims-experience-dataset" id="toc-the-claims-experience-dataset" class="nav-link" data-scroll-target="#the-claims-experience-dataset"><span class="header-section-number">3.3</span> The Claims Experience Dataset</a>
+  <ul class="collapse">
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data"><span class="header-section-number">3.3.1</span> Importing the data</a></li>
+  <li><a href="#inspecting-the-data" id="toc-inspecting-the-data" class="nav-link" data-scroll-target="#inspecting-the-data"><span class="header-section-number">3.3.2</span> Inspecting the data</a></li>
+  <li><a href="#description-of-the-rating-variables" id="toc-description-of-the-rating-variables" class="nav-link" data-scroll-target="#description-of-the-rating-variables"><span class="header-section-number">3.3.3</span> Description of the rating variables</a></li>
+  </ul></li>
+  <li><a href="#selecting-and-filtering-data" id="toc-selecting-and-filtering-data" class="nav-link" data-scroll-target="#selecting-and-filtering-data"><span class="header-section-number">3.4</span> Selecting and Filtering Data</a>
+  <ul class="collapse">
+  <li><a href="#selecting-variables" id="toc-selecting-variables" class="nav-link" data-scroll-target="#selecting-variables"><span class="header-section-number">3.4.1</span> Selecting variables</a></li>
+  <li><a href="#filtering-observations" id="toc-filtering-observations" class="nav-link" data-scroll-target="#filtering-observations"><span class="header-section-number">3.4.2</span> Filtering observations</a></li>
+  <li><a href="#selecting-from-a-set-of-values" id="toc-selecting-from-a-set-of-values" class="nav-link" data-scroll-target="#selecting-from-a-set-of-values"><span class="header-section-number">3.4.3</span> Selecting from a set of values</a></li>
+  <li><a href="#combining-selection-and-filtering" id="toc-combining-selection-and-filtering" class="nav-link" data-scroll-target="#combining-selection-and-filtering"><span class="header-section-number">3.4.4</span> Combining selection and filtering</a></li>
+  <li><a href="#why-selection-and-filtering-matter-in-actuarial-analysis" id="toc-why-selection-and-filtering-matter-in-actuarial-analysis" class="nav-link" data-scroll-target="#why-selection-and-filtering-matter-in-actuarial-analysis"><span class="header-section-number">3.4.5</span> Why selection and filtering matter in actuarial analysis</a></li>
+  </ul></li>
+  <li><a href="#creating-and-transforming-variables" id="toc-creating-and-transforming-variables" class="nav-link" data-scroll-target="#creating-and-transforming-variables"><span class="header-section-number">3.5</span> Creating and Transforming Variables</a>
+  <ul class="collapse">
+  <li><a href="#creating-a-new-variable" id="toc-creating-a-new-variable" class="nav-link" data-scroll-target="#creating-a-new-variable"><span class="header-section-number">3.5.1</span> Creating a new variable</a></li>
+  <li><a href="#transforming-an-existing-variable" id="toc-transforming-an-existing-variable" class="nav-link" data-scroll-target="#transforming-an-existing-variable"><span class="header-section-number">3.5.2</span> Transforming an existing variable</a></li>
+  <li><a href="#creating-actuarial-quantities" id="toc-creating-actuarial-quantities" class="nav-link" data-scroll-target="#creating-actuarial-quantities"><span class="header-section-number">3.5.3</span> Creating actuarial quantities</a></li>
+  <li><a href="#checking-the-result" id="toc-checking-the-result" class="nav-link" data-scroll-target="#checking-the-result"><span class="header-section-number">3.5.4</span> Checking the result</a></li>
+  <li><a href="#transforming-variables-for-analysis" id="toc-transforming-variables-for-analysis" class="nav-link" data-scroll-target="#transforming-variables-for-analysis"><span class="header-section-number">3.5.5</span> Transforming variables for analysis</a></li>
+  <li><a href="#transforming-data-as-part-of-the-workflow" id="toc-transforming-data-as-part-of-the-workflow" class="nav-link" data-scroll-target="#transforming-data-as-part-of-the-workflow"><span class="header-section-number">3.5.6</span> Transforming data as part of the workflow</a></li>
+  </ul></li>
+  <li><a href="#combining-operations-with-pipes" id="toc-combining-operations-with-pipes" class="nav-link" data-scroll-target="#combining-operations-with-pipes"><span class="header-section-number">3.6</span> Combining Operations with Pipes</a></li>
+  <li><a href="#grouping-and-summarizing-data" id="toc-grouping-and-summarizing-data" class="nav-link" data-scroll-target="#grouping-and-summarizing-data"><span class="header-section-number">3.7</span> Grouping and Summarizing Data</a>
+  <ul class="collapse">
+  <li><a href="#grouping-observations" id="toc-grouping-observations" class="nav-link" data-scroll-target="#grouping-observations"><span class="header-section-number">3.7.1</span> Grouping observations</a></li>
+  <li><a href="#grouping-by-rating-variables" id="toc-grouping-by-rating-variables" class="nav-link" data-scroll-target="#grouping-by-rating-variables"><span class="header-section-number">3.7.2</span> Grouping by rating variables</a></li>
+  <li><a href="#summarizing-insurance-experience" id="toc-summarizing-insurance-experience" class="nav-link" data-scroll-target="#summarizing-insurance-experience"><span class="header-section-number">3.7.3</span> Summarizing insurance experience</a></li>
+  </ul></li>
+  <li><a href="#insurance-summaries" id="toc-insurance-summaries" class="nav-link" data-scroll-target="#insurance-summaries"><span class="header-section-number">3.8</span> Insurance Summaries</a>
+  <ul class="collapse">
+  <li><a href="#claim-count" id="toc-claim-count" class="nav-link" data-scroll-target="#claim-count"><span class="header-section-number">3.8.1</span> Claim count</a></li>
+  <li><a href="#aggregate-claim-amount" id="toc-aggregate-claim-amount" class="nav-link" data-scroll-target="#aggregate-claim-amount"><span class="header-section-number">3.8.2</span> Aggregate claim amount</a></li>
+  <li><a href="#claim-severity" id="toc-claim-severity" class="nav-link" data-scroll-target="#claim-severity"><span class="header-section-number">3.8.3</span> Claim severity</a></li>
+  <li><a href="#exposure-and-claim-frequency" id="toc-exposure-and-claim-frequency" class="nav-link" data-scroll-target="#exposure-and-claim-frequency"><span class="header-section-number">3.8.4</span> Exposure and claim frequency</a></li>
+  <li><a href="#frequency-severity-and-risk-premium" id="toc-frequency-severity-and-risk-premium" class="nav-link" data-scroll-target="#frequency-severity-and-risk-premium"><span class="header-section-number">3.8.5</span> Frequency, severity, and risk premium</a></li>
+  </ul></li>
+  <li><a href="#interpreting-insurance-summaries" id="toc-interpreting-insurance-summaries" class="nav-link" data-scroll-target="#interpreting-insurance-summaries"><span class="header-section-number">3.9</span> Interpreting Insurance Summaries</a>
+  <ul class="collapse">
+  <li><a href="#comparing-groups" id="toc-comparing-groups" class="nav-link" data-scroll-target="#comparing-groups"><span class="header-section-number">3.9.1</span> Comparing groups</a></li>
+  <li><a href="#experience-and-volume" id="toc-experience-and-volume" class="nav-link" data-scroll-target="#experience-and-volume"><span class="header-section-number">3.9.2</span> Experience and volume</a></li>
+  <li><a href="#claim-count-is-not-frequency" id="toc-claim-count-is-not-frequency" class="nav-link" data-scroll-target="#claim-count-is-not-frequency"><span class="header-section-number">3.9.3</span> Claim count is not frequency</a></li>
+  <li><a href="#observed-differences-are-not-necessarily-causal" id="toc-observed-differences-are-not-necessarily-causal" class="nav-link" data-scroll-target="#observed-differences-are-not-necessarily-causal"><span class="header-section-number">3.9.4</span> Observed differences are not necessarily causal</a></li>
+  <li><a href="#from-summaries-to-actuarial-judgment" id="toc-from-summaries-to-actuarial-judgment" class="nav-link" data-scroll-target="#from-summaries-to-actuarial-judgment"><span class="header-section-number">3.9.5</span> From summaries to actuarial judgment</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3: Transforming and Summarizing Data</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- # Chapter 3: Transforming and Summarizing Data -->
+<section id="learning-outcomes" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning Outcomes</h2>
+<p>By the end of this chapter, students should be able to:</p>
+<!-- * Explain the principles of tidy data and recognize common untidy structures. -->
+<!-- * Import, inspect, and describe an insurance dataset in R. -->
+<!-- * Select, filter, and transform variables using `dplyr`. -->
+<!-- * Combine data-manipulation operations using pipes. -->
+<!-- * Group and summarize insurance data by rating variables. -->
+<!-- * Calculate and interpret basic claims summaries, including claim count, aggregate claims, and severity. -->
+<!-- * Distinguish claim count, frequency, severity, and risk premium. -->
+<!-- * Interpret claims experience in relation to the volume of data supporting it. -->
+<!-- * Recognize the limitations of unadjusted group comparisons in actuarial analysis. -->
+<!-- **Learning Outcomes** -->
+<ol type="1">
+<li>Explain the principles of tidy data and recognize common untidy structures.</li>
+<li>Import, inspect, and describe an insurance dataset in R.</li>
+<li>Select, filter, and transform variables using <code>dplyr</code>.</li>
+<li>Combine data-manipulation operations using pipes.</li>
+<li>Group and summarize insurance data by rating variables.</li>
+<li>Calculate and interpret basic claims summaries, including claim count, aggregate claims, and severity.</li>
+<li>Distinguish claim count, frequency, severity, and risk premium.</li>
+<li>Interpret claims experience in relation to the volume of data supporting it.</li>
+<li>Recognize the limitations of unadjusted group comparisons in actuarial analysis.</li>
+</ol>
+</section>
+<section id="why-data-transformation-matters" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="why-data-transformation-matters"><span class="header-section-number">3.1</span> Why Data Transformation Matters</h2>
+<p>Insurance data are rarely collected in exactly the form needed for analysis. A dataset may contain individual policy records, claim records, exposure measures, and characteristics of policyholders or insured objects. Before these data can be used to answer an actuarial question, they often need to be <strong>transformed, organized, and summarized</strong>.</p>
+<p>Data transformation refers to changing the structure or representation of data so that they are suitable for a particular analysis. This may involve creating new variables, changing the units of measurement, grouping observations, filtering records, or combining information from different variables.</p>
+<p>For example, consider a motor insurance dataset containing the policyholder’s age, ZIP code, number of claims, exposure, and aggregate claim amount. The raw variables may be sufficient for storing the data, but they do not immediately provide measures such as claim frequency or average claim severity. These measures must be calculated from the underlying data.</p>
+<p><span class="math display">\[
+\text{Raw data}
+\longrightarrow
+\text{Transformed data}
+\longrightarrow
+\text{Summary}
+\longrightarrow
+\text{Actuarial insight}.
+\]</span></p>
+<p>The purpose of transformation is therefore not simply to make the dataset look cleaner. It is to create variables and summaries that help answer a specific insurance question.</p>
+<p>For example, an insurer may want to investigate whether claim experience differs by age group. The original dataset may contain the exact age of each policyholder, but an analysis may require age groups such as 18–25, 26–35, 36–45, and so on. Similarly, comparing the number of claims between two groups without considering exposure can be misleading. A group with more policies will generally have more claims simply because it has more opportunities for claims to occur.</p>
+<p>This is why actuarial analysis often transforms the original data into measures that account for the volume of business. For example, claim frequency can be calculated as</p>
+<p><span class="math display">\[
+\text{Claim Frequency}
+=\frac{\text{Number of Claims}}
+{\text{Exposure}},
+\]</span></p>
+<p>while average claim severity can be calculated as</p>
+<p><span class="math display">\[
+\text{Average Severity}
+=\frac{\text{Aggregate Claim Amount}}
+{\text{Number of Claims}}.
+\]</span></p>
+<p>These quantities provide more meaningful information about the underlying risk than claim counts or aggregate claim amounts alone.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Transformation depends on the question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There is no single transformation that is appropriate for every analysis. The same raw dataset may be transformed in different ways depending on the actuarial question being investigated.</p>
+<p>For example, age may be used as an exact numerical variable when studying how risk changes with age, or it may be grouped into age bands when constructing an easily interpretable rating structure.</p>
+<p>Data summarization is the next step. A large dataset may contain thousands of individual observations, making it difficult to identify patterns by inspecting individual records. Summaries condense the data into a smaller set of informative quantities, such as counts, totals, averages, medians, and measures of variability.</p>
+<p>In insurance, summaries are often produced separately for different risk groups. For example, an insurer might compare exposure, claim frequency, and average severity across ZIP codes:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">ZIP</th>
+<th style="text-align: right;">Exposure</th>
+<th style="text-align: right;">Claims</th>
+<th style="text-align: right;">Claim Frequency</th>
+<th style="text-align: right;">Average Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">206.84</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">0.140</td>
+<td style="text-align: right;">28,328</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">11,080.63</td>
+<td style="text-align: right;">1,593</td>
+<td style="text-align: right;">0.144</td>
+<td style="text-align: right;">72,931</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7,782.63</td>
+<td style="text-align: right;">1,008</td>
+<td style="text-align: right;">0.130</td>
+<td style="text-align: right;">59,278</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7,587.56</td>
+<td style="text-align: right;">1,038</td>
+<td style="text-align: right;">0.137</td>
+<td style="text-align: right;">56,829</td>
+</tr>
+</tbody>
+</table>
+<p>Such a table is much easier to interpret than the underlying individual policy records. It allows an analyst to compare both <strong>risk experience</strong> and <strong>portfolio volume</strong> across groups.</p>
+<p>However, a summary is not itself an explanation. Differences between groups may arise for many reasons, including differences in the underlying risk characteristics, random variation, or differences in the composition of the portfolio. Data transformation and summarization therefore provide the evidence needed for further analysis; they do not replace actuarial judgement.</p>
+<p>The central idea of this chapter is therefore:</p>
+<p><span class="math display">\[
+\boxed{
+\text{Transform the data to represent the question, then summarize it to reveal the evidence.}
+}
+\]</span></p>
+<p>These skills form an essential foundation for exploratory data analysis, statistical modelling, and insurance rating. Before fitting a model, an actuary should understand what the data contain, how the variables have been constructed, and what the basic summaries reveal about the portfolio.</p>
+</div>
+</div>
+</section>
+<section id="inspecting-data" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="inspecting-data"><span class="header-section-number">3.2</span> Inspecting Data</h2>
+<p>Before transforming or summarizing a dataset, we first need to understand its structure and the meaning of the information it contains. This initial inspection is an important part of the data-science workflow because subsequent calculations are meaningful only when the underlying data have been correctly understood.</p>
+<p>A dataset consists of <strong>observations</strong> and <strong>variables</strong>. An observation represents the unit being studied, while a variable records a characteristic of that unit. In insurance data, an observation might represent a policy, a policy-year, or another defined unit of exposure. Variables may describe the policyholder, the insured object, the exposure, or the claims arising during the observation period.</p>
+<p>For example, a claims experience dataset may contain variables such as:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 54%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+<th>Possible type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>age_policyholder</code></td>
+<td>Age of the policyholder</td>
+<td>Numeric</td>
+</tr>
+<tr class="even">
+<td><code>nclaims</code></td>
+<td>Number of claims</td>
+<td>Numeric</td>
+</tr>
+<tr class="odd">
+<td><code>exposure</code></td>
+<td>Amount of exposure during the observation period</td>
+<td>Numeric</td>
+</tr>
+<tr class="even">
+<td><code>amount</code></td>
+<td>Aggregate claim amount</td>
+<td>Numeric</td>
+</tr>
+<tr class="odd">
+<td><code>power</code></td>
+<td>Vehicle power</td>
+<td>Numeric</td>
+</tr>
+<tr class="even">
+<td><code>bm</code></td>
+<td>Bonus-malus level</td>
+<td>Categorical or ordinal</td>
+</tr>
+<tr class="odd">
+<td><code>zip</code></td>
+<td>Geographic area</td>
+<td>Categorical</td>
+</tr>
+</tbody>
+</table>
+<p>Some of these variables describe the <strong>outcome of insurance experience</strong>, while others describe characteristics that may be associated with that experience. In actuarial applications, variables that may be used to differentiate risks for rating purposes are commonly called <strong>rating variables</strong>. They may include characteristics such as age, geographic area, vehicle characteristics, or previous claims experience.</p>
+<section id="observations-and-variables" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="observations-and-variables"><span class="header-section-number">3.2.1</span> Observations and variables</h3>
+<p>The number of observations is one of the first things we should establish. It tells us how many units are represented in the dataset and provides context for all subsequent calculations.</p>
+<p>The number of observations, however, is not necessarily the same as the amount of insurance business represented by the data. In insurance, <strong>exposure</strong> provides an important measure of portfolio volume. For example, two groups may contain the same number of policy records but represent different amounts of exposure because policies may have been in force for different lengths of time.</p>
+<p>This distinction becomes particularly important when comparing claims experience. A group with more claims does not necessarily have a higher underlying claim risk if it also has substantially greater exposure.</p>
+</section>
+<section id="variable-types" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="variable-types"><span class="header-section-number">3.2.2</span> Variable types</h3>
+<p>Before performing calculations, each variable should be classified according to its meaning.</p>
+<p>A <strong>numeric variable</strong> represents a quantity for which numerical operations are meaningful. Examples include age, exposure, number of claims, and claim amount. Such variables can be summarized using quantities such as means, medians, minima, maxima, and standard deviations.</p>
+<p>A <strong>categorical variable</strong> represents membership in a group or category. Examples include vehicle type, geographic area, and rating class.</p>
+<p>A variable should be classified according to its <strong>meaning</strong>, rather than simply according to the way its values are stored. For example, a ZIP code may be recorded using numbers such as <code>0</code>, <code>1</code>, <code>2</code>, and <code>3</code>, but these numbers identify geographic groups rather than quantities. Calculating their arithmetic mean would therefore have no useful interpretation.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Numeric values are not necessarily numeric variables
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The fact that a variable contains numbers does not mean that arithmetic operations on those numbers are meaningful.</p>
+<p>For example, if <code>zip</code> takes the values <code>0</code>, <code>1</code>, <code>2</code>, and <code>3</code>, it should normally be treated as a categorical variable. The value <code>3</code> does not represent three units of geographic area, nor is the average ZIP code an actuarial quantity of interest.</p>
+</div>
+</div>
+<p>Some variables may also have an <strong>ordinal</strong> interpretation. For example, a bonus-malus level may consist of ordered categories in which higher or lower levels indicate different positions in a rating system. Although the categories have an order, the numerical codes should not automatically be treated as measurements with equal numerical distances.</p>
+</section>
+<section id="inspecting-the-values" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="inspecting-the-values"><span class="header-section-number">3.2.3</span> Inspecting the values</h3>
+<p>Variable names and types are not sufficient. We should also examine the values recorded in each variable.</p>
+<p>For numeric variables, useful initial questions include:</p>
+<ul>
+<li>What are the minimum and maximum values?</li>
+<li>Are there missing values?</li>
+<li>Are there zero or negative values?</li>
+<li>Are there unusually large or small observations?</li>
+<li>What units are being used?</li>
+</ul>
+<p>For categorical variables, we should consider:</p>
+<ul>
+<li>What categories occur?</li>
+<li>How many observations belong to each category?</li>
+<li>Are there unexpected categories?</li>
+<li>Are category labels recorded consistently?</li>
+</ul>
+<p>These checks are particularly important for insurance data. For example, a negative claim amount may indicate a data-entry or coding issue, while a zero claim count may be perfectly valid because most policyholders may have no claim during a given observation period.</p>
+</section>
+<section id="tidy-data" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="tidy-data"><span class="header-section-number">3.2.4</span> Tidy data</h3>
+<p>Once the basic structure of the data has been identified, the next question is whether the data are organized in a form that is convenient for analysis.</p>
+<p>A useful standard is <strong>tidy data</strong>. A dataset is tidy when:</p>
+<ol type="1">
+<li>each variable has its own column;</li>
+<li>each observation has its own row; and</li>
+<li>each value has its own cell.</li>
+</ol>
+<p>This structure separates the concepts of observations and variables clearly. It also makes subsequent transformation, summarization, and visualization more systematic.</p>
+<p>For example, suppose a claims dataset records the policy number, year, and number of claims. A tidy representation might look like this:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Policy</th>
+<th style="text-align: right;">Year</th>
+<th style="text-align: right;">Claims</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>120002</td>
+<td style="text-align: right;">2009</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>120002</td>
+<td style="text-align: right;">2010</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td>120003</td>
+<td style="text-align: right;">2009</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td>120003</td>
+<td style="text-align: right;">2010</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Here, <code>Policy</code>, <code>Year</code>, and <code>Claims</code> are variables, while each row represents one policy-year observation. Each value occupies a single cell.</p>
+<p>The same information can, however, be stored in several other forms. These representations may be convenient for reporting or data entry, but they are less convenient for data analysis.</p>
+<section id="example-1-variables-stored-in-column-names" class="level4">
+<h4 class="anchored" data-anchor-id="example-1-variables-stored-in-column-names">Example 1: Variables stored in column names</h4>
+<p>Consider the following representation:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Policy</th>
+<th style="text-align: right;">Claims_2009</th>
+<th style="text-align: right;">Claims_2010</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>120002</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td>120003</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>The values for <code>Year</code> have been incorporated into the column names. This means that <code>Year</code> is no longer an explicit variable in the dataset.</p>
+<p>This structure is often convenient for displaying results, but it becomes less convenient when we want to perform an operation such as:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_claims =</span> <span class="fu">sum</span>(Claims))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In the tidy representation, <code>Year</code> is a variable and can therefore be used directly for grouping and summarization. In the representation above, the years must first be extracted from the column names.</p>
+<p>This type of transformation is commonly referred to as converting data from <strong>wide</strong> to <strong>long</strong> format. In <code>tidyr</code>, the <code>pivot_longer()</code> function is used for this purpose.</p>
+</section>
+<section id="example-2-multiple-variables-stored-in-one-column" class="level4">
+<h4 class="anchored" data-anchor-id="example-2-multiple-variables-stored-in-one-column">Example 2: Multiple variables stored in one column</h4>
+<p>Suppose claims information is recorded as follows:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Policy</th>
+<th style="text-align: right;">Year</th>
+<th>Information</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>120002</td>
+<td style="text-align: right;">2009</td>
+<td>Claims:0</td>
+</tr>
+<tr class="even">
+<td>120002</td>
+<td style="text-align: right;">2010</td>
+<td>Claims:1</td>
+</tr>
+<tr class="odd">
+<td>120003</td>
+<td style="text-align: right;">2009</td>
+<td>Claims:2</td>
+</tr>
+<tr class="even">
+<td>120003</td>
+<td style="text-align: right;">2010</td>
+<td>Claims:0</td>
+</tr>
+</tbody>
+</table>
+<p>Here, the column <code>Information</code> contains both the name of the variable (<code>Claims</code>) and its value. The actual claim count is therefore not stored as a separate variable.</p>
+<p>A more useful representation is:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Policy</th>
+<th style="text-align: right;">Year</th>
+<th style="text-align: right;">Claims</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>120002</td>
+<td style="text-align: right;">2009</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>120002</td>
+<td style="text-align: right;">2010</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td>120003</td>
+<td style="text-align: right;">2009</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td>120003</td>
+<td style="text-align: right;">2010</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>Separating the variable name from its values makes the data easier to filter, summarize, and visualize.</p>
+</section>
+<section id="example-3-multiple-observations-stored-in-one-row" class="level4">
+<h4 class="anchored" data-anchor-id="example-3-multiple-observations-stored-in-one-row">Example 3: Multiple observations stored in one row</h4>
+<p>Consider a dataset in which a policy’s claims experience is recorded in a single row:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Policy</th>
+<th style="text-align: right;">Claims_1</th>
+<th style="text-align: right;">Claims_2</th>
+<th style="text-align: right;">Claims_3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>120002</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>120003</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>Suppose <code>Claims_1</code>, <code>Claims_2</code>, and <code>Claims_3</code> represent claims in three successive years. The year information is again encoded in the column names rather than represented by a separate variable.</p>
+<p>A tidy representation would instead have one row for each policy-year observation:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Policy</th>
+<th style="text-align: right;">Year</th>
+<th style="text-align: right;">Claims</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>120002</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>120002</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td>120002</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>120003</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td>120003</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>120003</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>This structure makes it straightforward to perform operations such as calculating total claims by year or comparing claims experience across policies.</p>
+<p>The process of converting data from the first representation to the second is another example of transforming <strong>wide data into long data</strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why tidy data matter
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Tidy data provide a consistent structure for subsequent operations. Once each observation, variable, and value has a clear place in the dataset, operations such as filtering observations, creating variables, grouping records, and calculating summaries become easier to express and interpret.</p>
+<p>Tidy data are not necessarily the only possible way to store data. Wide formats can be useful for reporting and presentation. The purpose of tidy data is to provide a structure that is particularly convenient for data manipulation and analysis.</p>
+</div>
+</div>
+<p>In practice, data imported from spreadsheets, databases, or other sources may not initially be tidy. A substantial part of data preparation therefore involves reshaping the data into a suitable structure before analysis. The <code>tidyr</code> package provides functions such as <code>pivot_longer()</code> and <code>pivot_wider()</code> for converting between long and wide representations.</p>
+</section>
+</section>
+<section id="from-inspection-to-transformation" class="level3" data-number="3.2.5">
+<h3 data-number="3.2.5" class="anchored" data-anchor-id="from-inspection-to-transformation"><span class="header-section-number">3.2.5</span> From inspection to transformation</h3>
+<p>Inspecting the data does not mean that we have finished preparing them. Rather, it gives us the information needed to decide <strong>what transformation is appropriate</strong>.</p>
+<p>For example, after inspecting a motor insurance dataset, we might decide to:</p>
+<ul>
+<li>retain only variables relevant to the analysis;</li>
+<li>select policies from a particular period;</li>
+<li>create a claim frequency variable;</li>
+<li>group policyholders into age bands;</li>
+<li>classify ZIP codes as rating groups; or</li>
+<li>calculate claim severity for observations with at least one claim.</li>
+</ul>
+<p>These operations correspond to the next stage of the workflow:</p>
+<p><span class="math display">\[
+\text{Inspect}
+\longrightarrow
+\text{Transform}
+\longrightarrow
+\text{Summarize}.
+\]</span></p>
+<p>In R, the <code>dplyr</code> package provides a set of functions designed for these common operations. The most important functions introduced in this chapter are <code>select()</code>, <code>filter()</code>, <code>mutate()</code>, <code>group_by()</code>, and <code>summarise()</code>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Further reference: <code>dplyr</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>dplyr</code> package provides a consistent set of tools for transforming and summarizing data in R. This chapter introduces its core functions for common data-manipulation tasks.</p>
+<p>For the complete reference and additional examples, see the official <a href="https://dplyr.tidyverse.org/"><code>dplyr</code> documentation</a>.</p>
+</div>
+</div>
+<p>We begin by loading and briefly inspecting the claims dataset that will be used throughout this section. We then consider how data should be structured for analysis before introducing the operations used to manipulate and transform the data step by step.</p>
+</section>
+</section>
+<section id="the-claims-experience-dataset" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="the-claims-experience-dataset"><span class="header-section-number">3.3</span> The Claims Experience Dataset</h2>
+<p>Throughout this chapter, we will use a claims dataset to demonstrate how R can be used to import, inspect, transform, and analyse insurance data. The dataset contains information on insured risks and their claims experience.</p>
+<section id="importing-the-data" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="importing-the-data"><span class="header-section-number">3.3.1</span> Importing the data</h3>
+<p>The data are stored in the <code>data</code> folder of the project directory. We can therefore import the dataset using a relative file path without changing the working directory manually.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>claims <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/ClaimsExperienceData.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="inspecting-the-data" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="inspecting-the-data"><span class="header-section-number">3.3.2</span> Inspecting the data</h3>
+<p>After importing a dataset, it is good practice to inspect its basic structure before beginning any analysis. This helps us understand the observations and variables available and whether R has assigned appropriate data types to the variables.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(claims)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 5,639
+Columns: 23
+$ PolicyNum     &lt;dbl&gt; 120002, 120002, 120002, 120002, 120002, 120003, 120003, …
+$ Year          &lt;dbl&gt; 2006, 2007, 2008, 2009, 2010, 2006, 2007, 2008, 2009, 20…
+$ LnCoverage    &lt;dbl&gt; 3.123002, 3.220740, 3.037427, 3.084324, 3.157489, 4.5986…
+$ BCcov         &lt;dbl&gt; 22714456, 25046646, 20851525, 21852696, 23511493, 993533…
+$ Premium       &lt;dbl&gt; 9313, 8767, 7090, 8522, 7994, 40735, 39728, 42280, 36893…
+$ Freq          &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 5, 1, 2, 1, 3, 1, 0, 3, 1, 0, 5, 0, 2,…
+$ Deduct        &lt;dbl&gt; 1000, 1000, 1000, 1000, 1000, 5000, 5000, 5000, 5000, 50…
+$ y             &lt;dbl&gt; 0.00, 0.00, 0.00, 0.00, 6838.87, 0.00, 15500.00, 8775.00…
+$ lny           &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 0.000000, 8.830378, 0.0000…
+$ yAvg          &lt;dbl&gt; 0.000, 0.000, 0.000, 0.000, 6838.870, 0.000, 3100.000, 8…
+$ lnDeduct      &lt;dbl&gt; 6.907755, 6.907755, 6.907755, 6.907755, 6.907755, 8.5171…
+$ Fire5         &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ NoClaimCredit &lt;dbl&gt; 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ TypeCity      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ TypeCounty    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ TypeMisc      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ TypeSchool    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ TypeTown      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ TypeVillage   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ AC00          &lt;dbl&gt; 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ AC05          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ AC10          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ AC15          &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</code></pre>
+</div>
+</div>
+<p>The <code>glimpse()</code> function provides a compact overview of the dataset, including the number of observations and variables, variable names, data types, and example values.</p>
+<p>We can also use <code>head()</code> to view the first few observations:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(claims)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 23
+  PolicyNum  Year LnCoverage    BCcov Premium  Freq Deduct     y   lny  yAvg
+      &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1    120002  2006       3.12 22714456    9313     0   1000    0   0       0 
+2    120002  2007       3.22 25046646    8767     0   1000    0   0       0 
+3    120002  2008       3.04 20851525    7090     0   1000    0   0       0 
+4    120002  2009       3.08 21852696    8522     0   1000    0   0       0 
+5    120002  2010       3.16 23511493    7994     1   1000 6839.  8.83 6839.
+6    120003  2006       4.60 99353377   40735     0   5000    0   0       0 
+# ℹ 13 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="description-of-the-rating-variables" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="description-of-the-rating-variables"><span class="header-section-number">3.3.3</span> Description of the rating variables</h3>
+<p>The following variables represent characteristics of the insured risks that may be related to claims outcomes.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 88%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>EntityType</code></td>
+<td>Categorical variable with six types: Village, City, County, Misc, School, or Town</td>
+</tr>
+<tr class="even">
+<td><code>LnCoverage</code></td>
+<td>Total building and content coverage, in logarithmic millions of dollars</td>
+</tr>
+<tr class="odd">
+<td><code>LnDeduct</code></td>
+<td>Deductible, in logarithmic dollars</td>
+</tr>
+<tr class="even">
+<td><code>AlarmCredit</code></td>
+<td>Categorical variable with four levels (0, 5, 10, or 15), representing credits for automatic smoke alarms in main rooms</td>
+</tr>
+<tr class="odd">
+<td><code>NoClaimCredit</code></td>
+<td>Binary variable indicating whether there were no claims in the past two years</td>
+</tr>
+<tr class="even">
+<td><code>Fire5</code></td>
+<td>Binary variable indicating whether the fire class is below 5; the fire class ranges from 0 to 10</td>
+</tr>
+</tbody>
+</table>
+<p>These variables are potential <strong>rating factors</strong> because they describe characteristics of the insured risks that may help explain differences in claims experience. Their roles will become clearer as we use the dataset for data manipulation and analysis.</p>
+</section>
+</section>
+<section id="selecting-and-filtering-data" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="selecting-and-filtering-data"><span class="header-section-number">3.4</span> Selecting and Filtering Data</h2>
+<p>Once a dataset has been inspected and organized in a tidy form, the next step is to work with the observations and variables relevant to the question being investigated. A dataset may contain many variables and observations, but an analysis rarely requires all of them at once.</p>
+<p>Two common operations are therefore <strong>selecting variables</strong> and <strong>filtering observations</strong>. In <code>dplyr</code>, these operations are performed using <code>select()</code> and <code>filter()</code>.</p>
+<section id="selecting-variables" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="selecting-variables"><span class="header-section-number">3.4.1</span> Selecting variables</h3>
+<p>The <code>select()</code> function is used to choose particular variables from a data frame. This is useful when a dataset contains many columns but only a subset is relevant to the current analysis.</p>
+<p>For example, suppose a claims dataset contains information on policy number, year, coverage, claim frequency, and several other variables. We may select only the variables needed to examine claims experience:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(PolicyNum, Year, LnCoverage, y, Freq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,639 × 5
+   PolicyNum  Year LnCoverage      y  Freq
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+ 1    120002  2006       3.12     0      0
+ 2    120002  2007       3.22     0      0
+ 3    120002  2008       3.04     0      0
+ 4    120002  2009       3.08     0      0
+ 5    120002  2010       3.16  6839.     1
+ 6    120003  2006       4.60     0      0
+ 7    120003  2007       4.65 15500      5
+ 8    120003  2008       4.71  8775      1
+ 9    120003  2009       4.78 37471.     2
+10    120003  2010       4.74  9711.     1
+# ℹ 5,629 more rows</code></pre>
+</div>
+</div>
+<p>The result contains the selected columns while retaining all observations.</p>
+<p>The names supplied to <code>select()</code> refer to variables in the data frame. We can therefore use <code>select()</code> to create a simpler view of a dataset without changing the original data.</p>
+<p>For example,</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>new_table <span class="ot">&lt;-</span> claims <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(PolicyNum, Year, LnCoverage, y, Freq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>creates a new data frame containing only the selected variables. The original <code>claims</code> data remain unchanged.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Selecting variables is not the same as deleting data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>select()</code> determines which variables are included in the resulting data frame. Unless the result is assigned back to the original object, the original dataset is not modified.</p>
+<p>Selecting variables is particularly useful when checking whether related variables have been recorded consistently or when preparing a smaller table for further analysis.</p>
+</div>
+</div>
+</section>
+<section id="filtering-observations" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="filtering-observations"><span class="header-section-number">3.4.2</span> Filtering observations</h3>
+<p>While <code>select()</code> works with variables, <code>filter()</code> works with <strong>observations</strong>. It retains only the rows that satisfy a specified condition.</p>
+<p>For example, suppose we want to examine claims experience for the year 2010:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,110 × 23
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2010       3.16  23511493    7994     1   1000  6839.  8.83  6839.
+ 2    120003  2010       4.74 114646079   36687     1   5000  9711.  9.18  9711.
+ 3    120004  2010       3.46  31853574   17839     1   1000 10324.  9.24 10324.
+ 4    120005  2010       3.49  32713698   12431     0   5000     0   0        0 
+ 5    120008  2010       3.86  47321724   16090     1    500  3470.  8.15  3470.
+ 6    120009  2010       4.28  72286976   15180     0  25000     0   0        0 
+ 7    120010  2010       4.60  99135847   15861     1  25000 35000  10.5  35000 
+ 8    120012  2010       6.34 569366096  222052    19    500 83935. 11.3   4418.
+ 9    120013  2010       5.10 163526511   58869     5    500 63530. 11.1  12706.
+10    120015  2010       4.68 107382645   38657    11   1000 38117. 10.5   3465.
+# ℹ 1,100 more rows
+# ℹ 13 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>The condition <code>Year == 2010</code> is evaluated for each observation. Only observations for which the condition is <code>TRUE</code> are retained.</p>
+<p>The equality operator in R is <code>==</code>. It should not be confused with <code>=</code>, which is commonly used to assign a value to an object or to specify an argument.</p>
+<p>Filtering can also be used with other logical conditions. For example, to retain observations with positive claim counts:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Freq <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,679 × 23
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2010       3.16  23511493    7994     1   1000 6.84e3  8.83  6839.
+ 2    120003  2007       4.65 104546824   39728     5   5000 1.55e4  9.65  3100 
+ 3    120003  2008       4.71 111265009   42280     1   5000 8.78e3  9.08  8775 
+ 4    120003  2009       4.78 119005219   36893     2   5000 3.75e4 10.5  18735.
+ 5    120003  2010       4.74 114646079   36687     1   5000 9.71e3  9.18  9711.
+ 6    120004  2006       3.25  25879634   16823     3    500 1.30e4  9.47  4334.
+ 7    120004  2007       3.39  29720359   20507     1    500 3.27e4 10.4  32733.
+ 8    120004  2009       3.50  33064745   18185     3   1000 4.26e4 10.7  14200.
+ 9    120004  2010       3.46  31853574   17839     1   1000 1.03e4  9.24 10324.
+10    120005  2007       3.50  33128746   14245     5   5000 1.44e5 11.9  28801.
+# ℹ 1,669 more rows
+# ℹ 13 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>This is useful when the analysis concerns claim severity, because observations with no claims do not have an observed claim severity.</p>
+<p>Multiple conditions can be combined. For example, we may want observations from 2010 that also have at least one claim:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span> <span class="sc">&amp;</span> Freq <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 403 × 23
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2010       3.16  23511493    7994     1   1000  6839.  8.83  6839.
+ 2    120003  2010       4.74 114646079   36687     1   5000  9711.  9.18  9711.
+ 3    120004  2010       3.46  31853574   17839     1   1000 10324.  9.24 10324.
+ 4    120008  2010       3.86  47321724   16090     1    500  3470.  8.15  3470.
+ 5    120010  2010       4.60  99135847   15861     1  25000 35000  10.5  35000 
+ 6    120012  2010       6.34 569366096  222052    19    500 83935. 11.3   4418.
+ 7    120013  2010       5.10 163526511   58869     5    500 63530. 11.1  12706.
+ 8    120015  2010       4.68 107382645   38657    11   1000 38117. 10.5   3465.
+ 9    120017  2010       4.38  79719144   22321     7   5000  9132.  9.12  1305.
+10    120018  2010       4.75 115589417   39301     1   5000  9649.  9.17  9649.
+# ℹ 393 more rows
+# ℹ 13 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>The operator <code>&amp;</code> means <strong>and</strong>: both conditions must be satisfied.</p>
+<p>Similarly, <code>|</code> means <strong>or</strong>. For example,</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2009</span> <span class="sc">|</span> Year <span class="sc">==</span> <span class="dv">2010</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,222 × 23
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2009       3.08  21852696    8522     0   1000     0   0        0 
+ 2    120002  2010       3.16  23511493    7994     1   1000  6839.  8.83  6839.
+ 3    120003  2009       4.78 119005219   36893     2   5000 37471. 10.5  18735.
+ 4    120003  2010       4.74 114646079   36687     1   5000  9711.  9.18  9711.
+ 5    120004  2009       3.50  33064745   18185     3   1000 42600. 10.7  14200.
+ 6    120004  2010       3.46  31853574   17839     1   1000 10324.  9.24 10324.
+ 7    120005  2009       3.61  36974202   14050     2   5000 27481. 10.2  13740.
+ 8    120005  2010       3.49  32713698   12431     0   5000     0   0        0 
+ 9    120008  2009       3.81  45360920   18144     2    500 12015.  9.39  6007.
+10    120008  2010       3.86  47321724   16090     1    500  3470.  8.15  3470.
+# ℹ 2,212 more rows
+# ℹ 13 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>retains observations from either 2009 or 2010.</p>
+</section>
+<section id="selecting-from-a-set-of-values" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="selecting-from-a-set-of-values"><span class="header-section-number">3.4.3</span> Selecting from a set of values</h3>
+<p>When a variable needs to be compared with several possible values, the <code>%in%</code> operator provides a convenient alternative.</p>
+<p>For example,</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2009</span>, <span class="dv">2010</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,222 × 23
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2009       3.08  21852696    8522     0   1000     0   0        0 
+ 2    120002  2010       3.16  23511493    7994     1   1000  6839.  8.83  6839.
+ 3    120003  2009       4.78 119005219   36893     2   5000 37471. 10.5  18735.
+ 4    120003  2010       4.74 114646079   36687     1   5000  9711.  9.18  9711.
+ 5    120004  2009       3.50  33064745   18185     3   1000 42600. 10.7  14200.
+ 6    120004  2010       3.46  31853574   17839     1   1000 10324.  9.24 10324.
+ 7    120005  2009       3.61  36974202   14050     2   5000 27481. 10.2  13740.
+ 8    120005  2010       3.49  32713698   12431     0   5000     0   0        0 
+ 9    120008  2009       3.81  45360920   18144     2    500 12015.  9.39  6007.
+10    120008  2010       3.86  47321724   16090     1    500  3470.  8.15  3470.
+# ℹ 2,212 more rows
+# ℹ 13 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>retains observations for which <code>Year</code> is either 2009 or 2010. The expression</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2009</span>, <span class="dv">2010</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>checks whether the value of <code>Year</code> belongs to the specified set of values. This is often more readable than writing several equality conditions joined by <code>|</code>. The source material uses the same approach when filtering the claims data by multiple years.</p>
+</section>
+<section id="combining-selection-and-filtering" class="level3" data-number="3.4.4">
+<h3 data-number="3.4.4" class="anchored" data-anchor-id="combining-selection-and-filtering"><span class="header-section-number">3.4.4</span> Combining selection and filtering</h3>
+<p>In practice, selecting variables and filtering observations are often performed together.</p>
+<p>For example, we may want to examine only the policy number, year, coverage, and claim variables for policies observed in 2009 and 2010:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(PolicyNum, Year, LnCoverage, y, Freq) <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2009</span>, <span class="dv">2010</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,222 × 5
+   PolicyNum  Year LnCoverage      y  Freq
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+ 1    120002  2009       3.08     0      0
+ 2    120002  2010       3.16  6839.     1
+ 3    120003  2009       4.78 37471.     2
+ 4    120003  2010       4.74  9711.     1
+ 5    120004  2009       3.50 42600.     3
+ 6    120004  2010       3.46 10324.     1
+ 7    120005  2009       3.61 27481.     2
+ 8    120005  2010       3.49     0      0
+ 9    120008  2009       3.81 12015.     2
+10    120008  2010       3.86  3470.     1
+# ℹ 2,212 more rows</code></pre>
+</div>
+</div>
+<p>The operations are performed from left to right. First, the relevant variables are selected. The resulting data are then filtered to retain the required observations.</p>
+<p>This illustrates an important principle of data transformation:</p>
+<p><span class="math display">\[
+\text{Select relevant variables}
+\longrightarrow
+\text{Filter relevant observations}
+\longrightarrow
+\text{Continue the analysis}.
+\]</span></p>
+<p>The same operations could be performed separately by creating intermediate data frames. However, combining them into a sequence makes the analytical process easier to follow.</p>
+</section>
+<section id="why-selection-and-filtering-matter-in-actuarial-analysis" class="level3" data-number="3.4.5">
+<h3 data-number="3.4.5" class="anchored" data-anchor-id="why-selection-and-filtering-matter-in-actuarial-analysis"><span class="header-section-number">3.4.5</span> Why selection and filtering matter in actuarial analysis</h3>
+<p>Selection and filtering are not merely programming operations. They determine <strong>which part of the portfolio is being analyzed</strong>.</p>
+<p>For example, an analyst might investigate:</p>
+<ul>
+<li>policies written during a particular year;</li>
+<li>policyholders within a particular age range;</li>
+<li>policies belonging to a particular ZIP code;</li>
+<li>observations with positive claims;</li>
+<li>a particular set of rating classes.</li>
+</ul>
+<p>The resulting summaries describe only the observations that have been retained. Therefore, the filtering criteria should always be stated clearly when reporting an analysis.</p>
+<p>This is especially important when analyzing claims. If zero-claim observations are removed before calculating average severity, the resulting statistic describes the severity <strong>conditional on a claim occurring</strong>. It does not describe the average claim amount across all policyholders.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Always ask: what observations are being analyzed?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A summary statistic is meaningful only when we know which observations were included in its calculation.</p>
+<p>For example,</p>
+<p><span class="math display">\[
+\frac{\text{Aggregate Claim Amount}}
+{\text{Number of Claims}}
+\]</span></p>
+<p>describes average claim severity, whereas excluding observations with zero claims before calculating this quantity does not mean that zero claims have been ignored from the underlying portfolio; they simply do not contribute to the denominator because they contain no claim whose severity can be measured.</p>
+</div>
+</div>
+<p>Selection and filtering therefore provide the basic tools for defining the <strong>scope of an analysis</strong>. Once the relevant observations and variables have been identified, the next step is often to create new variables that express quantities more directly relevant to the actuarial question.</p>
+</section>
+</section>
+<section id="creating-and-transforming-variables" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="creating-and-transforming-variables"><span class="header-section-number">3.5</span> Creating and Transforming Variables</h2>
+<p>After selecting the relevant observations and variables, the next step is often to create variables that are more useful for the analysis. A raw dataset may contain the information needed to calculate an actuarial quantity, but that quantity may not yet exist as a variable in the dataset.</p>
+<p>For example, a claims dataset may contain the total claim amount and the number of claims, but not the average claim severity. We can create a new variable from the existing variables:</p>
+<p><span class="math display">\[
+\text{Average Severity}
+=\frac{\text{Aggregate Claim Amount}}
+{\text{Number of Claims}}.
+\]</span></p>
+<p>In <code>dplyr</code>, the <code>mutate()</code> function is used to create new variables or transform existing ones. The basic form is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">new_variable =</span> expression)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The expression on the right-hand side determines the values of the new variable. Existing variables can be used directly in the expression.</p>
+<section id="creating-a-new-variable" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="creating-a-new-variable"><span class="header-section-number">3.5.1</span> Creating a new variable</h3>
+<p>Suppose the claims dataset contains <code>y</code>, representing aggregate claim amount, and <code>Freq</code>, representing the number of claims. We can create a variable called <code>yAvg</code> representing average claim severity:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yAvg =</span> y <span class="sc">/</span> Freq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,639 × 23
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2006       3.12  22714456    9313     0   1000     0   0      NaN 
+ 2    120002  2007       3.22  25046646    8767     0   1000     0   0      NaN 
+ 3    120002  2008       3.04  20851525    7090     0   1000     0   0      NaN 
+ 4    120002  2009       3.08  21852696    8522     0   1000     0   0      NaN 
+ 5    120002  2010       3.16  23511493    7994     1   1000  6839.  8.83  6839.
+ 6    120003  2006       4.60  99353377   40735     0   5000     0   0      NaN 
+ 7    120003  2007       4.65 104546824   39728     5   5000 15500   9.65  3100 
+ 8    120003  2008       4.71 111265009   42280     1   5000  8775   9.08  8775 
+ 9    120003  2009       4.78 119005219   36893     2   5000 37471. 10.5  18735.
+10    120003  2010       4.74 114646079   36687     1   5000  9711.  9.18  9711.
+# ℹ 5,629 more rows
+# ℹ 13 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>The new variable is calculated separately for each observation. The original variables remain available in the resulting data frame.</p>
+<p>We can also save the transformed data as a new object:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>claims_new <span class="ot">&lt;-</span> claims <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yAvg =</span> y <span class="sc">/</span> Freq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>This creates <code>claims_new</code> with the additional variable <code>yAvg</code>, while leaving <code>claims</code> unchanged.</p>
+<p>The source material similarly uses <code>mutate()</code> to create <code>LnCoverageChecked</code> from the underlying coverage variable and <code>yAvgChecked</code> from claim amount divided by claim frequency.</p>
+</section>
+<section id="transforming-an-existing-variable" class="level3" data-number="3.5.2">
+<h3 data-number="3.5.2" class="anchored" data-anchor-id="transforming-an-existing-variable"><span class="header-section-number">3.5.2</span> Transforming an existing variable</h3>
+<p>Creating a new variable is not limited to arithmetic operations. A transformation may also change the scale or representation of an existing quantity.</p>
+<p>For example, the source claims data contains coverage represented on a logarithmic scale. The underlying coverage variable can be transformed using</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">LnCoverageChecked =</span> <span class="fu">log</span>(BCcov <span class="sc">/</span> <span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,639 × 24
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2006       3.12  22714456    9313     0   1000     0   0        0 
+ 2    120002  2007       3.22  25046646    8767     0   1000     0   0        0 
+ 3    120002  2008       3.04  20851525    7090     0   1000     0   0        0 
+ 4    120002  2009       3.08  21852696    8522     0   1000     0   0        0 
+ 5    120002  2010       3.16  23511493    7994     1   1000  6839.  8.83  6839.
+ 6    120003  2006       4.60  99353377   40735     0   5000     0   0        0 
+ 7    120003  2007       4.65 104546824   39728     5   5000 15500   9.65  3100 
+ 8    120003  2008       4.71 111265009   42280     1   5000  8775   9.08  8775 
+ 9    120003  2009       4.78 119005219   36893     2   5000 37471. 10.5  18735.
+10    120003  2010       4.74 114646079   36687     1   5000  9711.  9.18  9711.
+# ℹ 5,629 more rows
+# ℹ 14 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;, LnCoverageChecked &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>Here, the new variable is calculated by first converting coverage into millions of dollars and then taking its logarithm.</p>
+<p>The important principle is that a transformation should have a clear interpretation. A variable should not be transformed simply because a particular function is available. The analyst should understand what the resulting quantity represents and why it is appropriate for the analysis.</p>
+</section>
+<section id="creating-actuarial-quantities" class="level3" data-number="3.5.3">
+<h3 data-number="3.5.3" class="anchored" data-anchor-id="creating-actuarial-quantities"><span class="header-section-number">3.5.3</span> Creating actuarial quantities</h3>
+<p>Many useful insurance variables are derived from existing information.</p>
+<p>For example, suppose an observation contains claim count <span class="math inline">\(N\)</span> and exposure <span class="math inline">\(E\)</span>. Claim frequency can be represented by</p>
+<p><span class="math display">\[
+\text{Frequency}
+=\frac{N}{E}.
+\]</span></p>
+<p>Similarly, if <span class="math inline">\(Y\)</span> denotes aggregate claim amount and <span class="math inline">\(N\)</span> denotes the number of claims, average claim severity is</p>
+<p><span class="math display">\[
+\text{Severity}
+=\frac{Y}{N},
+\qquad N&gt;0.
+\]</span></p>
+<p>These quantities can be derived from the variables in the dataset. In particular, the average claim severity can be calculated as the total claim amount divided by the number of claims:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">severity =</span> y <span class="sc">/</span> Freq</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,639 × 24
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2006       3.12  22714456    9313     0   1000     0   0        0 
+ 2    120002  2007       3.22  25046646    8767     0   1000     0   0        0 
+ 3    120002  2008       3.04  20851525    7090     0   1000     0   0        0 
+ 4    120002  2009       3.08  21852696    8522     0   1000     0   0        0 
+ 5    120002  2010       3.16  23511493    7994     1   1000  6839.  8.83  6839.
+ 6    120003  2006       4.60  99353377   40735     0   5000     0   0        0 
+ 7    120003  2007       4.65 104546824   39728     5   5000 15500   9.65  3100 
+ 8    120003  2008       4.71 111265009   42280     1   5000  8775   9.08  8775 
+ 9    120003  2009       4.78 119005219   36893     2   5000 37471. 10.5  18735.
+10    120003  2010       4.74 114646079   36687     1   5000  9711.  9.18  9711.
+# ℹ 5,629 more rows
+# ℹ 14 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;, severity &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>The precise variable names and definitions depend on the dataset. The important idea is that <strong>derived variables express information already contained in the data in a form that is more directly relevant to the actuarial question</strong>.</p>
+</section>
+<section id="checking-the-result" class="level3" data-number="3.5.4">
+<h3 data-number="3.5.4" class="anchored" data-anchor-id="checking-the-result"><span class="header-section-number">3.5.4</span> Checking the result</h3>
+<p>Creating a variable does not guarantee that the resulting values are meaningful. Derived variables should be checked, particularly when the calculation involves division, logarithms, or other operations with restrictions.</p>
+<p>For example, the calculation</p>
+<p><span class="math display">\[
+\frac{y}{\text{Freq}}
+\]</span></p>
+<p>is not defined when <code>Freq = 0</code>. In R, dividing zero claim observations may produce <code>NaN</code> when both the numerator and denominator are zero. The source material identifies this issue when calculating average claims and shows that the resulting <code>NaN</code> values arise from division by zero.</p>
+<p>A better approach is usually to consider the meaning of the quantity before calculating it. Average claim severity is defined for observations where a claim has occurred, so observations with zero claims should be handled explicitly rather than simply replacing an undefined result after the calculation.</p>
+<p>For example:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">severity =</span> <span class="fu">if_else</span>(Freq <span class="sc">&gt;</span> <span class="dv">0</span>, y <span class="sc">/</span> Freq, <span class="cn">NA_real_</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,639 × 24
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2006       3.12  22714456    9313     0   1000     0   0        0 
+ 2    120002  2007       3.22  25046646    8767     0   1000     0   0        0 
+ 3    120002  2008       3.04  20851525    7090     0   1000     0   0        0 
+ 4    120002  2009       3.08  21852696    8522     0   1000     0   0        0 
+ 5    120002  2010       3.16  23511493    7994     1   1000  6839.  8.83  6839.
+ 6    120003  2006       4.60  99353377   40735     0   5000     0   0        0 
+ 7    120003  2007       4.65 104546824   39728     5   5000 15500   9.65  3100 
+ 8    120003  2008       4.71 111265009   42280     1   5000  8775   9.08  8775 
+ 9    120003  2009       4.78 119005219   36893     2   5000 37471. 10.5  18735.
+10    120003  2010       4.74 114646079   36687     1   5000  9711.  9.18  9711.
+# ℹ 5,629 more rows
+# ℹ 14 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;, severity &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>This records the severity as missing when there are no claims, reflecting the fact that there is no observed claim severity for such an observation.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Undefined is not the same as zero
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An observation with zero claims does not have a claim severity of zero.</p>
+<p>If</p>
+<p><span class="math display">\[
+N=0,
+\]</span></p>
+<p>then</p>
+<p><span class="math display">\[
+\frac{Y}{N}
+\]</span></p>
+<p>is undefined. A zero claim count means that no claim occurred; it does not mean that the severity of a claim was zero.</p>
+</div>
+</div>
+</section>
+<section id="transforming-variables-for-analysis" class="level3" data-number="3.5.5">
+<h3 data-number="3.5.5" class="anchored" data-anchor-id="transforming-variables-for-analysis"><span class="header-section-number">3.5.5</span> Transforming variables for analysis</h3>
+<p>Variable transformation can also make the data easier to analyze. A continuous variable may, for example, be converted into groups when the analysis requires comparisons between categories.</p>
+<p>Suppose age is recorded as an exact numerical variable. We might create age groups such as 18–25, 26–35, 36–45, and 46 or older. The resulting categorical variable can then be used to compare claims experience across age groups.</p>
+<p>The transformation should be guided by the purpose of the analysis. Grouping a continuous variable simplifies interpretation but also discards some information about the exact values. Consequently, grouping should be justified rather than performed automatically.</p>
+</section>
+<section id="transforming-data-as-part-of-the-workflow" class="level3" data-number="3.5.6">
+<h3 data-number="3.5.6" class="anchored" data-anchor-id="transforming-data-as-part-of-the-workflow"><span class="header-section-number">3.5.6</span> Transforming data as part of the workflow</h3>
+<p>Creating variables is most useful when it is viewed as part of a sequence of operations rather than as an isolated calculation. For example, we may first select the relevant variables, filter the observations, and then create a derived variable:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(PolicyNum, Year, y, Freq) <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">severity =</span> <span class="fu">if_else</span>(Freq <span class="sc">&gt;</span> <span class="dv">0</span>, y <span class="sc">/</span> Freq, <span class="cn">NA_real_</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,110 × 5
+   PolicyNum  Year      y  Freq severity
+       &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+ 1    120002  2010  6839.     1    6839.
+ 2    120003  2010  9711.     1    9711.
+ 3    120004  2010 10324.     1   10324.
+ 4    120005  2010     0      0      NA 
+ 5    120008  2010  3470.     1    3470.
+ 6    120009  2010     0      0      NA 
+ 7    120010  2010 35000      1   35000 
+ 8    120012  2010 83935.    19    4418.
+ 9    120013  2010 63530.     5   12706.
+10    120015  2010 38117.    11    3465.
+# ℹ 1,100 more rows</code></pre>
+</div>
+</div>
+<p>This sequence expresses the analytical logic directly:</p>
+<p><span class="math display">\[
+\text{Select}
+\longrightarrow
+\text{Filter}
+\longrightarrow
+\text{Transform}.
+\]</span></p>
+<p>The resulting data contain only the variables and observations needed for the analysis, together with the newly derived quantity.</p>
+<p>This approach becomes increasingly useful as the analysis becomes more complex. Rather than repeatedly creating intermediate datasets, we can combine several operations into a readable sequence using the <strong>pipe</strong>. The next section introduces this way of expressing a data-transformation workflow.</p>
+</section>
+</section>
+<section id="combining-operations-with-pipes" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="combining-operations-with-pipes"><span class="header-section-number">3.6</span> Combining Operations with Pipes</h2>
+<p>Data transformation often involves several operations performed in sequence. For example, we may first select the variables of interest, then filter the observations, and finally create a new variable. Rather than writing each operation separately and creating intermediate data frames, we can connect the operations using the <strong>pipe operator</strong> <code>%&gt;%</code>.</p>
+<p>The pipe passes the result of the operation on its left to the function on its right. For example,</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="dv">256</span> <span class="sc">%&gt;%</span> <span class="fu">sqrt</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 16</code></pre>
+</div>
+</div>
+<p>is equivalent to</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">256</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 16</code></pre>
+</div>
+</div>
+<p>The result of <code>sqrt(256)</code> can then be passed to another function:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="dv">256</span> <span class="sc">%&gt;%</span> <span class="fu">sqrt</span>() <span class="sc">%&gt;%</span> <span class="fu">log2</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+<p>This is equivalent to</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log2</span>(<span class="fu">sqrt</span>(<span class="dv">256</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+<p>The pipe is particularly useful with <code>dplyr</code> because its data-manipulation functions take the data frame as their first argument. Thus,</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(PolicyNum, Year, LnCoverage, yAvg) <span class="sc">%&gt;%</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2009</span>, <span class="dv">2010</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,222 × 4
+   PolicyNum  Year LnCoverage   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2009       3.08     0 
+ 2    120002  2010       3.16  6839.
+ 3    120003  2009       4.78 18735.
+ 4    120003  2010       4.74  9711.
+ 5    120004  2009       3.50 14200.
+ 6    120004  2010       3.46 10324.
+ 7    120005  2009       3.61 13740.
+ 8    120005  2010       3.49     0 
+ 9    120008  2009       3.81  6007.
+10    120008  2010       3.86  3470.
+# ℹ 2,212 more rows</code></pre>
+</div>
+</div>
+<p>is equivalent to performing the operations separately:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>new_table <span class="ot">&lt;-</span> <span class="fu">select</span>(claims, PolicyNum, Year, LnCoverage, yAvg)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>new_table <span class="ot">&lt;-</span> <span class="fu">filter</span>(new_table, Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2009</span>, <span class="dv">2010</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>The pipe version makes the sequence of operations more explicit. The data flow can be read from left to right:</p>
+<p><span class="math display">\[
+\text{claims}
+\longrightarrow
+\text{select variables}
+\longrightarrow
+\text{filter observations}.
+\]</span></p>
+<p>We can extend the sequence by adding further transformations:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(PolicyNum, Year, y, Freq) <span class="sc">%&gt;%</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">yAvg =</span> y <span class="sc">/</span> Freq)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,110 × 5
+   PolicyNum  Year      y  Freq   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2010  6839.     1  6839.
+ 2    120003  2010  9711.     1  9711.
+ 3    120004  2010 10324.     1 10324.
+ 4    120005  2010     0      0   NaN 
+ 5    120008  2010  3470.     1  3470.
+ 6    120009  2010     0      0   NaN 
+ 7    120010  2010 35000      1 35000 
+ 8    120012  2010 83935.    19  4418.
+ 9    120013  2010 63530.     5 12706.
+10    120015  2010 38117.    11  3465.
+# ℹ 1,100 more rows</code></pre>
+</div>
+</div>
+<p>Each step receives the result of the previous step. The complete workflow can therefore be read as:</p>
+<p><span class="math display">\[
+\text{Select}
+\longrightarrow
+\text{Filter}
+\longrightarrow
+\text{Transform}.
+\]</span></p>
+<p>This style is particularly useful when the analysis involves several transformations because each step corresponds to a recognizable analytical action. The source material uses the same principle to combine <code>select()</code>, <code>filter()</code>, and <code>head()</code> in a single sequence.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Reading a pipe
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When reading a sequence of piped operations, start from the left and proceed to the right.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">operation_1</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">operation_2</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">operation_3</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>means that the data are passed through <code>operation_1</code>, then the resulting data are passed through <code>operation_2</code>, and finally through <code>operation_3</code>.</p>
+</div>
+</div>
+<p>The pipe does not introduce a new statistical method. Its purpose is to make a sequence of data operations easier to write and understand. The resulting code should still be evaluated according to the actuarial question being addressed.</p>
+<p>Once the relevant observations have been selected and the required variables have been created, we can move from individual observations to <strong>summaries of the data</strong>.</p>
+</section>
+<section id="grouping-and-summarizing-data" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="grouping-and-summarizing-data"><span class="header-section-number">3.7</span> Grouping and Summarizing Data</h2>
+<p>A large dataset is often too detailed to interpret by inspecting individual observations. <strong>Summary statistics</strong> provide a way to reduce many observations to a small number of quantities that describe important features of the data.</p>
+<p>Common summary statistics include the mean, standard deviation, minimum, maximum, median, and quantiles. In actuarial analysis, other summaries such as total exposure, number of claims, aggregate claim amount, claim frequency, and average claim severity are also important.</p>
+<p>The <code>dplyr</code> package provides the <code>summarise()</code> function for calculating summary statistics.</p>
+<p>For example, suppose we want to calculate the mean and standard deviation of average claim severity for observations in 2010 where at least one claim occurred:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>summary_table <span class="ot">&lt;-</span> claims <span class="sc">%&gt;%</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="dv">2010</span> <span class="sc">&amp;</span> Freq <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Mean =</span> <span class="fu">mean</span>(yAvg),</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">SD =</span> <span class="fu">sd</span>(yAvg)</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>The resulting data frame contains one row with the two requested summaries. The names <code>Mean</code> and <code>SD</code> are chosen by the analyst.</p>
+<p>The filtering step is important here. Average claim severity is meaningful only for observations with positive claim counts. The source material uses the same sequence of filtering to calculate the mean and standard deviation of average severity for 2010.</p>
+<section id="grouping-observations" class="level3" data-number="3.7.1">
+<h3 data-number="3.7.1" class="anchored" data-anchor-id="grouping-observations"><span class="header-section-number">3.7.1</span> Grouping observations</h3>
+<p>A single summary for the entire dataset may hide important differences between groups. In exploratory analysis, we often want to calculate the same summaries separately for different levels of a variable.</p>
+<p>The <code>group_by()</code> function divides the data into groups. A subsequent <code>summarise()</code> then calculates the requested summaries separately within each group.</p>
+<p>For example, instead of calculating average severity for only 2010, we can calculate it separately for each year:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>summary_table_all_years <span class="ot">&lt;-</span> claims <span class="sc">%&gt;%</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Freq <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Mean =</span> <span class="fu">mean</span>(yAvg),</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">SD =</span> <span class="fu">sd</span>(yAvg)</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>The result contains one row for each year, with the mean and standard deviation calculated using the observations belonging to that year. The source material demonstrates this use of <code>group_by(Year)</code> followed by <code>summarise()</code>.</p>
+<p>The conceptual difference is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summarise</span>(...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>calculates a summary for the selected data as a whole, whereas</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(variable) <span class="sc">%&gt;%</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>calculates the summary separately for each level of <code>variable</code>.</p>
+<p>This distinction is fundamental to actuarial analysis because risk experience is rarely homogeneous across an entire portfolio.</p>
+</section>
+<section id="grouping-by-rating-variables" class="level3" data-number="3.7.2">
+<h3 data-number="3.7.2" class="anchored" data-anchor-id="grouping-by-rating-variables"><span class="header-section-number">3.7.2</span> Grouping by rating variables</h3>
+<p>Grouping becomes particularly useful when investigating <strong>rating variables</strong>. For example, we may want to compare claims experience across characteristics such as entity type, alarm credit, no-claim credit, or fire class. The same principle applies to insurance variables such as age group, ZIP code, vehicle type, or bonus-malus level.</p>
+<p>In the claims dataset, entity type is represented by several binary indicator variables, such as <code>TypeCounty</code>, <code>TypeMisc</code>, <code>TypeSchool</code>, and <code>TypeTown</code>, rather than by a single categorical variable. If we want to analyse claims experience by entity type, we can first combine these indicators into a single categorical variable.</p>
+<p>For example:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>claims <span class="ot">&lt;-</span> claims <span class="sc">%&gt;%</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">EntityType =</span> <span class="fu">case_when</span>(</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>      TypeCounty <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"County"</span>,</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>      TypeMisc <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"Misc"</span>,</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>      TypeSchool <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"School"</span>,</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>      TypeTown <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"Town"</span>,</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>      TypeVillage <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"Village"</span>,</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"City"</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>claims</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5,639 × 24
+   PolicyNum  Year LnCoverage     BCcov Premium  Freq Deduct      y   lny   yAvg
+       &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1    120002  2006       3.12  22714456    9313     0   1000     0   0        0 
+ 2    120002  2007       3.22  25046646    8767     0   1000     0   0        0 
+ 3    120002  2008       3.04  20851525    7090     0   1000     0   0        0 
+ 4    120002  2009       3.08  21852696    8522     0   1000     0   0        0 
+ 5    120002  2010       3.16  23511493    7994     1   1000  6839.  8.83  6839.
+ 6    120003  2006       4.60  99353377   40735     0   5000     0   0        0 
+ 7    120003  2007       4.65 104546824   39728     5   5000 15500   9.65  3100 
+ 8    120003  2008       4.71 111265009   42280     1   5000  8775   9.08  8775 
+ 9    120003  2009       4.78 119005219   36893     2   5000 37471. 10.5  18735.
+10    120003  2010       4.74 114646079   36687     1   5000  9711.  9.18  9711.
+# ℹ 5,629 more rows
+# ℹ 14 more variables: lnDeduct &lt;dbl&gt;, Fire5 &lt;dbl&gt;, NoClaimCredit &lt;dbl&gt;,
+#   TypeCity &lt;dbl&gt;, TypeCounty &lt;dbl&gt;, TypeMisc &lt;dbl&gt;, TypeSchool &lt;dbl&gt;,
+#   TypeTown &lt;dbl&gt;, TypeVillage &lt;dbl&gt;, AC00 &lt;dbl&gt;, AC05 &lt;dbl&gt;, AC10 &lt;dbl&gt;,
+#   AC15 &lt;dbl&gt;, EntityType &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>The <code>case_when()</code> function checks the conditions in order and assigns the corresponding category. Here, the remaining observations are classified as <code>City</code>.</p>
+<p>Once <code>EntityType</code> has been created, we can use it with <code>group_by()</code> to compare claims experience across the different entity types. For example, if <code>yAvg</code> represents average claim severity:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EntityType) <span class="sc">%&gt;%</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Mean =</span> <span class="fu">mean</span>(yAvg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">SD =</span> <span class="fu">sd</span>(yAvg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  EntityType   Mean      SD
+  &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;
+1 City        8707.  44794.
+2 County     11590.  33285.
+3 Misc        5229.  54625.
+4 School     20791. 366484.
+5 Town        1491.  32629.
+6 Village     2874.  18389.</code></pre>
+</div>
+</div>
+<p>This produces a summary of the mean and standard deviation of claim severity for each entity type. The same approach can be applied to other rating variables once they are represented in a form suitable for grouping.</p>
+<p>The resulting table allows us to compare the observed experience of different groups. However, differences in averages should always be considered together with the amount of data supporting each group. A group with very little exposure or few claims may have an extreme observed value simply because of random variation.</p>
+</section>
+<section id="summarizing-insurance-experience" class="level3" data-number="3.7.3">
+<h3 data-number="3.7.3" class="anchored" data-anchor-id="summarizing-insurance-experience"><span class="header-section-number">3.7.3</span> Summarizing insurance experience</h3>
+<p>The same grouping principle can be used to produce more directly actuarial summaries.</p>
+<p>In this dataset, <code>Freq</code> represents the number of claims and <code>y</code> represents the aggregate claim amount. We can therefore calculate the total number of claims and aggregate claim amount for each rating group:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EntityType) <span class="sc">%&gt;%</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">claims =</span> <span class="fu">sum</span>(Freq),</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">amount =</span> <span class="fu">sum</span>(y)</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  EntityType claims    amount
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+1 City         1539 18609205.
+2 County       1607 25491545.
+3 Misc          113  3401011.
+4 School       2290 42999241.
+5 Town          100  1605103.
+6 Village       606  5376997.</code></pre>
+</div>
+</div>
+<p>These totals provide a simple description of the volume of claims and the total cost of claims within each group.</p>
+<p>If <code>yAvg</code> represents the average claim severity for each observation, we can also summarize severity by rating group:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EntityType) <span class="sc">%&gt;%</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_severity =</span> <span class="fu">mean</span>(yAvg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_severity =</span> <span class="fu">sd</span>(yAvg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  EntityType mean_severity sd_severity
+  &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;
+1 City               8707.      44794.
+2 County            11590.      33285.
+3 Misc               5229.      54625.
+4 School            20791.     366484.
+5 Town               1491.      32629.
+6 Village            2874.      18389.</code></pre>
+</div>
+</div>
+<p>Alternatively, when <code>y</code> is the aggregate claim amount and <code>Freq</code> is the corresponding claim count, the overall average severity for each group can be calculated as:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EntityType) <span class="sc">%&gt;%</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">claims =</span> <span class="fu">sum</span>(Freq),</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">amount =</span> <span class="fu">sum</span>(y),</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">severity =</span> amount <span class="sc">/</span> claims</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  EntityType claims    amount severity
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 City         1539 18609205.   12092.
+2 County       1607 25491545.   15863.
+3 Misc          113  3401011.   30097.
+4 School       2290 42999241.   18777.
+5 Town          100  1605103.   16051.
+6 Village       606  5376997.    8873.</code></pre>
+</div>
+</div>
+<p>Here, <code>severity</code> represents the average amount per claim within each <code>EntityType</code>. The calculation is based on the total claim amount divided by the total number of claims, rather than taking a simple average of individual observations.</p>
+<p>These summaries illustrate two important dimensions of claims experience:</p>
+<p><span class="math display">\[
+\text{Claims experience}
+=\text{Frequency}
+\times
+\text{Severity}.
+\]</span></p>
+<p>In this dataset, we can examine claim counts and severity directly. A conventional claim frequency, however, requires an appropriate measure of exposure. Since exposure is not available in this dataset, we do not calculate frequency as claims divided by exposure here. Exposure-based frequency measures will be introduced when a dataset containing exposure information is used.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Volume and experience
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When comparing groups, do not look only at the calculated risk measure. It is also important to consider the <strong>volume of observations or claims</strong> supporting the measure.</p>
+<p>For example, two groups may have similar average severities but very different numbers of claims. Conversely, a group with an unusually high average severity may contain only a small number of claims, making the observed estimate relatively unstable.</p>
+<p>The number of observations, claim counts, and aggregate claim amounts therefore provide useful context when interpreting differences between rating groups.</p>
+</div>
+</div>
+<p>Grouping and summarizing provide a systematic way to compare claims experience across risk factors. These summaries form a useful starting point for actuarial analysis before more formal frequency, severity, and premium models are considered.</p>
+</section>
+</section>
+<section id="insurance-summaries" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="insurance-summaries"><span class="header-section-number">3.8</span> Insurance Summaries</h2>
+<p>The grouping and summarizing operations introduced above allow us to move from individual observations to quantities that are more directly relevant to actuarial analysis. In insurance, we are often interested in the number and cost of claims and in measures that allow claims experience to be compared across groups.</p>
+<p>Several basic quantities are particularly important.</p>
+<section id="claim-count" class="level3" data-number="3.8.1">
+<h3 data-number="3.8.1" class="anchored" data-anchor-id="claim-count"><span class="header-section-number">3.8.1</span> Claim count</h3>
+<p>The <strong>claim count</strong> is the total number of claims observed within a group. In the current dataset, <code>Freq</code> represents the number of claims for each observation. We can therefore calculate the total claim count for each <code>EntityType</code> as follows:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EntityType) <span class="sc">%&gt;%</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">claims =</span> <span class="fu">sum</span>(Freq)</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  EntityType claims
+  &lt;chr&gt;       &lt;dbl&gt;
+1 City         1539
+2 County       1607
+3 Misc          113
+4 School       2290
+5 Town          100
+6 Village       606</code></pre>
+</div>
+</div>
+<p>The resulting value represents the total number of claims observed in each group.</p>
+</section>
+<section id="aggregate-claim-amount" class="level3" data-number="3.8.2">
+<h3 data-number="3.8.2" class="anchored" data-anchor-id="aggregate-claim-amount"><span class="header-section-number">3.8.2</span> Aggregate claim amount</h3>
+<p>The <strong>aggregate claim amount</strong> is the total amount paid or incurred for claims within a group. If <code>y</code> represents the aggregate claim amount for each observation, it can be obtained by summing <code>y</code>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EntityType) <span class="sc">%&gt;%</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">claims =</span> <span class="fu">sum</span>(Freq),</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">amount =</span> <span class="fu">sum</span>(y)</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  EntityType claims    amount
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+1 City         1539 18609205.
+2 County       1607 25491545.
+3 Misc          113  3401011.
+4 School       2290 42999241.
+5 Town          100  1605103.
+6 Village       606  5376997.</code></pre>
+</div>
+</div>
+<p>The claim count and aggregate claim amount describe two different aspects of claims experience. A group may have many claims but relatively low total claim costs, or relatively few claims but a high total claim amount.</p>
+</section>
+<section id="claim-severity" class="level3" data-number="3.8.3">
+<h3 data-number="3.8.3" class="anchored" data-anchor-id="claim-severity"><span class="header-section-number">3.8.3</span> Claim severity</h3>
+<p><strong>Claim severity</strong> measures the average amount associated with a claim. At the group level, it can be calculated as aggregate claim amount divided by the total number of claims:</p>
+<p><span class="math display">\[
+\text{Severity}_j
+=\frac{\text{Aggregate claims}_j}
+{\text{Claims}_j},
+\]</span></p>
+<p>where <span class="math inline">\(j\)</span> denotes a particular rating group.</p>
+<p>For example:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EntityType) <span class="sc">%&gt;%</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">claims =</span> <span class="fu">sum</span>(Freq),</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">amount =</span> <span class="fu">sum</span>(y),</span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">severity =</span> amount <span class="sc">/</span> claims</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  EntityType claims    amount severity
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 City         1539 18609205.   12092.
+2 County       1607 25491545.   15863.
+3 Misc          113  3401011.   30097.
+4 School       2290 42999241.   18777.
+5 Town          100  1605103.   16051.
+6 Village       606  5376997.    8873.</code></pre>
+</div>
+</div>
+<p>This calculation gives the average claim amount for each <code>EntityType</code>. It is preferable to simply taking the average of individual claim amounts when observations may represent different numbers of claims, because the group-level calculation uses the total claim amount and total number of claims.</p>
+</section>
+<section id="exposure-and-claim-frequency" class="level3" data-number="3.8.4">
+<h3 data-number="3.8.4" class="anchored" data-anchor-id="exposure-and-claim-frequency"><span class="header-section-number">3.8.4</span> Exposure and claim frequency</h3>
+<p>In many insurance applications, claim counts are interpreted relative to the amount of <strong>exposure</strong> underlying the business. Exposure measures the amount of risk insured or the period for which the risk was covered. For example, one policy-year may represent one unit of exposure.</p>
+<p>When exposure is available, the claim frequency for group <span class="math inline">\(j\)</span> can be calculated as</p>
+<p><span class="math display">\[
+\text{Frequency}_j
+=\frac{\text{Claims}_j}
+{\text{Exposure}_j}.
+\]</span></p>
+<p>This is different from claim count. A group with 100 claims does not necessarily have a higher claim frequency than a group with 50 claims if the first group has substantially more exposure.</p>
+<p>The current claims dataset does not contain an exposure variable. Therefore, we do not calculate exposure-based claim frequency from this dataset. Instead, we focus on claim counts, aggregate claim amounts, and severity. Exposure-based frequency will be introduced when we work with a dataset containing an appropriate exposure measure.</p>
+</section>
+<section id="frequency-severity-and-risk-premium" class="level3" data-number="3.8.5">
+<h3 data-number="3.8.5" class="anchored" data-anchor-id="frequency-severity-and-risk-premium"><span class="header-section-number">3.8.5</span> Frequency, severity, and risk premium</h3>
+<p>In actuarial analysis, frequency and severity are often combined to describe the expected claim cost per unit of exposure. Conceptually,</p>
+<p><span class="math display">\[
+\text{Risk premium}
+=\text{Frequency}
+\times
+\text{Severity}.
+\]</span></p>
+<p>Thus, when exposure is available,</p>
+<p><span class="math display">\[
+\text{Risk premium}_j
+=\frac{\text{Claims}_j}
+{\text{Exposure}_j}
+\times
+\frac{\text{Aggregate claims}_j}
+{\text{Claims}_j}
+=\frac{\text{Aggregate claims}_j}
+{\text{Exposure}_j}.
+\]</span></p>
+<p>This relationship provides an important connection between the basic summaries and later actuarial pricing models. Frequency describes how often claims occur, severity describes the average cost of a claim, and their product gives the expected claim cost per unit of exposure.</p>
+<p>For the current dataset, however, the quantities that can be directly summarized are claim count, aggregate claim amount, and severity:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EntityType) <span class="sc">%&gt;%</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">claims =</span> <span class="fu">sum</span>(Freq),</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">amount =</span> <span class="fu">sum</span>(y),</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">severity =</span> amount <span class="sc">/</span> claims</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  EntityType claims    amount severity
+  &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 City         1539 18609205.   12092.
+2 County       1607 25491545.   15863.
+3 Misc          113  3401011.   30097.
+4 School       2290 42999241.   18777.
+5 Town          100  1605103.   16051.
+6 Village       606  5376997.    8873.</code></pre>
+</div>
+</div>
+<p>These summaries provide a first description of claims experience across rating groups. They do not, by themselves, establish that one group should be charged a higher premium than another. Such a conclusion requires consideration of the amount of business represented by each group and, ultimately, an appropriate statistical model.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Key actuarial quantities
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When exposure is available, the basic relationships can be summarized as</p>
+<p><span class="math display">\[
+\text{Frequency}
+=\frac{\text{Claims}}{\text{Exposure}},
+\]</span></p>
+<p><span class="math display">\[
+\text{Severity}
+=\frac{\text{Aggregate claims}}{\text{Claims}},
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\text{Risk premium}
+=\text{Frequency}\times\text{Severity}.
+\]</span></p>
+<p>Equivalently,</p>
+<p><span class="math display">\[
+\text{Risk premium}
+=\frac{\text{Aggregate claims}}{\text{Exposure}}.
+\]</span></p>
+<p>The current dataset allows us to examine claims and severity, but not exposure-based frequency or risk premium.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="interpreting-insurance-summaries" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="interpreting-insurance-summaries"><span class="header-section-number">3.9</span> Interpreting Insurance Summaries</h2>
+<p>Calculating insurance summaries is only the first step. In actuarial analysis, the more important question is what these summaries tell us about the underlying claims experience. A difference between two groups does not automatically imply that one group represents a higher-risk class. The size and composition of each group must also be considered.</p>
+<section id="comparing-groups" class="level3" data-number="3.9.1">
+<h3 data-number="3.9.1" class="anchored" data-anchor-id="comparing-groups"><span class="header-section-number">3.9.1</span> Comparing groups</h3>
+<p>Suppose we summarize claims experience by <code>EntityType</code>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>claims <span class="sc">%&gt;%</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(EntityType) <span class="sc">%&gt;%</span></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">observations =</span> <span class="fu">n</span>(),</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">claims =</span> <span class="fu">sum</span>(Freq),</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">amount =</span> <span class="fu">sum</span>(y),</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">severity =</span> amount <span class="sc">/</span> claims</span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  EntityType observations claims    amount severity
+  &lt;chr&gt;             &lt;int&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 City                793   1539 18609205.   12092.
+2 County              328   1607 25491545.   15863.
+3 Misc                609    113  3401011.   30097.
+4 School             1597   2290 42999241.   18777.
+5 Town                971    100  1605103.   16051.
+6 Village            1341    606  5376997.    8873.</code></pre>
+</div>
+</div>
+<p>The resulting table allows us to compare groups using several measures. For example, one group may have a higher aggregate claim amount simply because it contains more observations. Another group may have fewer claims but a substantially higher average severity.</p>
+<p>It is therefore useful to consider <strong>experience</strong> and <strong>volume</strong> together.</p>
+</section>
+<section id="experience-and-volume" class="level3" data-number="3.9.2">
+<h3 data-number="3.9.2" class="anchored" data-anchor-id="experience-and-volume"><span class="header-section-number">3.9.2</span> Experience and volume</h3>
+<p>The term <strong>experience</strong> refers to the observed claims results, such as the number or cost of claims. <strong>Volume</strong> refers to the amount of business supporting those results, such as the number of observations, claims, or exposure.</p>
+<p>For example, consider two groups:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Group</th>
+<th style="text-align: right;">Observations</th>
+<th style="text-align: right;">Claims</th>
+<th style="text-align: right;">Aggregate claims</th>
+<th style="text-align: right;">Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">500,000</td>
+<td style="text-align: right;">5,000</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">40,000</td>
+<td style="text-align: right;">8,000</td>
+</tr>
+</tbody>
+</table>
+<p>Group B has a higher observed severity, but this result is based on only five claims. Group A has considerably more claims and therefore provides more observations from which to assess the underlying claims experience.</p>
+<p>This does not mean that the result for Group B should be ignored. Rather, the difference should be interpreted with appropriate caution.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Volume matters
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A calculated summary should always be considered together with the amount of data supporting it.</p>
+<p>A group with a small number of observations or claims can produce an extreme observed result simply through random variation. Conversely, a result based on a large volume of business may provide more stable evidence of an underlying difference in risk.</p>
+<p>Therefore, when comparing rating groups, ask both:</p>
+<ul>
+<li><strong>What is the observed claims experience?</strong></li>
+<li><strong>How much data support that experience?</strong></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="claim-count-is-not-frequency" class="level3" data-number="3.9.3">
+<h3 data-number="3.9.3" class="anchored" data-anchor-id="claim-count-is-not-frequency"><span class="header-section-number">3.9.3</span> Claim count is not frequency</h3>
+<p>It is also important to distinguish <strong>claim count</strong> from <strong>claim frequency</strong>.</p>
+<p>A claim count measures the number of claims:</p>
+<p><span class="math display">\[
+\text{Claims}*j = \sum_i N*{ij}.
+\]</span></p>
+<p>A claim frequency relates the number of claims to the amount of exposure:</p>
+<p><span class="math display">\[
+\text{Frequency}_j
+=\frac{\text{Claims}_j}{\text{Exposure}_j}.
+\]</span></p>
+<p>Consequently, comparing claim counts between groups can be misleading when the groups contain different amounts of business.</p>
+<p>For example, a group with 200 claims may appear to have worse experience than a group with 100 claims. However, if the first group has 10,000 exposure units while the second has only 1,000, their claim frequencies are</p>
+<p><span class="math display">\[
+\frac{200}{10{,}000}=0.02
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\frac{100}{1{,}000}=0.10,
+\]</span></p>
+<p>respectively. The group with fewer claims actually has the higher claim frequency.</p>
+</section>
+<section id="observed-differences-are-not-necessarily-causal" class="level3" data-number="3.9.4">
+<h3 data-number="3.9.4" class="anchored" data-anchor-id="observed-differences-are-not-necessarily-causal"><span class="header-section-number">3.9.4</span> Observed differences are not necessarily causal</h3>
+<p>Differences between rating groups should also be interpreted carefully. A group may have higher observed severity because of another characteristic that is associated with both the group and claim severity.</p>
+<p>For example, suppose one <code>EntityType</code> has higher observed claim severity. This does not by itself establish that the type of entity causes higher claim severity. The group may differ from other groups in coverage, deductible, location, or other risk characteristics.</p>
+<p>This is one reason why simple grouped summaries are useful for <strong>exploratory analysis</strong>, but are not sufficient on their own for determining rating relativities or premiums.</p>
+</section>
+<section id="from-summaries-to-actuarial-judgment" class="level3" data-number="3.9.5">
+<h3 data-number="3.9.5" class="anchored" data-anchor-id="from-summaries-to-actuarial-judgment"><span class="header-section-number">3.9.5</span> From summaries to actuarial judgment</h3>
+<p>Grouped summaries provide an initial view of the claims experience associated with different rating variables. They help identify patterns, unusual observations, and potential differences between groups.</p>
+<p>However, actuarial analysis requires more than identifying which group has the largest observed value. A sound interpretation considers:</p>
+<ol type="1">
+<li>the observed claims experience;</li>
+<li>the volume of business supporting the experience;</li>
+<li>the definition of the measure being compared;</li>
+<li>other characteristics that may differ between groups; and</li>
+<li>the uncertainty associated with the observed results.</li>
+</ol>
+<p>These considerations provide the bridge from <strong>descriptive analysis</strong> to <strong>actuarial modelling</strong>. Statistical models can then be used to assess the relationship between claims outcomes and multiple rating variables simultaneously, rather than relying only on unadjusted comparisons between groups.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>From data to actuarial decision
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The purpose of data manipulation and summarization is not simply to produce tables. The objective is to obtain evidence that can support actuarial judgment.</p>
+<p>A useful progression is:</p>
+<p><span class="math display">\[
+\text{Data}
+\rightarrow
+\text{Summary}
+\rightarrow
+\text{Comparison}
+\rightarrow
+\text{Interpretation}
+\rightarrow
+\text{Actuarial decision}.
+\]</span></p>
+<p>The summaries developed in this chapter provide the descriptive foundation for the statistical and actuarial models considered later.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Beyond the examples in this chapter
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The operations introduced in this chapter cover the main <code>dplyr</code> tools needed for the analyses that follow, but they are not an exhaustive list. <code>dplyr</code> also provides functions for joining datasets, arranging observations, counting records, handling missing values, working with distinct observations, and performing more advanced grouped operations.</p>
+<p>The purpose here is to establish the core principles of data manipulation rather than to cover every available function. The same principles can be extended to more complex datasets and analyses as needed.</p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/02_Introduction_to_Data_Science.html" class="pagination-link" aria-label="Chapter 2:  Introduction to Data Science">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 2: Introduction to Data Science</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

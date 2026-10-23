@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Chapter 2: Introduction to Data Science – Introduction to Data Science in Non-Life Insurance</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/03_Transforming_and_Summarizing_Data.html" rel="next">
+<link href="../chapters/01_Introduction_to_Risk_and_Insurance.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-87aed0b8589e23e45aa8556edf37a91b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/02_Introduction_to_Data_Science.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 2: Introduction to Data Science</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Introduction to Data Science in Non-Life Insurance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome to My Book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01_Introduction_to_Risk_and_Insurance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Introduction to Risk and Insurance</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02_Introduction_to_Data_Science.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 2: Introduction to Data Science</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03_Transforming_and_Summarizing_Data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3: Transforming and Summarizing Data</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning Outcomes</a></li>
+  <li><a href="#from-insurance-to-data-science" id="toc-from-insurance-to-data-science" class="nav-link" data-scroll-target="#from-insurance-to-data-science"><span class="header-section-number">2.1</span> From Insurance to Data Science</a>
+  <ul class="collapse">
+  <li><a href="#data-driven-insurance-decisions" id="toc-data-driven-insurance-decisions" class="nav-link" data-scroll-target="#data-driven-insurance-decisions"><span class="header-section-number">2.1.1</span> Data-Driven Insurance Decisions</a></li>
+  <li><a href="#from-risk-to-data" id="toc-from-risk-to-data" class="nav-link" data-scroll-target="#from-risk-to-data"><span class="header-section-number">2.1.2</span> From Risk to Data</a></li>
+  <li><a href="#why-data-science-matters-to-actuaries" id="toc-why-data-science-matters-to-actuaries" class="nav-link" data-scroll-target="#why-data-science-matters-to-actuaries"><span class="header-section-number">2.1.3</span> Why Data Science Matters to Actuaries</a></li>
+  </ul></li>
+  <li><a href="#what-is-data-science" id="toc-what-is-data-science" class="nav-link" data-scroll-target="#what-is-data-science"><span class="header-section-number">2.2</span> What Is Data Science?</a>
+  <ul class="collapse">
+  <li><a href="#data-statistics-computing-and-domain-knowledge" id="toc-data-statistics-computing-and-domain-knowledge" class="nav-link" data-scroll-target="#data-statistics-computing-and-domain-knowledge"><span class="header-section-number">2.2.1</span> Data, Statistics, Computing and Domain Knowledge</a></li>
+  <li><a href="#data-science-and-decision-making" id="toc-data-science-and-decision-making" class="nav-link" data-scroll-target="#data-science-and-decision-making"><span class="header-section-number">2.2.2</span> Data Science and Decision-Making</a></li>
+  </ul></li>
+  <li><a href="#the-role-of-data-in-insurance" id="toc-the-role-of-data-in-insurance" class="nav-link" data-scroll-target="#the-role-of-data-in-insurance"><span class="header-section-number">2.3</span> The Role of Data in Insurance</a>
+  <ul class="collapse">
+  <li><a href="#insurance-data-sources" id="toc-insurance-data-sources" class="nav-link" data-scroll-target="#insurance-data-sources"><span class="header-section-number">2.3.1</span> Insurance Data Sources</a></li>
+  <li><a href="#types-of-data" id="toc-types-of-data" class="nav-link" data-scroll-target="#types-of-data"><span class="header-section-number">2.3.2</span> Types of Data</a></li>
+  <li><a href="#an-insurance-dataset" id="toc-an-insurance-dataset" class="nav-link" data-scroll-target="#an-insurance-dataset"><span class="header-section-number">2.3.3</span> An Insurance Dataset</a></li>
+  </ul></li>
+  <li><a href="#the-data-science-life-cycle" id="toc-the-data-science-life-cycle" class="nav-link" data-scroll-target="#the-data-science-life-cycle"><span class="header-section-number">2.4</span> The Data Science Life Cycle</a>
+  <ul class="collapse">
+  <li><a href="#define-the-problem" id="toc-define-the-problem" class="nav-link" data-scroll-target="#define-the-problem"><span class="header-section-number">2.4.1</span> Define the Problem</a></li>
+  <li><a href="#acquire-the-data" id="toc-acquire-the-data" class="nav-link" data-scroll-target="#acquire-the-data"><span class="header-section-number">2.4.2</span> Acquire the Data</a></li>
+  <li><a href="#prepare-the-data" id="toc-prepare-the-data" class="nav-link" data-scroll-target="#prepare-the-data"><span class="header-section-number">2.4.3</span> Prepare the Data</a></li>
+  <li><a href="#explore-the-data" id="toc-explore-the-data" class="nav-link" data-scroll-target="#explore-the-data"><span class="header-section-number">2.4.4</span> Explore the Data</a></li>
+  <li><a href="#model-the-data" id="toc-model-the-data" class="nav-link" data-scroll-target="#model-the-data"><span class="header-section-number">2.4.5</span> Model the Data</a></li>
+  <li><a href="#communicate-the-results" id="toc-communicate-the-results" class="nav-link" data-scroll-target="#communicate-the-results"><span class="header-section-number">2.4.6</span> Communicate the Results</a></li>
+  <li><a href="#deploy-and-monitor" id="toc-deploy-and-monitor" class="nav-link" data-scroll-target="#deploy-and-monitor"><span class="header-section-number">2.4.7</span> Deploy and Monitor</a></li>
+  </ul></li>
+  <li><a href="#roles-in-a-data-science-team" id="toc-roles-in-a-data-science-team" class="nav-link" data-scroll-target="#roles-in-a-data-science-team"><span class="header-section-number">2.5</span> Roles in a Data Science Team</a>
+  <ul class="collapse">
+  <li><a href="#data-analyst" id="toc-data-analyst" class="nav-link" data-scroll-target="#data-analyst"><span class="header-section-number">2.5.1</span> Data Analyst</a></li>
+  <li><a href="#data-scientist" id="toc-data-scientist" class="nav-link" data-scroll-target="#data-scientist"><span class="header-section-number">2.5.2</span> Data Scientist</a></li>
+  <li><a href="#data-engineer" id="toc-data-engineer" class="nav-link" data-scroll-target="#data-engineer"><span class="header-section-number">2.5.3</span> Data Engineer</a></li>
+  <li><a href="#the-actuary-in-a-data-science-team" id="toc-the-actuary-in-a-data-science-team" class="nav-link" data-scroll-target="#the-actuary-in-a-data-science-team"><span class="header-section-number">2.5.4</span> The Actuary in a Data Science Team</a></li>
+  </ul></li>
+  <li><a href="#applications-of-data-science-in-insurance" id="toc-applications-of-data-science-in-insurance" class="nav-link" data-scroll-target="#applications-of-data-science-in-insurance"><span class="header-section-number">2.6</span> Applications of Data Science in Insurance</a>
+  <ul class="collapse">
+  <li><a href="#pricing-and-underwriting" id="toc-pricing-and-underwriting" class="nav-link" data-scroll-target="#pricing-and-underwriting"><span class="header-section-number">2.6.1</span> Pricing and Underwriting</a></li>
+  <li><a href="#claims-management" id="toc-claims-management" class="nav-link" data-scroll-target="#claims-management"><span class="header-section-number">2.6.2</span> Claims Management</a></li>
+  <li><a href="#fraud-detection" id="toc-fraud-detection" class="nav-link" data-scroll-target="#fraud-detection"><span class="header-section-number">2.6.3</span> Fraud Detection</a></li>
+  <li><a href="#customer-analytics" id="toc-customer-analytics" class="nav-link" data-scroll-target="#customer-analytics"><span class="header-section-number">2.6.4</span> Customer Analytics</a></li>
+  <li><a href="#risk-management-and-forecasting" id="toc-risk-management-and-forecasting" class="nav-link" data-scroll-target="#risk-management-and-forecasting"><span class="header-section-number">2.6.5</span> Risk Management and Forecasting</a></li>
+  <li><a href="#from-data-to-insurance-decisions" id="toc-from-data-to-insurance-decisions" class="nav-link" data-scroll-target="#from-data-to-insurance-decisions"><span class="header-section-number">2.6.6</span> From Data to Insurance Decisions</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 2: Introduction to Data Science</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- # Chapter 2: Introduction to Data Science -->
+<section id="learning-outcomes" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning Outcomes</h2>
+<p>By the end of this chapter, students should be able to:</p>
+<ol type="1">
+<li>Explain the role of data science in supporting insurance and actuarial decision-making.</li>
+<li>Describe the relationship between data, statistics, computing, and domain knowledge in data science.</li>
+<li>Identify common sources and types of data used in insurance.</li>
+<li>Describe the main stages of the data science life cycle and explain how they relate to insurance problems.</li>
+<li>Distinguish the roles of data analysts, data scientists, data engineers, and actuaries in a data science project.</li>
+<li>Identify applications of data science in insurance, including pricing, underwriting, claims management, fraud detection, customer analytics, and risk management.</li>
+<li>Explain how data-driven evidence is combined with actuarial judgement to support insurance decisions.</li>
+</ol>
+<hr>
+</section>
+<section id="from-insurance-to-data-science" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="from-insurance-to-data-science"><span class="header-section-number">2.1</span> From Insurance to Data Science</h2>
+<p>Insurance is fundamentally concerned with making decisions under uncertainty. As discussed in Chapter 1, insurers pool risks, use information about past experience to assess future losses, and determine premiums that are appropriate for the risks being insured. These activities require more than an understanding of insurance principles and probability. They also require reliable data and systematic methods for analysing it.</p>
+<p>For example, a motor insurer may want to determine whether claim frequency differs according to age, geographical area, vehicle characteristics, or other characteristics of policyholders. The insurer must obtain appropriate data, assess its quality, identify relevant patterns, and use suitable statistical methods to support the decision. These activities are part of the broader field of data science.</p>
+<section id="data-driven-insurance-decisions" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="data-driven-insurance-decisions"><span class="header-section-number">2.1.1</span> Data-Driven Insurance Decisions</h3>
+<p>An insurance decision is data-driven when information from relevant data is used systematically to support the decision. Data do not replace actuarial judgement; rather, they provide evidence that can be combined with statistical methods, insurance knowledge, and professional judgement.</p>
+<p>Data are used throughout the insurance process. For example, insurers may use data to:</p>
+<ul>
+<li>assess and classify risks during underwriting;</li>
+<li>estimate claim frequency and claim severity;</li>
+<li>determine appropriate premiums;</li>
+<li>monitor claims and identify unusual patterns;</li>
+<li>evaluate the experience of an insurance portfolio; and</li>
+<li>support decisions about risk management and business strategy.</li>
+</ul>
+<p>Consider a motor insurance portfolio. Suppose an insurer observes that policyholders in different age groups have different claim frequencies. The insurer can examine the observed experience, investigate whether the difference is supported by sufficient data, and determine whether age should be considered when assessing risk.</p>
+<p>The process can be viewed as:</p>
+<p><span class="math display">\[
+\text{Insurance problem}
+\rightarrow
+\text{Data}
+\rightarrow
+\text{Analysis}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Decision}.
+\]</span></p>
+<p>The purpose of data science is therefore not simply to produce calculations or visualisations. Its purpose is to help transform data into useful information and evidence for decision-making.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Data do not speak for themselves
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Observed patterns in insurance data must be interpreted in their context. A difference between two groups does not necessarily imply that the corresponding risk factor causes the difference. Data quality, exposure, other risk factors, and the method of analysis must also be considered.</p>
+</div>
+</div>
+</section>
+<section id="from-risk-to-data" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="from-risk-to-data"><span class="header-section-number">2.1.2</span> From Risk to Data</h3>
+<p>Chapter 1 introduced risk as uncertainty concerning future outcomes and showed how insurance uses probability and pooling to manage this uncertainty. In practice, however, the probabilities and expected losses used by insurers are not known with certainty. They must be estimated from observations.</p>
+<p>Suppose an insurer wants to estimate the expected number of claims for a portfolio. Historical observations may contain the number of claims and the corresponding exposure for each policy. A simple estimate of claim frequency is</p>
+<p><span class="math display">\[
+\widehat{\lambda}
+=\frac{\text{Number of claims}}
+{\text{Exposure}}.
+\]</span></p>
+<p>This simple calculation illustrates an important transition from the concepts of Chapter 1 to the methods introduced in this chapter. The concept of risk is theoretical, but its measurement requires data.</p>
+<p>The same principle applies to claim severity. If observed claims have amounts <span class="math inline">\(X_1,\ldots,X_n\)</span>, their average provides a basic estimate of the average claim amount:</p>
+<p><span class="math display">\[
+\widehat{\mu}
+=\frac{1}{n}\sum_{i=1}^{n} X_i.
+\]</span></p>
+<p>In practice, insurers work with much richer data. A policy record may contain information about the policyholder, the insured object, geographical area, coverage, exposure period, and claims. These data can be used to investigate how insurance outcomes vary across different characteristics.</p>
+<p>Thus, the relationship between risk and data can be represented as</p>
+<p><span class="math display">\[
+\boxed{
+\text{Risk}
+\rightarrow
+\text{Observable outcomes}
+\rightarrow
+\text{Data}
+\rightarrow
+\text{Statistical analysis}
+\rightarrow
+\text{Risk assessment}
+}.
+\]</span></p>
+<p>Data science provides a systematic framework for the stages involving data collection, preparation, exploration, analysis, modelling, and communication.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Exposure matters in insurance data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Insurance experience cannot always be compared using raw counts alone. A portfolio with more policies or a longer period of exposure will generally produce more claims simply because it contains more opportunity for claims to occur. Measures such as claim frequency therefore relate observed claims to an appropriate measure of exposure.</p>
+</div>
+</div>
+</section>
+<section id="why-data-science-matters-to-actuaries" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="why-data-science-matters-to-actuaries"><span class="header-section-number">2.1.3</span> Why Data Science Matters to Actuaries</h3>
+<p>Actuaries have traditionally used mathematics, probability, statistics, and financial theory to analyse uncertainty and make decisions about risk. Data science extends these capabilities by providing a broader framework for working with data throughout the analytical process.</p>
+<p>For actuaries, data science is particularly relevant because modern insurance problems often involve large and complex datasets. An actuary may need to combine information from different sources, identify data-quality problems, explore relationships between variables, develop statistical models, and communicate the results to decision-makers.</p>
+<p>The role of the actuary is not simply to apply an algorithm to a dataset. Actuarial knowledge is needed to formulate an appropriate problem, select meaningful variables, recognise relevant exposure measures, assess whether modelling assumptions are reasonable, and interpret the results in the context of insurance.</p>
+<p>For example, a statistical model may indicate that claim frequency varies between two groups of policyholders. An actuary must consider whether the difference is credible, whether other risk factors may explain the observed relationship, whether the available exposure is sufficient, and whether the result is appropriate for the intended insurance decision.</p>
+<p>This illustrates the complementary roles of data science and actuarial science:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 47%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Data science</th>
+<th>Actuarial science</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Collects and prepares data</td>
+<td>Understands the insurance problem</td>
+</tr>
+<tr class="even">
+<td>Explores and visualises data</td>
+<td>Interprets risk and uncertainty</td>
+</tr>
+<tr class="odd">
+<td>Develops statistical and predictive models</td>
+<td>Assesses actuarial assumptions and implications</td>
+</tr>
+<tr class="even">
+<td>Communicates analytical results</td>
+<td>Applies professional judgement to decisions</td>
+</tr>
+</tbody>
+</table>
+<p>Data science should therefore be viewed as an important part of the modern actuarial toolkit. The objective is not to replace actuarial reasoning with data or algorithms, but to combine <strong>data, statistical methods, computational tools, and actuarial judgement</strong> to make better-informed decisions.</p>
+<p>This chapter develops the foundations for that process. It begins with the nature of data and the data science life cycle, before introducing methods for acquiring, preparing, exploring, modelling, and communicating data.</p>
+</section>
+</section>
+<section id="what-is-data-science" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="what-is-data-science"><span class="header-section-number">2.2</span> What Is Data Science?</h2>
+<p>Data science is concerned with extracting useful information and knowledge from data to support understanding, prediction, and decision-making. It combines statistical methods, computational tools, and knowledge of the subject area in which the data arise.</p>
+<p>There is no single method that defines data science. Different problems require different combinations of data management, statistical analysis, programming, visualisation, and modelling. The common element is the systematic use of data to answer meaningful questions.</p>
+<p>For an insurer, for example, data science may be used to investigate questions such as:</p>
+<ul>
+<li>How does claim frequency vary across different groups of policyholders?</li>
+<li>Which characteristics are associated with larger claims?</li>
+<li>Can future claims be predicted from available information?</li>
+<li>Are there unusual patterns in claims that require further investigation?</li>
+</ul>
+<p>These questions require more than simply calculating statistics. They require an understanding of the insurance problem, appropriate data, suitable analytical methods, and computational tools.</p>
+<section id="data-statistics-computing-and-domain-knowledge" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="data-statistics-computing-and-domain-knowledge"><span class="header-section-number">2.2.1</span> Data, Statistics, Computing and Domain Knowledge</h3>
+<p>Data science brings together four closely related components: <strong>data, statistics, computing, and domain knowledge</strong>.</p>
+<p><strong>Data</strong> provide the observations from which information can be obtained. In insurance, data may include policy characteristics, exposure, claims, claim amounts, premiums, and other information relevant to risk.</p>
+<p><strong>Statistics</strong> provides methods for describing data, identifying patterns, quantifying uncertainty, and drawing conclusions from observations. For example, an insurer may use statistical methods to estimate claim frequency or compare the experience of different groups.</p>
+<p><strong>Computing</strong> provides the tools needed to store, manipulate, analyse, and visualise data. Modern datasets may contain thousands or millions of observations, making computational tools essential for carrying out analyses efficiently and reproducibly.</p>
+<p><strong>Domain knowledge</strong> provides an understanding of the context in which the data arise. For an actuary, this includes knowledge of insurance products, risk, exposure, claims, premiums, and the business decisions that the analysis is intended to support.</p>
+<p>These components are complementary:</p>
+<!-- $$ -->
+<!-- \boxed{ -->
+<!-- \text{Data Science} -->
+<!-- =\text{Data} -->
+<!-- + -->
+<!-- \text{Statistics} -->
+<!-- + -->
+<!-- \text{Computing} -->
+<!-- + -->
+<!-- \text{Domain Knowledge} -->
+<!-- } -->
+<!-- $$ -->
+<div id="fig-foundations" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-foundations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="../figures/Four_Foundations_of_Data_Science.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;2.1: The Four Foundations of Data Science"><img src="../figures/Four_Foundations_of_Data_Science.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-foundations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: The Four Foundations of Data Science
+</figcaption>
+</figure>
+</div>
+<p>The combination is important because weakness in any one component can affect the quality of the analysis. A sophisticated statistical model cannot compensate for poor-quality data, and a technically correct analysis may still lead to an inappropriate conclusion if the insurance context is misunderstood.</p>
+<p>For example, suppose an insurer observes that one group of policyholders has a higher claim frequency than another. Statistics can quantify the difference, computing can process the underlying data, and domain knowledge can help determine whether the comparison is meaningful. The analysis may also need to account for exposure and other characteristics that differ between the groups.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Data science is more than programming
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Programming is an important tool in data science, but data science is not simply programming with data. A successful analysis requires an appropriate question, reliable data, suitable statistical methods, and an understanding of the context in which the results will be used.</p>
+</div>
+</div>
+<p>The four components can therefore be viewed as complementary skills rather than separate stages:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 40%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Main purpose</th>
+<th>Example in insurance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Data</td>
+<td>Provide observations</td>
+<td>Policy and claims records</td>
+</tr>
+<tr class="even">
+<td>Statistics</td>
+<td>Quantify and analyse patterns</td>
+<td>Estimate claim frequency</td>
+</tr>
+<tr class="odd">
+<td>Computing</td>
+<td>Process and analyse data efficiently</td>
+<td>Use R to manipulate and model data</td>
+</tr>
+<tr class="even">
+<td>Domain knowledge</td>
+<td>Interpret results in context</td>
+<td>Understand exposure and insurance risk</td>
+</tr>
+</tbody>
+</table>
+<p>For an actuarial student, this framework is particularly useful. Actuarial training already provides a strong foundation in statistics, probability, and insurance knowledge. Data science adds computational and analytical practices that allow these foundations to be applied effectively to increasingly complex datasets.</p>
+</section>
+<section id="data-science-and-decision-making" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="data-science-and-decision-making"><span class="header-section-number">2.2.2</span> Data Science and Decision-Making</h3>
+<p>The ultimate purpose of data science is not to produce data, tables, graphs, or models for their own sake. Its purpose is to provide evidence that can improve decisions.</p>
+<p>A useful way to view the process is:</p>
+<p><span class="math display">\[
+\text{Question}
+\rightarrow
+\text{Data}
+\rightarrow
+\text{Analysis}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Decision}.
+\]</span></p>
+<p>Consider an insurer deciding whether a particular characteristic should be used in pricing. The analysis might begin with historical policy and claims data. The data are then prepared and explored, and an appropriate statistical model may be developed. The results provide evidence about the relationship between the characteristic and insurance outcomes. The insurer can then consider whether that evidence is sufficient and appropriate for a pricing decision.</p>
+<p>The quality of the final decision depends on more than the predictive performance of a model. The analyst must also consider the quality and relevance of the data, the assumptions underlying the analysis, uncertainty in the results, and the consequences of using those results.</p>
+<p>This is particularly important in insurance because decisions can affect both the insurer and its policyholders. For example, a pricing model may identify differences in expected claim costs between groups. An actuarial assessment must consider whether those differences are credible, whether the data support the conclusion, and whether the resulting rating structure is appropriate for the insurance product.</p>
+<p>Data science therefore supports, rather than replaces, professional judgement. The role of the actuary is to connect analytical evidence with insurance principles and business decisions.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>From analysis to action
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A useful data-science result should answer three questions:</p>
+<ol type="1">
+<li><strong>What did the data show?</strong></li>
+<li><strong>How reliable is the evidence?</strong></li>
+<li><strong>What decision, if any, should follow from it?</strong></li>
+</ol>
+<p>Keeping these questions in mind helps distinguish useful analysis from analysis that merely produces numerical results.</p>
+</div>
+</div>
+<p>The distinction between <strong>analysis</strong> and <strong>decision-making</strong> will remain important throughout this book. Data science provides methods for obtaining evidence from data; actuarial science provides the risk, financial, and professional context needed to interpret that evidence and use it responsibly.</p>
+</section>
+</section>
+<section id="the-role-of-data-in-insurance" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="the-role-of-data-in-insurance"><span class="header-section-number">2.3</span> The Role of Data in Insurance</h2>
+<p>Data provide the empirical foundation for many insurance activities. Insurers collect and maintain information about policies, policyholders, exposures, premiums, claims, and payments. These data allow insurers to measure past experience, assess current risks, and support decisions about underwriting, pricing, claims management, and risk management.</p>
+<p>The usefulness of insurance data depends on more than the amount of information available. Data must be relevant to the problem, recorded consistently, and sufficiently complete and accurate for the intended analysis. In addition, insurance data often need to be interpreted in relation to exposure and the characteristics of the insurance portfolio.</p>
+<p>For example, the number of claims alone provides limited information about claim risk. A portfolio with 1,000 claims may have a higher risk than a portfolio with 500 claims, but it may simply have a much larger amount of exposure. Comparing claim frequency rather than claim counts can provide a more meaningful basis for comparison.</p>
+<section id="insurance-data-sources" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="insurance-data-sources"><span class="header-section-number">2.3.1</span> Insurance Data Sources</h3>
+<p>Insurance data come from many sources. Some are generated directly through the insurer’s operations, while others may be obtained from external sources.</p>
+<p>Common internal sources include:</p>
+<ul>
+<li><strong>Policy data</strong> — information about policies, such as policy type, coverage, inception and expiry dates, insured characteristics, and premium.</li>
+<li><strong>Exposure data</strong> — information describing the amount of time or risk exposure associated with a policy.</li>
+<li><strong>Claims data</strong> — information about reported claims, including claim dates, claim types, claim status, and claim amounts.</li>
+<li><strong>Payment data</strong> — information about premiums received, claim payments, expenses, and other financial transactions.</li>
+<li><strong>Customer data</strong> — information used to understand policyholder characteristics and interactions with the insurer.</li>
+</ul>
+<p>External sources may provide additional information relevant to risk assessment. Examples include geographical information, demographic information, weather data, economic indicators, and other publicly or commercially available data.</p>
+<p>These sources may be stored separately. For example, policy information and claims information may be maintained in different systems and linked using a policy identifier. Combining these sources is often an important part of an insurance data-science project.</p>
+<p>A simple representation is:</p>
+<p><span class="math display">\[
+\text{Policy data}
++
+\text{Exposure data}
++
+\text{Claims data}
+\longrightarrow
+\text{Insurance analysis}.
+\]</span></p>
+<p>The appropriate data sources depend on the question being investigated. A pricing analysis may require policy, exposure, claim, and premium information, whereas a claims-management analysis may focus more heavily on claim and payment records.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Start with the question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The objective of data collection is not to collect as much data as possible. The data should be relevant to the question being investigated and measured in a way that supports the intended analysis.</p>
+</div>
+</div>
+</section>
+<section id="types-of-data" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="types-of-data"><span class="header-section-number">2.3.2</span> Types of Data</h3>
+<p>Insurance datasets contain variables with different characteristics. Recognising the type of each variable is important because the type determines how the variable can be summarised, visualised, and analysed.</p>
+<p>One useful distinction is between <strong>categorical</strong> and <strong>numerical</strong> data.</p>
+<p><strong>Categorical data</strong> describe membership in a group or category. Examples include:</p>
+<ul>
+<li>type of insurance;</li>
+<li>geographical area;</li>
+<li>vehicle type;</li>
+<li>policy status; and</li>
+<li>claim type.</li>
+</ul>
+<p>A categorical variable may have a small number of possible categories. For example, a policy may be classified as <code>Urban</code> or <code>Rural</code>.</p>
+<p><strong>Numerical data</strong> represent quantities for which arithmetic operations are meaningful. Examples include:</p>
+<ul>
+<li>age;</li>
+<li>exposure;</li>
+<li>premium;</li>
+<li>number of claims; and</li>
+<li>claim amount.</li>
+</ul>
+<p>Numerical variables can be further distinguished as <strong>discrete</strong> or <strong>continuous</strong>.</p>
+<p>A discrete variable takes values that can be counted. The number of claims, for example, is a discrete variable:</p>
+<p><span class="math display">\[
+N \in {0,1,2,\ldots}.
+\]</span></p>
+<p>A continuous variable can take values within an interval. Claim amount and exposure are examples, depending on how they are measured and recorded.</p>
+<p>Another useful distinction is between <strong>structured</strong> and <strong>unstructured</strong> data. Structured data are organised in a predefined format, such as rows and columns in a database. Traditional policy and claims records are usually structured data. Unstructured data do not follow such a predefined tabular structure and may include documents, images, audio, or text.</p>
+<p>For introductory actuarial analysis, structured data are particularly important because many insurance models are developed from datasets in which each row represents an observation and each column represents a variable.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 9%">
+<col style="width: 69%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Example</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Age</td>
+<td>35</td>
+<td>Numerical, continuous/discrete depending on recording</td>
+</tr>
+<tr class="even">
+<td>Area</td>
+<td>Urban</td>
+<td>Categorical</td>
+</tr>
+<tr class="odd">
+<td>Exposure</td>
+<td>0.75</td>
+<td>Numerical, continuous</td>
+</tr>
+<tr class="even">
+<td>Number of claims</td>
+<td>2</td>
+<td>Numerical, discrete</td>
+</tr>
+<tr class="odd">
+<td>Claim amount</td>
+<td>18,500</td>
+<td>Numerical, continuous</td>
+</tr>
+<tr class="even">
+<td>Policy status</td>
+<td>Active</td>
+<td>Categorical</td>
+</tr>
+</tbody>
+</table>
+<p>The classification of a variable is not merely a technical label. It affects the methods used to analyse the variable. For example, the distribution of a numerical variable may be examined using a histogram, whereas the frequencies of categories may be displayed using a bar chart.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>A variable’s role depends on the analysis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The same variable can serve different roles in different analyses. For example, claim amount may be an outcome variable when modelling claim severity, but it may also be summarised as part of an exploratory analysis. Variable type and variable role should therefore be considered separately.</p>
+</div>
+</div>
+</section>
+<section id="an-insurance-dataset" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="an-insurance-dataset"><span class="header-section-number">2.3.3</span> An Insurance Dataset</h3>
+<p>To illustrate the data-science process, consider a simplified motor insurance dataset. Each row represents an insurance policy, while each column records a characteristic of that policy or its observed experience.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Policy</th>
+<th style="text-align: right;">Age</th>
+<th>Area</th>
+<th style="text-align: right;">Exposure</th>
+<th style="text-align: right;">Claims</th>
+<th style="text-align: right;">Claim Amount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">24</td>
+<td>Urban</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12,500</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">42</td>
+<td>Rural</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">31</td>
+<td>Urban</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8,400</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">56</td>
+<td>Rural</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">27</td>
+<td>Urban</td>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">21,300</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">45</td>
+<td>Urban</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>This small dataset contains several types of insurance information. <code>Age</code> and <code>Area</code> describe characteristics of the policyholder or risk, while <code>Exposure</code> describes the amount of risk observed during the period. <code>Claims</code> records the number of observed claims, and <code>Claim Amount</code> records the corresponding aggregate claim amount.</p>
+<p>The dataset can be used to illustrate several questions.</p>
+<p><strong>Descriptive question:</strong> How does claim experience vary across different areas?</p>
+<p><strong>Frequency question:</strong> What is the observed claim frequency?</p>
+<p><strong>Severity question:</strong> What is the average claim amount among policies with claims?</p>
+<p><strong>Comparative question:</strong> Does claim experience appear to differ between younger and older policyholders?</p>
+<p>These questions illustrate an important feature of insurance data: different variables describe different aspects of the risk. In particular, the distinction between <strong>frequency</strong> and <strong>severity</strong> is fundamental in insurance analysis.</p>
+<p>For a portfolio, claim frequency can be represented by</p>
+<p><span class="math display">\[
+\text{Claim frequency}
+=\frac{\text{Number of claims}}
+{\text{Exposure}},
+\]</span></p>
+<p>while average claim severity can be represented by</p>
+<p><span class="math display">\[
+\text{Average severity}
+=\frac{\text{Total claim amount}}
+{\text{Number of claims}},
+\]</span></p>
+<p>provided that the denominator is positive.</p>
+<p>Combining the two gives the basic relationship</p>
+<p><span class="math display">\[
+\text{Expected loss per unit exposure}
+\approx
+\text{Claim frequency}
+\times
+\text{Average severity}.
+\]</span></p>
+<p>This relationship provides a simple bridge between the insurance concepts introduced in Chapter 1 and the data-science methods introduced in this chapter. The quantities are estimated from observed data, and more advanced methods can then be used to examine how they vary with risk characteristics.</p>
+</section>
+</section>
+<section id="the-data-science-life-cycle" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="the-data-science-life-cycle"><span class="header-section-number">2.4</span> The Data Science Life Cycle</h2>
+<p>A data science project typically follows a sequence of activities that transforms a practical problem into an evidence-based decision. Although individual projects differ, most involve several common stages:</p>
+<!-- $$ -->
+<!-- \text{Define} -->
+<!-- \rightarrow -->
+<!-- \text{Acquire} -->
+<!-- \rightarrow -->
+<!-- \text{Prepare} -->
+<!-- \rightarrow -->
+<!-- \text{Explore} -->
+<!-- \rightarrow -->
+<!-- \text{Model} -->
+<!-- \rightarrow -->
+<!-- \text{Communicate} -->
+<!-- \rightarrow -->
+<!-- \text{Deploy and monitor}. -->
+<!-- $$ -->
+<div id="fig-lifecycle" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-lifecycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/Data_Science_Life_Cycle.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lifecycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.2: Data Science Life Cycle Flowchart
+</figcaption>
+</figure>
+</div>
+<p>These stages provide a useful framework for organising a data science project. They should not, however, be viewed as a strictly linear process. Findings from one stage may require the analyst to return to an earlier stage. For example, exploratory analysis may reveal data-quality problems that require additional data preparation, while modelling results may indicate that the original question needs to be reconsidered.</p>
+<p>In insurance, the cycle may begin with a question about claim experience, proceed through the analysis of policy and claims data, and ultimately produce information that supports underwriting, pricing, claims management, or risk management.</p>
+<section id="define-the-problem" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="define-the-problem"><span class="header-section-number">2.4.1</span> Define the Problem</h3>
+<p>The first stage is to clearly define the problem that the analysis is intended to address. A data science project should begin with a question or decision, rather than with a dataset or a particular modelling technique.</p>
+<p>For an insurance problem, the analyst should establish:</p>
+<ul>
+<li>what decision needs to be supported;</li>
+<li>what outcome or quantity is of interest;</li>
+<li>which population or portfolio is being studied;</li>
+<li>what information may be relevant; and</li>
+<li>how the results will be used.</li>
+</ul>
+<p>For example, an insurer may observe differences in motor insurance claim experience and ask:</p>
+<blockquote class="blockquote">
+<p><strong>Which characteristics are associated with differences in claim frequency?</strong></p>
+</blockquote>
+<p>This question is more useful than simply stating that the insurer wants to “analyse the claims data.” It identifies the outcome of interest and provides a direction for the analysis.</p>
+<p>The problem should also be translated into measurable quantities. For example, if claim frequency is being studied, the analysis needs information about both the number of claims and the corresponding exposure.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Start with the decision, not the model
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The choice of statistical or machine-learning method should follow from the problem being addressed. A sophisticated model is not useful if it does not answer a relevant question or support a meaningful decision.</p>
+<p>A well-defined problem provides a clear objective for the remaining stages of the data science life cycle.</p>
+</div>
+</div>
+</section>
+<section id="acquire-the-data" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="acquire-the-data"><span class="header-section-number">2.4.2</span> Acquire the Data</h3>
+<p>Once the problem has been defined, the next stage is to obtain the data required for the analysis.</p>
+<p>Insurance data may come from several sources, including policy administration systems, claims systems, financial records, customer databases, and external sources. Data from different systems may need to be combined using a common identifier such as a policy or claim number.</p>
+<p>The data required depend on the question being investigated. For example, analysing claim frequency may require:</p>
+<ul>
+<li>the number of claims;</li>
+<li>exposure;</li>
+<li>policy characteristics; and</li>
+<li>relevant risk characteristics.</li>
+</ul>
+<p>Data acquisition may involve importing files, querying databases, accessing application programming interfaces (APIs), or obtaining data from external sources.</p>
+<p>At this stage, it is important to distinguish between <strong>available data</strong> and <strong>appropriate data</strong>. A large dataset is not necessarily useful if it does not measure the quantities relevant to the problem.</p>
+</section>
+<section id="prepare-the-data" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="prepare-the-data"><span class="header-section-number">2.4.3</span> Prepare the Data</h3>
+<p>Raw data are rarely ready for analysis. Data preparation involves checking, cleaning, transforming, and organising the data so that they are suitable for the intended analysis.</p>
+<p>Common problems include:</p>
+<ul>
+<li>missing values;</li>
+<li>invalid or impossible values;</li>
+<li>inconsistent data types;</li>
+<li>duplicated observations;</li>
+<li>inconsistent categories;</li>
+<li>incorrect dates; and</li>
+<li>records that fall outside the relevant observation period.</li>
+</ul>
+<p>Insurance data provide many examples. A policy may have a missing inception date, an exposure period may be incorrectly recorded, a claim may be associated with a policy that was not active at the claim date, or a categorical variable may contain several different labels for the same geographical area.</p>
+<p>Data preparation may also require transformations. For example, a date may need to be converted into a standard date format, or several claim records may need to be aggregated to obtain the total claim amount for each policy.</p>
+<p>The objective is not simply to make the dataset look tidy. Each transformation should have a clear reason based on the meaning of the underlying data and the requirements of the analysis.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Data cleaning is part of the analysis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cleaning data is not merely a technical task. Decisions about missing, invalid, or unusual observations can affect the results of the analysis. Data preparation should therefore be documented and carried out with an understanding of the underlying insurance process.</p>
+</div>
+</div>
+</section>
+<section id="explore-the-data" class="level3" data-number="2.4.4">
+<h3 data-number="2.4.4" class="anchored" data-anchor-id="explore-the-data"><span class="header-section-number">2.4.4</span> Explore the Data</h3>
+<p>After the data have been prepared, the next stage is <strong>exploratory data analysis (EDA)</strong>. The purpose of EDA is to understand the main characteristics of the data before formal modelling.</p>
+<p>EDA can be used to examine:</p>
+<ul>
+<li>the distribution of individual variables;</li>
+<li>differences between groups;</li>
+<li>relationships between variables;</li>
+<li>unusual or extreme observations;</li>
+<li>missing values; and</li>
+<li>possible data-quality problems.</li>
+</ul>
+<p>For example, an insurer may compare claim frequency across geographical areas or examine the distribution of claim amounts.</p>
+<p>Both numerical summaries and graphical methods can be useful. Means, medians, standard deviations, and other descriptive statistics provide numerical summaries, while histograms, boxplots, bar charts, and scatterplots can reveal patterns that may not be apparent from numerical summaries alone.</p>
+<p>EDA can also influence subsequent modelling. It may reveal variables that require transformation, groups that should be examined separately, or potential relationships that require further investigation.</p>
+<p>Thus, exploration is not simply a preliminary presentation of the data. It helps the analyst understand what the data can reasonably support.</p>
+</section>
+<section id="model-the-data" class="level3" data-number="2.4.5">
+<h3 data-number="2.4.5" class="anchored" data-anchor-id="model-the-data"><span class="header-section-number">2.4.5</span> Model the Data</h3>
+<p>Once the data have been understood, an appropriate statistical or computational model can be developed when modelling is required.</p>
+<p>A model provides a mathematical representation of relationships in the data. Depending on the problem, the objective may be to explain observed patterns, estimate an unknown quantity, or predict future outcomes.</p>
+<p>In insurance, examples include:</p>
+<ul>
+<li>modelling claim frequency;</li>
+<li>modelling claim severity;</li>
+<li>predicting the probability of a claim;</li>
+<li>forecasting future claims; and</li>
+<li>estimating expected losses.</li>
+</ul>
+<p>The choice of model depends on the nature of the outcome, the available data, the purpose of the analysis, and the assumptions that can reasonably be made.</p>
+<p>For example, the number of claims is a count variable, whereas claim amount is a monetary variable. These different outcomes may require different modelling approaches.</p>
+<p>Model development should also include evaluation. A model that fits historical data well may not necessarily provide reliable predictions for new observations. The analyst therefore needs to assess whether the model is appropriate for its intended purpose.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>A model is an approximation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A statistical model does not reproduce reality exactly. It provides a simplified representation of relationships observed in the data. Its usefulness depends on whether the assumptions and results are appropriate for the problem being considered.</p>
+</div>
+</div>
+</section>
+<section id="communicate-the-results" class="level3" data-number="2.4.6">
+<h3 data-number="2.4.6" class="anchored" data-anchor-id="communicate-the-results"><span class="header-section-number">2.4.6</span> Communicate the Results</h3>
+<p>The results of an analysis must be communicated clearly to the people who will use them. A technically correct analysis has limited value if its findings cannot be understood or connected to the original decision.</p>
+<p>Communication may involve:</p>
+<ul>
+<li>tables;</li>
+<li>charts and visualisations;</li>
+<li>written reports;</li>
+<li>presentations; or</li>
+<li>interactive dashboards.</li>
+</ul>
+<p>The form of communication should reflect the audience. An actuarial report may require technical details about assumptions and model performance, whereas senior management may need a concise summary of the main findings and their implications.</p>
+<p>Good communication should connect the results back to the original question. For example, rather than simply reporting that two groups have different observed claim frequencies, the analyst should explain the size of the difference, the evidence supporting it, relevant limitations, and its potential implications for the insurance decision.</p>
+<p>A useful structure is:</p>
+<p><span class="math display">\[
+\text{Problem}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Interpretation}
+\rightarrow
+\text{Implication}.
+\]</span></p>
+<p>This helps ensure that analysis leads to understanding rather than simply producing additional information.</p>
+</section>
+<section id="deploy-and-monitor" class="level3" data-number="2.4.7">
+<h3 data-number="2.4.7" class="anchored" data-anchor-id="deploy-and-monitor"><span class="header-section-number">2.4.7</span> Deploy and Monitor</h3>
+<p>When an analysis produces a model intended for operational use, the final stage is to deploy the model and monitor its performance.</p>
+<p><strong>Deployment</strong> means making the model available within the process for which it was developed. For example, a predictive model might be incorporated into an underwriting system to estimate risk when a new policy is quoted.</p>
+<p>Deployment should normally be preceded by appropriate testing. The model should be checked in an environment that reflects its intended use before it is introduced into production.</p>
+<p>Once deployed, the model should not simply be left unchanged. Insurance portfolios, customer behaviour, economic conditions, claim patterns, and data-generation processes can change over time. A model that performed well when developed may therefore become less appropriate later.</p>
+<p><strong>Monitoring</strong> involves checking whether the model and its underlying data continue to perform as expected. This may include monitoring predictive performance, data quality, unusual changes in input variables, and differences between predicted and observed outcomes.</p>
+<p>For example, if a claim prediction model consistently underestimates the frequency of claims in a particular segment, the model may need to be investigated and potentially recalibrated or redeveloped.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>The life cycle is iterative
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The final stage may lead back to earlier stages. Changes in model performance may require new data, additional data preparation, further exploration, or redevelopment of the model.</p>
+<p><span class="math display">\[
+\boxed{
+\text{Data science is a cycle, not a one-time process}
+}
+\]</span></p>
+<p>The objective is to develop solutions that remain useful as the data, environment, and decision-making requirements change.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="roles-in-a-data-science-team" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="roles-in-a-data-science-team"><span class="header-section-number">2.5</span> Roles in a Data Science Team</h2>
+<p>Data science projects often involve several people with different areas of expertise. Although the responsibilities may overlap, different roles contribute different skills to the data science life cycle.</p>
+<p>The composition of a data science team depends on the size and nature of the organisation. In a small organisation, one person may perform several roles. In a larger organisation, responsibilities may be distributed among specialists.</p>
+<p>Three common roles are <strong>data analyst</strong>, <strong>data scientist</strong>, and <strong>data engineer</strong>. In an insurance organisation, these roles may work closely with actuaries and other insurance professionals.</p>
+<div id="fig-team-roles" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" aria-descr="Venn diagram or chart showing collaboration between Data Engineers, Data Scientists, and MLOps Engineers.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-team-roles-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="../figures/Data_Science_Team_Roles.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2.3: Core Roles and Responsibilities in a Data Science Team"><img src="../figures/Data_Science_Team_Roles.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%" aria-descr="Venn diagram or chart showing collaboration between Data Engineers, Data Scientists, and MLOps Engineers."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-team-roles-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.3: Core Roles and Responsibilities in a Data Science Team
+</figcaption>
+</figure>
+</div>
+<section id="data-analyst" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="data-analyst"><span class="header-section-number">2.5.1</span> Data Analyst</h3>
+<p>A data analyst focuses on understanding and communicating information contained in data. Typical activities include:</p>
+<ul>
+<li>collecting and preparing data for analysis;</li>
+<li>producing descriptive statistics;</li>
+<li>identifying patterns and trends;</li>
+<li>creating tables and visualisations; and</li>
+<li>communicating findings to stakeholders.</li>
+</ul>
+<p>For example, a data analyst in an insurance company might examine claim frequency by geographical area and prepare a report showing differences in observed experience.</p>
+<p>The role is closely associated with the <strong>exploration and communication</strong> stages of the data science life cycle.</p>
+</section>
+<section id="data-scientist" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="data-scientist"><span class="header-section-number">2.5.2</span> Data Scientist</h3>
+<p>A data scientist typically works on more complex analytical and predictive problems. In addition to preparing and exploring data, a data scientist may develop statistical or machine-learning models to explain relationships or make predictions.</p>
+<p>For example, a data scientist might develop a model to predict the probability that a motor insurance policy will generate a claim.</p>
+<p>The role commonly involves:</p>
+<ul>
+<li>statistical modelling;</li>
+<li>predictive modelling;</li>
+<li>machine learning;</li>
+<li>model evaluation; and</li>
+<li>translating analytical results into useful information for decision-making.</li>
+</ul>
+<p>The precise responsibilities vary between organisations, and the distinction between a data analyst and a data scientist is not always strict.</p>
+</section>
+<section id="data-engineer" class="level3" data-number="2.5.3">
+<h3 data-number="2.5.3" class="anchored" data-anchor-id="data-engineer"><span class="header-section-number">2.5.3</span> Data Engineer</h3>
+<p>A data engineer focuses on the infrastructure and processes required to make data available for analysis. This may include:</p>
+<ul>
+<li>collecting data from different systems;</li>
+<li>building and maintaining data pipelines;</li>
+<li>storing and organising data;</li>
+<li>integrating data from multiple sources; and</li>
+<li>ensuring that data can be accessed reliably.</li>
+</ul>
+<p>For example, an insurance company may have separate systems for policies, claims, and payments. A data engineer may develop processes that extract and combine information from these systems so that it can be used for analysis.</p>
+<p>The work of a data engineer is particularly important in the <strong>data acquisition and preparation</strong> stages of the data science life cycle.</p>
+</section>
+<section id="the-actuary-in-a-data-science-team" class="level3" data-number="2.5.4">
+<h3 data-number="2.5.4" class="anchored" data-anchor-id="the-actuary-in-a-data-science-team"><span class="header-section-number">2.5.4</span> The Actuary in a Data Science Team</h3>
+<p>For an actuarial student, an important question is where the <strong>actuary</strong> fits within a data science team.</p>
+<p>Actuaries contribute specialised knowledge of risk, uncertainty, insurance products, financial consequences, and actuarial methods. They also understand the decisions that analytical results are intended to support.</p>
+<p>For example, when developing a model for motor insurance pricing, an actuary may contribute by:</p>
+<ul>
+<li>defining the insurance problem;</li>
+<li>identifying appropriate measures of exposure;</li>
+<li>selecting relevant risk characteristics;</li>
+<li>assessing whether modelling assumptions are reasonable;</li>
+<li>interpreting model results in an insurance context; and</li>
+<li>considering the implications for pricing and risk management.</li>
+</ul>
+<p>This illustrates the complementary nature of the different roles.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 47%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Role</th>
+<th>Main focus</th>
+<th>Example in insurance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Data analyst</td>
+<td>Describe and communicate data</td>
+<td>Analyse claim experience</td>
+</tr>
+<tr class="even">
+<td>Data scientist</td>
+<td>Develop analytical and predictive models</td>
+<td>Predict claim frequency</td>
+</tr>
+<tr class="odd">
+<td>Data engineer</td>
+<td>Build and manage data infrastructure</td>
+<td>Combine policy and claims data</td>
+</tr>
+<tr class="even">
+<td>Actuary</td>
+<td>Apply risk and insurance expertise</td>
+<td>Interpret results for pricing</td>
+</tr>
+</tbody>
+</table>
+<p>The boundaries between these roles are not fixed. An actuary may perform data analysis and statistical modelling, while a data scientist may need substantial knowledge of the insurance problem. In smaller organisations, a single person may perform several of these functions.</p>
+<p>What matters is not the job title but the combination of skills required to complete the data science life cycle.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Data science is collaborative
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A successful data science project usually requires more than one type of expertise. Technical skills are needed to work with data and develop models, while domain knowledge is needed to ensure that the analysis addresses the right problem and that its results are interpreted appropriately.</p>
+<p>For actuarial students, developing data-science skills therefore does not mean becoming a data engineer or replacing actuarial methods with machine learning. Instead, these skills provide additional tools for applying actuarial knowledge to increasingly complex data and decision-making problems.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="applications-of-data-science-in-insurance" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="applications-of-data-science-in-insurance"><span class="header-section-number">2.6</span> Applications of Data Science in Insurance</h2>
+<p>Data science can be applied throughout the insurance value chain. Insurers collect data at many stages of the insurance process, from underwriting and policy administration to claims settlement and portfolio management. Analysing these data can help insurers understand risk, improve operational processes, and support better-informed decisions.</p>
+<p>The applications of data science in insurance can be grouped into several broad areas:</p>
+<!-- $$ -->
+<!-- \boxed{ -->
+<!-- \text{Pricing} -->
+<!-- \quad -->
+<!-- \text{Claims} -->
+<!-- \quad -->
+<!-- \text{Fraud} -->
+<!-- \quad -->
+<!-- \text{Customers} -->
+<!-- \quad -->
+<!-- \text{Risk} -->
+<!-- } -->
+<!-- $$ -->
+<div id="fig-insurance-apps" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" data-group="insurance">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-insurance-apps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="../figures/Data_Science_in_Insurance_Applications.png" class="lightbox" data-gallery="insurance" title="Figure&nbsp;2.4: Data Science Applications in the Insurance Industry"><img src="../figures/Data_Science_in_Insurance_Applications.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-insurance-apps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.4: Data Science Applications in the Insurance Industry
+</figcaption>
+</figure>
+</div>
+<p>The methods used in each area may differ, but they generally follow the same data-science principles introduced earlier in this chapter: define a problem, obtain and prepare relevant data, explore the data, develop an appropriate analysis or model, and communicate the results.</p>
+<section id="pricing-and-underwriting" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="pricing-and-underwriting"><span class="header-section-number">2.6.1</span> Pricing and Underwriting</h3>
+<p>Pricing is one of the most important applications of data science in insurance. Insurers need to estimate the expected cost of claims and determine premiums that appropriately reflect the risks being insured.</p>
+<p>Historical policy and claims data can be used to investigate how insurance outcomes vary with characteristics such as age, geographical area, vehicle characteristics, coverage, or other risk factors.</p>
+<p>For example, a motor insurer may analyse claim experience to investigate whether claim frequency varies with the age of the policyholder. A statistical model can then be used to estimate expected claim frequency for different combinations of risk characteristics.</p>
+<p>A simple representation is</p>
+<p><span class="math display">\[
+\text{Expected loss}
+\approx
+\text{Expected frequency}
+\times
+\text{Expected severity}.
+\]</span></p>
+<p>Data science can support both components. Historical data can be used to model the number of claims and the amount of individual claims, while other variables can be used to explain differences in risk.</p>
+<p>Data can also support underwriting decisions. An insurer may use information available at the time a policy is requested to assess the characteristics of the risk and determine whether additional information or underwriting review is required.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Data science does not replace actuarial pricing
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A predictive model provides estimates based on data and modelling assumptions. Pricing decisions also require consideration of expenses, capital, reinsurance, regulatory requirements, market conditions, and professional judgement.</p>
+</div>
+</div>
+</section>
+<section id="claims-management" class="level3" data-number="2.6.2">
+<h3 data-number="2.6.2" class="anchored" data-anchor-id="claims-management"><span class="header-section-number">2.6.2</span> Claims Management</h3>
+<p>Claims generate a substantial amount of information that can be analysed to improve the claims process.</p>
+<p>Data science can be used to understand claim patterns, estimate expected claim costs, predict claims outcomes, and support claims triage. For example, claims may be classified according to characteristics such as type, estimated cost, complexity, or likelihood of requiring further investigation.</p>
+<p>Predictive models can help identify claims that are likely to become large or require additional attention. This can allow claims staff to allocate resources more effectively.</p>
+<p>Data can also be used to monitor the development of claims over time. Comparing observed claim experience with previous experience or expected outcomes can provide information for claims management and portfolio monitoring.</p>
+<p>The objective is not necessarily to automate the entire claims process. Instead, analytical results can provide additional information to claims professionals when making decisions.</p>
+</section>
+<section id="fraud-detection" class="level3" data-number="2.6.3">
+<h3 data-number="2.6.3" class="anchored" data-anchor-id="fraud-detection"><span class="header-section-number">2.6.3</span> Fraud Detection</h3>
+<p>Insurance fraud can result in financial losses and can affect the overall cost of insurance. Data science can assist insurers in identifying claims or transactions that have unusual characteristics.</p>
+<p>For example, an insurer may analyse relationships among:</p>
+<ul>
+<li>policy characteristics;</li>
+<li>claim characteristics;</li>
+<li>claim timing;</li>
+<li>claim amounts; and</li>
+<li>previous claims.</li>
+</ul>
+<p>Statistical or machine-learning methods can be used to identify patterns associated with claims that require further investigation.</p>
+<p>An important distinction is that a model identifying an unusual claim does <strong>not</strong> establish that fraud has occurred. It identifies a case that may deserve additional investigation.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Prediction is not proof
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A data-science model can identify patterns or assign a probability to an outcome, but the result should not automatically be interpreted as evidence that a particular policyholder has committed fraud.</p>
+</div>
+</div>
+<p>This distinction illustrates the importance of combining analytical results with domain knowledge and appropriate professional procedures.</p>
+</section>
+<section id="customer-analytics" class="level3" data-number="2.6.4">
+<h3 data-number="2.6.4" class="anchored" data-anchor-id="customer-analytics"><span class="header-section-number">2.6.4</span> Customer Analytics</h3>
+<p>Data science can also be used to understand customer behaviour and interactions with insurers.</p>
+<p>Examples include analysing:</p>
+<ul>
+<li>policy renewals;</li>
+<li>cancellations and lapses;</li>
+<li>customer enquiries;</li>
+<li>product preferences; and</li>
+<li>patterns of interaction with digital services.</li>
+</ul>
+<p>For example, an insurer may wish to identify policies that have a high probability of not being renewed. Historical policy data can be used to develop a predictive model and identify characteristics associated with higher lapse rates.</p>
+<p>The resulting information can support decisions about customer communication, product design, and service delivery.</p>
+<p>Customer analytics therefore extends the use of insurance data beyond the traditional assessment of claims risk. It considers how policyholders interact with the insurer and how these behaviours may affect the business.</p>
+</section>
+<section id="risk-management-and-forecasting" class="level3" data-number="2.6.5">
+<h3 data-number="2.6.5" class="anchored" data-anchor-id="risk-management-and-forecasting"><span class="header-section-number">2.6.5</span> Risk Management and Forecasting</h3>
+<p>Data science can support broader risk-management and forecasting activities.</p>
+<p>Insurers need to monitor changes in their portfolios and anticipate future outcomes. Historical data can be analysed to identify trends, changes in risk characteristics, and unusual patterns.</p>
+<p>Examples include:</p>
+<ul>
+<li>forecasting claim volumes;</li>
+<li>monitoring changes in claim severity;</li>
+<li>analysing portfolio composition;</li>
+<li>identifying emerging patterns of loss; and</li>
+<li>supporting scenario analysis.</li>
+</ul>
+<p>Forecasting methods can be used to estimate future values based on historical patterns and other relevant information. However, forecasts are subject to uncertainty, particularly when future conditions differ from those observed in the historical data.</p>
+<p>For example, changes in economic conditions, technology, regulation, customer behaviour, or the underlying risk environment may affect future insurance experience.</p>
+</section>
+<section id="from-data-to-insurance-decisions" class="level3" data-number="2.6.6">
+<h3 data-number="2.6.6" class="anchored" data-anchor-id="from-data-to-insurance-decisions"><span class="header-section-number">2.6.6</span> From Data to Insurance Decisions</h3>
+<p>The applications described above illustrate that data science is not a single insurance technique. It is a collection of methods that can support different types of insurance decisions.</p>
+<p>The common process can be represented as:</p>
+<p><span class="math display">\[
+\text{Insurance problem}
+\rightarrow
+\text{Relevant data}
+\rightarrow
+\text{Analysis or model}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Actuarial judgement}
+\rightarrow
+\text{Decision}.
+\]</span></p>
+<p>For example, in pricing, data may provide evidence about differences in expected claims between groups of policyholders. In claims management, data may help identify claims requiring additional attention. In fraud detection, data may identify unusual patterns for investigation.</p>
+<p>In each case, the analytical result is only one part of the decision-making process. The result must be interpreted in the context of the insurance problem, the quality of the data, the assumptions of the analysis, and the consequences of the decision.</p>
+<p>This is why data science and actuarial science are complementary. Data science provides methods for extracting information from data, while actuarial knowledge provides the context needed to interpret that information and apply it to insurance decisions.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>The same data-science principles apply across applications
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Although pricing, claims, fraud detection, and customer analytics address different problems, they follow the same fundamental process:</p>
+<p><span class="math display">\[
+\text{Question}
+\rightarrow
+\text{Data}
+\rightarrow
+\text{Analysis}
+\rightarrow
+\text{Evidence}
+\rightarrow
+\text{Decision}.
+\]</span></p>
+<p>Learning the data-science process therefore provides a foundation for many different actuarial applications.</p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/01_Introduction_to_Risk_and_Insurance.html" class="pagination-link" aria-label="Chapter 1: Introduction to Risk and Insurance">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Introduction to Risk and Insurance</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/03_Transforming_and_Summarizing_Data.html" class="pagination-link" aria-label="Chapter 3: Transforming and Summarizing Data">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3: Transforming and Summarizing Data</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>
