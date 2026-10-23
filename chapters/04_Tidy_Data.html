@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Chapter 4: Tidy Data – Introduction to Data Science in Non-Life Insurance</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/03_Transforming_and_Summarizing_Data.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-87aed0b8589e23e45aa8556edf37a91b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/04_Tidy_Data.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Chapter 4: Tidy Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Introduction to Data Science in Non-Life Insurance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome to My Book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01_Introduction_to_Risk_and_Insurance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Chapter 1: Introduction to Risk and Insurance</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02_Introduction_to_Data_Science.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 2: Introduction to Data Science</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03_Transforming_and_Summarizing_Data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3: Transforming and Summarizing Data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04_Tidy_Data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Chapter 4: Tidy Data</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning Outcomes</a></li>
+  <li><a href="#tidy-data" id="toc-tidy-data" class="nav-link" data-scroll-target="#tidy-data"><span class="header-section-number">4.1</span> Tidy Data</a>
+  <ul class="collapse">
+  <li><a href="#why-tidy-data-matters" id="toc-why-tidy-data-matters" class="nav-link" data-scroll-target="#why-tidy-data-matters"><span class="header-section-number">4.1.1</span> Why Tidy Data Matters</a></li>
+  </ul></li>
+  <li><a href="#common-forms-of-untidy-data" id="toc-common-forms-of-untidy-data" class="nav-link" data-scroll-target="#common-forms-of-untidy-data"><span class="header-section-number">4.2</span> Common Forms of Untidy Data</a>
+  <ul class="collapse">
+  <li><a href="#column-headers-are-values" id="toc-column-headers-are-values" class="nav-link" data-scroll-target="#column-headers-are-values"><span class="header-section-number">4.2.1</span> Column Headers Are Values</a></li>
+  <li><a href="#multiple-variables-stored-in-one-column" id="toc-multiple-variables-stored-in-one-column" class="nav-link" data-scroll-target="#multiple-variables-stored-in-one-column"><span class="header-section-number">4.2.2</span> Multiple Variables Stored in One Column</a></li>
+  <li><a href="#multiple-variables-stored-in-column-names" id="toc-multiple-variables-stored-in-column-names" class="nav-link" data-scroll-target="#multiple-variables-stored-in-column-names"><span class="header-section-number">4.2.3</span> Multiple Variables Stored in Column Names</a></li>
+  <li><a href="#variables-stored-in-both-rows-and-columns" id="toc-variables-stored-in-both-rows-and-columns" class="nav-link" data-scroll-target="#variables-stored-in-both-rows-and-columns"><span class="header-section-number">4.2.4</span> Variables Stored in Both Rows and Columns</a></li>
+  <li><a href="#recognising-the-structure-before-reshaping" id="toc-recognising-the-structure-before-reshaping" class="nav-link" data-scroll-target="#recognising-the-structure-before-reshaping"><span class="header-section-number">4.2.5</span> Recognising the Structure Before Reshaping</a></li>
+  </ul></li>
+  <li><a href="#introducing-tidyr" id="toc-introducing-tidyr" class="nav-link" data-scroll-target="#introducing-tidyr"><span class="header-section-number">4.3</span> Introducing <code>tidyr</code></a>
+  <ul class="collapse">
+  <li><a href="#from-wide-to-long-with-pivot_longer" id="toc-from-wide-to-long-with-pivot_longer" class="nav-link" data-scroll-target="#from-wide-to-long-with-pivot_longer"><span class="header-section-number">4.3.1</span> From Wide to Long with <code>pivot_longer()</code></a></li>
+  <li><a href="#from-long-to-wide-with-pivot_wider" id="toc-from-long-to-wide-with-pivot_wider" class="nav-link" data-scroll-target="#from-long-to-wide-with-pivot_wider"><span class="header-section-number">4.3.2</span> From Long to Wide with <code>pivot_wider()</code></a></li>
+  <li><a href="#choosing-the-appropriate-function" id="toc-choosing-the-appropriate-function" class="nav-link" data-scroll-target="#choosing-the-appropriate-function"><span class="header-section-number">4.3.3</span> Choosing the Appropriate Function</a></li>
+  </ul></li>
+  <li><a href="#working-with-the-sample-insurance-data" id="toc-working-with-the-sample-insurance-data" class="nav-link" data-scroll-target="#working-with-the-sample-insurance-data"><span class="header-section-number">4.4</span> Working with the Sample Insurance Data</a>
+  <ul class="collapse">
+  <li><a href="#claims-recorded-by-year" id="toc-claims-recorded-by-year" class="nav-link" data-scroll-target="#claims-recorded-by-year"><span class="header-section-number">4.4.1</span> Claims Recorded by Year</a></li>
+  <li><a href="#policy-measures" id="toc-policy-measures" class="nav-link" data-scroll-target="#policy-measures"><span class="header-section-number">4.4.2</span> Policy Measures</a></li>
+  <li><a href="#claims-by-year-and-measure" id="toc-claims-by-year-and-measure" class="nav-link" data-scroll-target="#claims-by-year-and-measure"><span class="header-section-number">4.4.3</span> Claims by Year and Measure</a></li>
+  <li><a href="#portfolio-summary" id="toc-portfolio-summary" class="nav-link" data-scroll-target="#portfolio-summary"><span class="header-section-number">4.4.4</span> Portfolio Summary</a></li>
+  </ul></li>
+  <li><a href="#from-tidy-data-to-dplyr" id="toc-from-tidy-data-to-dplyr" class="nav-link" data-scroll-target="#from-tidy-data-to-dplyr"><span class="header-section-number">4.5</span> From Tidy Data to <code>dplyr</code></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Chapter 4: Tidy Data</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- # Chapter 4: Tidy Data -->
+<section id="learning-outcomes" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning Outcomes</h2>
+<p>By the end of this chapter, students should be able to:</p>
+<ol type="1">
+<li>Explain the three principles of tidy data and identify common forms of untidy data.</li>
+<li>Distinguish between identifier variables and variables that need to be reshaped.</li>
+<li>Use <code>pivot_longer()</code> and <code>pivot_wider()</code> to transform untidy insurance data into a tidy format.</li>
+<li>Explain how tidy data facilitates data transformation and summarization using <code>dplyr</code>.</li>
+</ol>
+</section>
+<section id="tidy-data" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="tidy-data"><span class="header-section-number">4.1</span> Tidy Data</h2>
+<p>Before transforming or summarizing data, it is important to consider how the data are organized. <strong>Tidy data</strong> provides a consistent structure that makes data easier to inspect, transform, summarize, and analyse.</p>
+<p>A dataset is <strong>tidy</strong> when its structure follows three principles:</p>
+<ol type="1">
+<li><p><strong>Each variable is a column.</strong> A variable represents an attribute being measured, such as age, exposure, claim count, or premium.</p></li>
+<li><p><strong>Each observation is a row.</strong> An observation represents one unit being studied, such as a policy, policyholder, or claim.</p></li>
+<li><p><strong>Each value is a cell.</strong> Each cell contains one value for one variable and one observation.</p></li>
+</ol>
+<p>For example, a dataset of motor insurance policies might be organized as follows:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>policy_id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">exposure</th>
+<th style="text-align: right;">nclaims</th>
+<th style="text-align: right;">amount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12500</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8400</td>
+</tr>
+</tbody>
+</table>
+<p>Here, <code>age</code>, <code>exposure</code>, <code>nclaims</code>, and <code>amount</code> are variables, while each row represents one policy. Each cell contains a single value.</p>
+<div id="fig-tidy-data" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tidy-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="../figures/Guide_to_Tidy_Data_Principles.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;4.1: Guide to Tidy Data Principles"><img src="../figures/Guide_to_Tidy_Data_Principles.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tidy-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.1: Guide to Tidy Data Principles
+</figcaption>
+</figure>
+</div>
+<section id="why-tidy-data-matters" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="why-tidy-data-matters"><span class="header-section-number">4.1.1</span> Why Tidy Data Matters</h3>
+<p>Tidy data is particularly useful when working with R because many data manipulation functions are designed around this structure. For example, with <code>dplyr</code>:</p>
+<ul>
+<li><code>select()</code> works with variables represented as columns;</li>
+<li><code>filter()</code> works with values within observations;</li>
+<li><code>mutate()</code> creates or transforms variables;</li>
+<li><code>group_by()</code> defines groups of observations; and</li>
+<li><code>summarise()</code> calculates summaries of variables within those groups.</li>
+</ul>
+<p>This gives a natural workflow:</p>
+<p><span class="math display">\[
+\text{Tidy data}
+\longrightarrow;
+\text{Transform}
+\longrightarrow;
+\text{Group and summarise}
+\longrightarrow;
+\text{Analyse}.
+\]</span></p>
+<p>When data are not organized in this way, the analysis may still be possible, but additional steps are often needed to reshape the data first. The <strong><code>tidyr</code></strong> package provides tools for doing this. In the next sections, we will examine common forms of untidy data and learn how to reshape them into a structure that is easier to work with using <code>dplyr</code>.</p>
+</section>
+</section>
+<section id="common-forms-of-untidy-data" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="common-forms-of-untidy-data"><span class="header-section-number">4.2</span> Common Forms of Untidy Data</h2>
+<p>Untidy data can arise in several ways. The issue is not simply whether data are stored in a <em>wide</em> or <em>long</em> format. A dataset is untidy when its structure does not clearly represent the variables and observations it contains.</p>
+<p>The following examples use small synthetic insurance datasets stored in the project’s <code>data/</code> folder. Each example illustrates a different structural problem.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figures/Guide_to_Reshaping_Insurance_Data.png" class="img-fluid figure-img"></p>
+<figcaption>Guide to Reshaping Insurance Data</figcaption>
+</figure>
+</div>
+<section id="column-headers-are-values" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="column-headers-are-values"><span class="header-section-number">4.2.1</span> Column Headers Are Values</h3>
+<p>The file <code>tidyr_01_claims_by_year.csv</code> records the number of claims for each policy across several years.</p>
+<p>The main variables are:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>policy_id</code></td>
+<td>Unique identifier for the insurance policy</td>
+</tr>
+<tr class="even">
+<td><code>risk_group</code></td>
+<td>Risk classification of the policyholder</td>
+</tr>
+<tr class="odd">
+<td><code>2022</code>–<code>2026</code></td>
+<td>Number of claims recorded in each year</td>
+</tr>
+</tbody>
+</table>
+<p>The data have a structure such as:</p>
+<pre class="text"><code>policy_id  risk_group  2022  2023  2024  2025  2026
+1001       Young          1     0     2     1     0
+1002       Standard       0     1     0     0     1
+1003       Young          2     1     1     0     2</code></pre>
+<p>The problem is that <code>2022</code>, <code>2023</code>, …, <code>2026</code> are not really different variables. They are <strong>values of the same variable, <code>year</code></strong>.</p>
+<p>The underlying variables are:</p>
+<ul>
+<li><code>policy_id</code></li>
+<li><code>risk_group</code></li>
+<li><code>year</code></li>
+<li><code>nclaims</code></li>
+</ul>
+<p>The tidy structure would therefore be:</p>
+<pre class="text"><code>policy_id  risk_group  year  nclaims
+1001       Young       2022       1
+1001       Young       2023       0
+1001       Young       2024       2
+...</code></pre>
+<p>The key question to ask is:</p>
+<blockquote class="blockquote">
+<p><strong>Are the column names actually variable names, or are they values of a variable?</strong></p>
+</blockquote>
+<p>Here, the years are values, so the yearly columns need to be reshaped into rows. This is the type of problem addressed by <code>pivot_longer()</code>.</p>
+</section>
+<section id="multiple-variables-stored-in-one-column" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="multiple-variables-stored-in-one-column"><span class="header-section-number">4.2.2</span> Multiple Variables Stored in One Column</h3>
+<p>The file <code>tidyr_02_policy_measures.csv</code> records several characteristics of each policy. However, the name of the characteristic is stored as a value in the <code>measure</code> column.</p>
+<p>The variables are:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>policy_id</code></td>
+<td>Unique identifier for the insurance policy</td>
+</tr>
+<tr class="even">
+<td><code>risk_group</code></td>
+<td>Risk classification of the policyholder</td>
+</tr>
+<tr class="odd">
+<td><code>measure</code></td>
+<td>Type of measurement being recorded</td>
+</tr>
+<tr class="even">
+<td><code>value</code></td>
+<td>Value of the corresponding measurement</td>
+</tr>
+</tbody>
+</table>
+<p>The data have a structure such as:</p>
+<pre class="text"><code>policy_id  risk_group  measure    value
+1001       Young       age         25
+1001       Young       exposure     1
+1001       Young       nclaims      2
+1002       Standard    age         45
+1002       Standard    exposure     1
+1002       Standard    nclaims      0</code></pre>
+<p>Here, <code>age</code>, <code>exposure</code>, and <code>nclaims</code> are not merely categories of a variable called <code>measure</code>. They represent <strong>different variables</strong> that should become separate columns.</p>
+<p>The tidy structure would be:</p>
+<pre class="text"><code>policy_id  risk_group  age  exposure  nclaims
+1001       Young        25       1.0        2
+1002       Standard     45       1.0        0</code></pre>
+<p>The key question is:</p>
+<blockquote class="blockquote">
+<p><strong>Are values in a column actually the names of different variables?</strong></p>
+</blockquote>
+<p>If so, the values in that column may need to become column names. This is the type of problem addressed by <code>pivot_wider()</code>.</p>
+<p>This example is also important because it shows that <strong><code>pivot_wider()</code> can be used to make data tidy</strong>. Tidy data are not necessarily produced by making data longer.</p>
+</section>
+<section id="multiple-variables-stored-in-column-names" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="multiple-variables-stored-in-column-names"><span class="header-section-number">4.2.3</span> Multiple Variables Stored in Column Names</h3>
+<p>The file <code>tidyr_03_claims_year_measure.csv</code> contains claims information for several years and measures.</p>
+<p>The dataset includes columns such as:</p>
+<pre class="text"><code>policy_id  risk_group  vehicle_type  2023_count  2023_amount  2024_count  2024_amount  ...
+1001       Young       Car                    0            0           0            0  ...</code></pre>
+<p>The main variables are:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 44%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>policy_id</code></td>
+<td>Unique identifier for the insurance policy</td>
+</tr>
+<tr class="even">
+<td><code>risk_group</code></td>
+<td>Risk classification of the policyholder</td>
+</tr>
+<tr class="odd">
+<td><code>vehicle_type</code></td>
+<td>Type of vehicle insured</td>
+</tr>
+<tr class="even">
+<td><code>2023_count</code>, <code>2024_count</code>, …</td>
+<td>Number of claims in each year</td>
+</tr>
+<tr class="odd">
+<td><code>2023_amount</code>, <code>2024_amount</code>, …</td>
+<td>Total claim amount in each year</td>
+</tr>
+</tbody>
+</table>
+<p>The problem is that a column name such as <code>2023_count</code> contains <strong>two pieces of information</strong>:</p>
+<pre class="text"><code>2023_count
+│    │
+│    └── measure
+└─────── year</code></pre>
+<p>Thus, the column names contain values for two variables:</p>
+<ul>
+<li><code>year</code></li>
+<li><code>measure</code></li>
+</ul>
+<p>The tidy structure would separate these pieces of information:</p>
+<pre class="text"><code>policy_id  risk_group  vehicle_type  year  measure  value
+1001       Young       Car           2023  count        0
+1001       Young       Car           2023  amount       0
+1001       Young       Car           2024  count        0
+1001       Young       Car           2024  amount       0</code></pre>
+<p>The key question is:</p>
+<blockquote class="blockquote">
+<p><strong>Does a column name contain more than one piece of information?</strong></p>
+</blockquote>
+<p>If it does, those pieces may represent separate variables that need to be extracted from the column names.</p>
+<p>For example, <code>2023_count</code> contains both a year and a measure. <code>pivot_longer()</code> can move the column names into rows, while <code>names_to</code> can separate the different pieces into variables.</p>
+<p>The important idea is that <code>pivot_longer()</code> can create <strong>multiple variables from column names</strong>. When column names contain several pieces of information, <code>names_to</code> can be used to separate those pieces into different variables.</p>
+<p>After reshaping, <code>measure</code> is a legitimate variable. It does <strong>not</strong> need to be converted into separate columns simply because its values are <code>count</code> and <code>amount</code>.</p>
+<p>This leads to an important principle:</p>
+<blockquote class="blockquote">
+<p><strong>Tidy data do not require one row per policy.</strong></p>
+</blockquote>
+<p>For this dataset, an observation can be identified by the combination of:</p>
+<p><span class="math display">\[
+(\mathrm{policy\_id},\ \mathrm{year},\ \mathrm{measure})
+\]</span></p>
+<p>Therefore, a policy can legitimately appear on several rows.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Tidy Does Not Mean One Row per Policy
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The number of rows in a tidy dataset depends on what an <strong>observation</strong> represents.</p>
+<p>In this example, the observation is a particular measure for a particular policy and year. Therefore, <code>policy_id</code> alone does not identify a row.</p>
+<p>The combination</p>
+<p><span class="math display">\[
+(\mathrm{policy\_id},\ \mathrm{year},\ \mathrm{measure})
+\]</span></p>
+<p>identifies the observation.</p>
+<p>Do not reshape data simply to obtain one row per policy. First determine what an observation represents.</p>
+</div>
+</div>
+</section>
+<section id="variables-stored-in-both-rows-and-columns" class="level3" data-number="4.2.4">
+<h3 data-number="4.2.4" class="anchored" data-anchor-id="variables-stored-in-both-rows-and-columns"><span class="header-section-number">4.2.4</span> Variables Stored in Both Rows and Columns</h3>
+<p>The file <code>tidyr_04_portfolio_summary.csv</code> combines two of the structural problems seen above.</p>
+<p>The data have a structure such as:</p>
+<pre class="text"><code>risk_group  measure    2024  2025  2026
+Young       exposure   ...   ...   ...
+Young       nclaims    ...   ...   ...
+Young       premium    ...   ...   ...
+Standard    exposure   ...   ...   ...
+Standard    nclaims    ...   ...   ...
+Standard    premium    ...   ...   ...</code></pre>
+<p>The main variables are:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>risk_group</code></td>
+<td>Risk classification of the policyholder group</td>
+</tr>
+<tr class="even">
+<td><code>measure</code></td>
+<td>Type of portfolio measure</td>
+</tr>
+<tr class="odd">
+<td><code>2024</code>–<code>2026</code></td>
+<td>Year for which the measure is reported</td>
+</tr>
+<tr class="even">
+<td><code>exposure</code></td>
+<td>Total exposure for the risk group and year</td>
+</tr>
+<tr class="odd">
+<td><code>nclaims</code></td>
+<td>Number of claims for the risk group and year</td>
+</tr>
+<tr class="even">
+<td><code>premium</code></td>
+<td>Premium for the risk group and year</td>
+</tr>
+</tbody>
+</table>
+<p>There are two structural problems.</p>
+<p>First, <code>measure</code> contains values such as <code>exposure</code>, <code>nclaims</code>, and <code>premium</code>. These values represent different variables.</p>
+<p>Second, <code>2024</code>, <code>2025</code>, and <code>2026</code> are column names but represent values of the variable <code>year</code>.</p>
+<p>The tidy structure should therefore be:</p>
+<pre class="text"><code>risk_group  year  exposure  nclaims  premium
+Young       2024     ...       ...      ...
+Young       2025     ...       ...      ...
+Young       2026     ...       ...      ...
+Standard    2024     ...       ...      ...</code></pre>
+<p>The key question is:</p>
+<blockquote class="blockquote">
+<p><strong>Are there structural problems in both the rows and the columns?</strong></p>
+</blockquote>
+<p>Here, both directions need to be considered:</p>
+<ul>
+<li>the year values need to move from columns into rows;</li>
+<li>the measure values need to move from rows into columns.</li>
+</ul>
+<p>Consequently, tidying this dataset requires a combination of <code>pivot_longer()</code> and <code>pivot_wider()</code>.</p>
+<p>This is the most complex of the four examples because it demonstrates that <strong>tidying is not determined by a single reshaping operation</strong>. The appropriate sequence depends on the structure of the original data.</p>
+</section>
+<section id="recognising-the-structure-before-reshaping" class="level3" data-number="4.2.5">
+<h3 data-number="4.2.5" class="anchored" data-anchor-id="recognising-the-structure-before-reshaping"><span class="header-section-number">4.2.5</span> Recognising the Structure Before Reshaping</h3>
+<p>The four examples illustrate a common way of thinking about untidy data. Before deciding which function to use, first identify what the data are trying to represent.</p>
+<p>For each dataset, ask:</p>
+<ol type="1">
+<li><strong>What is an observation?</strong></li>
+<li><strong>Which variables describe or identify that observation?</strong></li>
+<li><strong>Which values have been placed in column names or in inappropriate rows?</strong></li>
+<li><strong>What should the tidy variables be?</strong></li>
+<li><strong>Which reshaping operation would put those variables in the correct places?</strong></li>
+</ol>
+<p>For the insurance examples, <code>policy_id</code> identifies an individual policy, while variables such as <code>risk_group</code> and <code>vehicle_type</code> describe that policy. In an aggregated portfolio dataset, a combination such as <code>risk_group</code> and <code>year</code> may identify an observation.</p>
+<p>The reasoning process can be summarised as:</p>
+<p><span class="math display">\[
+\boxed{
+\text{Identify the observation}
+\;\rightarrow\;
+\text{Identify the variables}
+\;\rightarrow\;
+\text{Identify the structural problem}
+\;\rightarrow\;
+\text{Choose the appropriate } \mathrm{pivot\_*()}
+}
+\]</span></p>
+<p>The goal is therefore not simply to make data <em>long</em> or <em>wide</em>. The goal is to make the rows and columns correspond to the observations and variables represented by the data.</p>
+<p>The complete R workflows for these four datasets are developed in <strong>Working with the Sample Insurance Data</strong>, where the datasets are reshaped and then used with the <code>dplyr</code> operations introduced earlier.</p>
+</section>
+</section>
+<section id="introducing-tidyr" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="introducing-tidyr"><span class="header-section-number">4.3</span> Introducing <code>tidyr</code></h2>
+<p>The <code>tidyr</code> package provides tools for reshaping data so that its structure better reflects the variables and observations it contains. In practice, this is particularly useful when data have been recorded in a form that is convenient for data entry or presentation but does not follow the principles of tidy data.</p>
+<p>The two functions used most often for reshaping data are <code>pivot_longer()</code> and <code>pivot_wider()</code>.</p>
+<section id="from-wide-to-long-with-pivot_longer" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="from-wide-to-long-with-pivot_longer"><span class="header-section-number">4.3.1</span> From Wide to Long with <code>pivot_longer()</code></h3>
+<p><code>pivot_longer()</code> makes a dataset <strong>longer</strong> by turning selected columns into rows.</p>
+<p>The basic idea is:</p>
+<p><span class="math display">\[
+\text{Wide}
+\xrightarrow{\text{pivot\_longer()}}
+\text{Long}
+\]</span></p>
+<p>For example, suppose claims are recorded in separate columns for each year:</p>
+<pre class="text"><code>policy_id  2022  2023  2024
+1001          1     0     2
+1002          0     1     0</code></pre>
+<p>After reshaping, the year becomes a variable:</p>
+<pre class="text"><code>policy_id  year  nclaims
+1001       2022        1
+1001       2023        0
+1001       2024        2
+1002       2022        0
+...</code></pre>
+<p>The general form is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> ...,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> ...,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> ...</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The main arguments are:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 84%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cols</code></td>
+<td>Columns to reshape</td>
+</tr>
+<tr class="even">
+<td><code>names_to</code></td>
+<td>Name of the new variable containing the original column names</td>
+</tr>
+<tr class="odd">
+<td><code>values_to</code></td>
+<td>Name of the new variable containing the values</td>
+</tr>
+</tbody>
+</table>
+<p>For example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="st">`</span><span class="at">2022</span><span class="st">`</span><span class="sc">:</span><span class="st">`</span><span class="at">2024</span><span class="st">`</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"year"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"nclaims"</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Here, the column names become values of <code>year</code>, while the cell values become values of <code>nclaims</code>.</p>
+<section id="separating-information-contained-in-column-names" class="level4">
+<h4 class="anchored" data-anchor-id="separating-information-contained-in-column-names">Separating information contained in column names</h4>
+<p>Sometimes a column name contains more than one piece of information. For example:</p>
+<pre class="text"><code>2023_count
+2023_amount
+2024_count
+2024_amount</code></pre>
+<p>The names contain both <code>year</code> and <code>measure</code>.</p>
+<p><code>pivot_longer()</code> can separate these pieces into different variables:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> ...,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"measure"</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_sep =</span> <span class="st">"_"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"value"</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The additional argument <code>names_sep</code> specifies the character used to separate the pieces of the column name.</p>
+<p>Thus,</p>
+<pre class="text"><code>2023_count</code></pre>
+<p>becomes:</p>
+<pre class="text"><code>year       measure
+2023       count</code></pre>
+<p>This is useful when column names contain several pieces of information that should become separate variables.</p>
+</section>
+</section>
+<section id="from-long-to-wide-with-pivot_wider" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="from-long-to-wide-with-pivot_wider"><span class="header-section-number">4.3.2</span> From Long to Wide with <code>pivot_wider()</code></h3>
+<p><code>pivot_wider()</code> makes a dataset <strong>wider</strong> by turning values in a column into new columns.</p>
+<p>The basic idea is:</p>
+<p><span class="math display">\[
+\text{Long}
+\xrightarrow{\text{pivot\_wider()}}
+\text{Wide}
+\]</span></p>
+<p>For example, suppose the data contain:</p>
+<pre class="text"><code>policy_id  measure    value
+1001       age           25
+1001       exposure       1
+1001       nclaims        2
+1002       age           45
+1002       exposure       1
+1002       nclaims        0</code></pre>
+<p>The values in <code>measure</code> represent different variables. We can turn them into columns:</p>
+<pre class="text"><code>policy_id  age  exposure  nclaims
+1001        25       1.0        2
+1002        45       1.0        0</code></pre>
+<p>The general form is:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> ...,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> ...</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The main arguments are:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 82%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>names_from</code></td>
+<td>Column containing the values that will become new column names</td>
+</tr>
+<tr class="even">
+<td><code>values_from</code></td>
+<td>Column containing the values that will fill the new columns</td>
+</tr>
+</tbody>
+</table>
+<p>For example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> measure,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> value</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Here, the values in <code>measure</code> become column names, and the corresponding values in <code>value</code> fill those columns.</p>
+</section>
+<section id="choosing-the-appropriate-function" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="choosing-the-appropriate-function"><span class="header-section-number">4.3.3</span> Choosing the Appropriate Function</h3>
+<p>The choice between the two functions depends on <strong>where the variables are currently stored</strong>.</p>
+<p>If values representing a variable have been stored in <strong>column names</strong>, <code>pivot_longer()</code> is usually appropriate:</p>
+<p><span class="math display">\[
+\text{Values in column names}
+\rightarrow
+\text{pivot\_longer()}
+\]</span></p>
+<p>If values representing variables have been stored in <strong>rows</strong>, <code>pivot_wider()</code> may be appropriate:</p>
+<p><span class="math display">\[
+\text{Variable names stored as values in rows}
+\rightarrow
+\text{pivot\_wider()}
+\]</span></p>
+<p>In some datasets, both problems occur at the same time. The fourth insurance dataset demonstrates how <code>pivot_longer()</code> and <code>pivot_wider()</code> can be combined.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Long and Wide Do Not Define Tidy Data
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The terms <strong>long</strong> and <strong>wide</strong> describe the shape of a dataset. They do not, by themselves, determine whether the data are tidy.</p>
+<p>A wide dataset can be tidy, and a long dataset can be untidy.</p>
+<p>The goal of <code>tidyr</code> is not simply to make data longer or wider. The goal is to reshape the data so that <strong>each variable is a column, each observation is a row, and each value is a cell</strong>.</p>
+</div>
+</div>
+<p>In the next section, these ideas are applied to the four synthetic insurance datasets. The examples show how to identify the columns that should remain unchanged and how to select the appropriate <code>pivot_*()</code> operation for each structure.</p>
+</section>
+</section>
+<section id="working-with-the-sample-insurance-data" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="working-with-the-sample-insurance-data"><span class="header-section-number">4.4</span> Working with the Sample Insurance Data</h2>
+<p>The four synthetic datasets introduced earlier are stored in the project’s <code>data/</code> folder. We now use them to practise the reshaping operations introduced above.</p>
+<p>The purpose of this section is not to introduce new types of untidy data. Instead, it is to apply the same reasoning to actual data:</p>
+<ol type="1">
+<li>inspect the data;</li>
+<li>identify the observation;</li>
+<li>identify the variables that should remain unchanged;</li>
+<li>identify the columns that need to be reshaped;</li>
+<li>apply the appropriate <code>pivot_*()</code> function; and</li>
+<li>check the resulting tidy structure.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>A useful habit
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before writing a <code>pivot_*()</code> command, do not start with the function. First ask:</p>
+<blockquote class="blockquote">
+<p><strong>What does one row represent in the data I want to obtain?</strong></p>
+</blockquote>
+<p>Once the intended observation is clear, it becomes much easier to decide which columns should remain and which information needs to be reshaped.</p>
+</div>
+</div>
+<section id="claims-recorded-by-year" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="claims-recorded-by-year"><span class="header-section-number">4.4.1</span> Claims Recorded by Year</h3>
+<p>Start with <code>tidyr_01_claims_by_year.csv</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>claims_by_year <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"../data/tidyr_01_claims_by_year.csv"</span>,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>claims_by_year</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 100 × 9
+   policy_id risk_group vehicle_type exposure `2022` `2023` `2024` `2025` `2026`
+       &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;           &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+ 1      1001 Young      Car              0.83      0      0      0      0      0
+ 2      1002 Young      Car              0.81      0      0      1      0      0
+ 3      1003 Older      SUV              0.87      0      0      0      0      0
+ 4      1004 Older      SUV              0.58      0      0      0      0      0
+ 5      1005 Middle     Pickup           0.67      1      0      0      1      0
+ 6      1006 Middle     Car              0.58      0      0      0      0      0
+ 7      1007 Young      Pickup           0.92      0      0      1      0      0
+ 8      1008 Young      SUV              0.87      0      0      0      0      0
+ 9      1009 Middle     SUV              0.63      0      0      0      0      0
+10      1010 Older      Pickup           0.64      0      0      0      0      0
+# ℹ 90 more rows</code></pre>
+</div>
+</div>
+<p>The yearly claim counts are stored in separate columns. We want one observation for each <strong>policy and year</strong>.</p>
+<p>The columns <code>policy_id</code> and <code>risk_group</code> describe the policy and therefore remain unchanged. The columns containing years are reshaped using <code>pivot_longer()</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>claims_by_year_tidy <span class="ot">&lt;-</span> claims_by_year <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="st">`</span><span class="at">2022</span><span class="st">`</span><span class="sc">:</span><span class="st">`</span><span class="at">2026</span><span class="st">`</span>,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"year"</span>,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"nclaims"</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>claims_by_year_tidy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 6
+   policy_id risk_group vehicle_type exposure year  nclaims
+       &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;
+ 1      1001 Young      Car              0.83 2022        0
+ 2      1001 Young      Car              0.83 2023        0
+ 3      1001 Young      Car              0.83 2024        0
+ 4      1001 Young      Car              0.83 2025        0
+ 5      1001 Young      Car              0.83 2026        0
+ 6      1002 Young      Car              0.81 2022        0
+ 7      1002 Young      Car              0.81 2023        0
+ 8      1002 Young      Car              0.81 2024        1
+ 9      1002 Young      Car              0.81 2025        0
+10      1002 Young      Car              0.81 2026        0
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+<p>The resulting data have the variables:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(claims_by_year_tidy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 500
+Columns: 6
+$ policy_id    &lt;dbl&gt; 1001, 1001, 1001, 1001, 1001, 1002, 1002, 1002, 1002, 100…
+$ risk_group   &lt;chr&gt; "Young", "Young", "Young", "Young", "Young", "Young", "Yo…
+$ vehicle_type &lt;chr&gt; "Car", "Car", "Car", "Car", "Car", "Car", "Car", "Car", "…
+$ exposure     &lt;dbl&gt; 0.83, 0.83, 0.83, 0.83, 0.83, 0.81, 0.81, 0.81, 0.81, 0.8…
+$ year         &lt;chr&gt; "2022", "2023", "2024", "2025", "2026", "2022", "2023", "…
+$ nclaims      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</code></pre>
+</div>
+</div>
+<p>The <code>year</code> variable is initially read as character because the original column names are text. If we want <code>year</code> to be numeric, we can convert it explicitly:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>claims_by_year_tidy <span class="ot">&lt;-</span> claims_by_year_tidy <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.integer</span>(year))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>The tidy data can now be used directly with <code>dplyr</code>. For example, we can calculate the total number of claims by year:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>claims_by_year_tidy <span class="sc">|&gt;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(year) <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">nclaims =</span> <span class="fu">sum</span>(nclaims),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+   year nclaims
+  &lt;int&gt;   &lt;dbl&gt;
+1  2022      10
+2  2023       5
+3  2024      15
+4  2025       4
+5  2026       8</code></pre>
+</div>
+</div>
+<p>The important point is that <code>pivot_longer()</code> has not performed an analysis. It has <strong>put the data into a structure in which the analysis is straightforward</strong>.</p>
+</section>
+<section id="policy-measures" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="policy-measures"><span class="header-section-number">4.4.2</span> Policy Measures</h3>
+<p>Next, consider <code>tidyr_02_policy_measures.csv</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>policy_measures <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"../data/tidyr_02_policy_measures.csv"</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>policy_measures</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 400 × 5
+   policy_id risk_group vehicle_type measure     value
+       &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;       &lt;dbl&gt;
+ 1      1001 Young      Car          age         19   
+ 2      1001 Young      Car          exposure     0.95
+ 3      1001 Young      Car          nclaims      1   
+ 4      1001 Young      Car          premium  11875   
+ 5      1002 Young      Car          age         19   
+ 6      1002 Young      Car          exposure     0.98
+ 7      1002 Young      Car          nclaims      0   
+ 8      1002 Young      Car          premium  12250   
+ 9      1003 Older      SUV          age         72   
+10      1003 Older      SUV          exposure     0.98
+# ℹ 390 more rows</code></pre>
+</div>
+</div>
+<p>Here, <code>measure</code> contains values such as <code>age</code>, <code>exposure</code>, and <code>nclaims</code>. These values represent different variables.</p>
+<p>The intended observation is one <strong>policy</strong>, so we want one row per <code>policy_id</code>. The values in <code>measure</code> should become column names.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>policy_measures_tidy <span class="ot">&lt;-</span> policy_measures <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> measure,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> value</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>policy_measures_tidy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 100 × 7
+   policy_id risk_group vehicle_type   age exposure nclaims premium
+       &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+ 1      1001 Young      Car             19     0.95       1   11875
+ 2      1002 Young      Car             19     0.98       0   12250
+ 3      1003 Older      SUV             72     0.98       0    8820
+ 4      1004 Older      SUV             61     0.74       0    6660
+ 5      1005 Middle     Pickup          37     0.8        0    8000
+ 6      1006 Middle     Car             31     0.97       0    9700
+ 7      1007 Young      Pickup          27     0.76       0    9500
+ 8      1008 Young      SUV             20     0.6        0    7500
+ 9      1009 Middle     SUV             35     0.82       0    8200
+10      1010 Older      Pickup          72     0.71       0    6390
+# ℹ 90 more rows</code></pre>
+</div>
+</div>
+<p>We can now use the variables directly in <code>dplyr</code>. For example, calculate the total number of claims by risk group:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>policy_measures_tidy <span class="sc">|&gt;</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(risk_group) <span class="sc">|&gt;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">exposure =</span> <span class="fu">sum</span>(exposure),</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">nclaims =</span> <span class="fu">sum</span>(nclaims),</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  risk_group exposure nclaims
+  &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;
+1 Middle         31.6       1
+2 Older          18.8       2
+3 Young          24.7       4</code></pre>
+</div>
+</div>
+<p>This example demonstrates why the direction of reshaping cannot be chosen simply by looking at whether the data appear long or wide. We first identify what the variables are and what one row should represent.</p>
+</section>
+<section id="claims-by-year-and-measure" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="claims-by-year-and-measure"><span class="header-section-number">4.4.3</span> Claims by Year and Measure</h3>
+<p>Now consider <code>tidyr_03_claims_year_measure.csv</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>claims_year_measure <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"../data/tidyr_03_claims_year_measure.csv"</span>,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>claims_year_measure</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 100 × 11
+   policy_id risk_group vehicle_type `2023_count` `2023_amount` `2024_count`
+       &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;               &lt;dbl&gt;         &lt;dbl&gt;        &lt;dbl&gt;
+ 1      1001 Young      Car                     0             0            0
+ 2      1002 Young      Car                     1         47486            0
+ 3      1003 Older      SUV                     0             0            0
+ 4      1004 Older      SUV                     0             0            0
+ 5      1005 Middle     Pickup                  0             0            0
+ 6      1006 Middle     Car                     0             0            0
+ 7      1007 Young      Pickup                  0             0            0
+ 8      1008 Young      SUV                     0             0            0
+ 9      1009 Middle     SUV                     0             0            0
+10      1010 Older      Pickup                  0             0            0
+# ℹ 90 more rows
+# ℹ 5 more variables: `2024_amount` &lt;dbl&gt;, `2025_count` &lt;dbl&gt;,
+#   `2025_amount` &lt;dbl&gt;, `2026_count` &lt;dbl&gt;, `2026_amount` &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>The column names contain both the year and the measure, for example <code>2023_count</code> and <code>2023_amount</code>.</p>
+<p>The observation we want is one <strong>policy, year, and measure</strong>. Therefore, <code>policy_id</code>, <code>risk_group</code>, and <code>vehicle_type</code> remain unchanged.</p>
+<p>We can separate the information contained in each column name using <code>names_to</code> and <code>names_sep</code>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>claims_year_measure_tidy <span class="ot">&lt;-</span> claims_year_measure <span class="sc">|&gt;</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(policy_id, risk_group, vehicle_type),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"measure"</span>),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_sep =</span> <span class="st">"_"</span>,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"value"</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>claims_year_measure_tidy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 800 × 6
+   policy_id risk_group vehicle_type year  measure value
+       &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;
+ 1      1001 Young      Car          2023  count       0
+ 2      1001 Young      Car          2023  amount      0
+ 3      1001 Young      Car          2024  count       0
+ 4      1001 Young      Car          2024  amount      0
+ 5      1001 Young      Car          2025  count       0
+ 6      1001 Young      Car          2025  amount      0
+ 7      1001 Young      Car          2026  count       0
+ 8      1001 Young      Car          2026  amount      0
+ 9      1002 Young      Car          2023  count       1
+10      1002 Young      Car          2023  amount  47486
+# ℹ 790 more rows</code></pre>
+</div>
+</div>
+<p>We can check the resulting structure:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(claims_year_measure_tidy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 800
+Columns: 6
+$ policy_id    &lt;dbl&gt; 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1002, 100…
+$ risk_group   &lt;chr&gt; "Young", "Young", "Young", "Young", "Young", "Young", "Yo…
+$ vehicle_type &lt;chr&gt; "Car", "Car", "Car", "Car", "Car", "Car", "Car", "Car", "…
+$ year         &lt;chr&gt; "2023", "2023", "2024", "2024", "2025", "2025", "2026", "…
+$ measure      &lt;chr&gt; "count", "amount", "count", "amount", "count", "amount", …
+$ value        &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 47486, 0, 0, 0, 0, 0, 0, 0, 0,…</code></pre>
+</div>
+</div>
+<p>Again, <code>measure</code> remains a variable. There is no need to widen it further because the intended observation includes the measure.</p>
+<p>For example, we can examine total claim amounts by year:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>claims_year_measure_tidy <span class="sc">|&gt;</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(measure <span class="sc">==</span> <span class="st">"amount"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(year) <span class="sc">|&gt;</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">claim_amount =</span> <span class="fu">sum</span>(value),</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  year  claim_amount
+  &lt;chr&gt;        &lt;dbl&gt;
+1 2023        204972
+2 2024        168787
+3 2025        271468
+4 2026        222881</code></pre>
+</div>
+</div>
+<p>This illustrates an important advantage of tidy data. We can use the value of <code>measure</code> to select the type of information we want to analyse.</p>
+</section>
+<section id="portfolio-summary" class="level3" data-number="4.4.4">
+<h3 data-number="4.4.4" class="anchored" data-anchor-id="portfolio-summary"><span class="header-section-number">4.4.4</span> Portfolio Summary</h3>
+<p>Finally, consider <code>tidyr_04_portfolio_summary.csv</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>portfolio_summary <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"../data/tidyr_04_portfolio_summary.csv"</span>,</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>portfolio_summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 5
+  risk_group measure    `2024`   `2025`   `2026`
+  &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+1 Young      exposure    135.     146.     160. 
+2 Young      nclaims      22        5       15  
+3 Young      premium  288403   206554   228693  
+4 Middle     exposure    123.     128.     137  
+5 Middle     nclaims      21       22       19  
+6 Middle     premium  157140   268681   318099  
+7 Older      exposure     88.6     92.9     97.1
+8 Older      nclaims       9       10       15  
+9 Older      premium  214187   259423   300269  </code></pre>
+</div>
+</div>
+<p>This dataset contains both structural problems encountered earlier:</p>
+<ul>
+<li>the years are stored in column names; and</li>
+<li><code>measure</code> contains values representing different variables.</li>
+</ul>
+<p>The intended observation is one <strong>risk group and year</strong>. We therefore need to reshape the years into rows and then turn the measures into separate columns.</p>
+<p>First, use <code>pivot_longer()</code>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>portfolio_long <span class="ot">&lt;-</span> portfolio_summary <span class="sc">|&gt;</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="st">`</span><span class="at">2024</span><span class="st">`</span><span class="sc">:</span><span class="st">`</span><span class="at">2026</span><span class="st">`</span>,</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"year"</span>,</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"value"</span></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>portfolio_long</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 27 × 4
+   risk_group measure  year    value
+   &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;   &lt;dbl&gt;
+ 1 Young      exposure 2024     135.
+ 2 Young      exposure 2025     146.
+ 3 Young      exposure 2026     160.
+ 4 Young      nclaims  2024      22 
+ 5 Young      nclaims  2025       5 
+ 6 Young      nclaims  2026      15 
+ 7 Young      premium  2024  288403 
+ 8 Young      premium  2025  206554 
+ 9 Young      premium  2026  228693 
+10 Middle     exposure 2024     123.
+# ℹ 17 more rows</code></pre>
+</div>
+</div>
+<p>The data are now longer, but <code>measure</code> still contains values that represent variables. We can use <code>pivot_wider()</code> to complete the transformation:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>portfolio_tidy <span class="ot">&lt;-</span> portfolio_long <span class="sc">|&gt;</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> measure,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> value</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>portfolio_tidy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 5
+  risk_group year  exposure nclaims premium
+  &lt;chr&gt;      &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+1 Young      2024     135.       22  288403
+2 Young      2025     146.        5  206554
+3 Young      2026     160.       15  228693
+4 Middle     2024     123.       21  157140
+5 Middle     2025     128.       22  268681
+6 Middle     2026     137        19  318099
+7 Older      2024      88.6       9  214187
+8 Older      2025      92.9      10  259423
+9 Older      2026      97.1      15  300269</code></pre>
+</div>
+</div>
+<p>The final structure contains:</p>
+<pre class="text"><code>risk_group  year  exposure  nclaims  premium
+Young       2024     ...       ...      ...
+Young       2025     ...       ...      ...
+Young       2026     ...       ...      ...</code></pre>
+<p>We can now use the resulting variables naturally with <code>dplyr</code>. For example, calculate the claim frequency for each risk group and year:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>portfolio_tidy <span class="sc">|&gt;</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">frequency =</span> nclaims <span class="sc">/</span> exposure</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 6
+  risk_group year  exposure nclaims premium frequency
+  &lt;chr&gt;      &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+1 Young      2024     135.       22  288403    0.163 
+2 Young      2025     146.        5  206554    0.0341
+3 Young      2026     160.       15  228693    0.0938
+4 Middle     2024     123.       21  157140    0.170 
+5 Middle     2025     128.       22  268681    0.172 
+6 Middle     2026     137        19  318099    0.139 
+7 Older      2024      88.6       9  214187    0.102 
+8 Older      2025      92.9      10  259423    0.108 
+9 Older      2026      97.1      15  300269    0.154 </code></pre>
+</div>
+</div>
+<p>Here, <code>tidyr</code> has prepared the structure, while <code>dplyr</code> performs the transformation.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Reshaping Is About Structure
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The four examples use different reshaping operations, but the reasoning is the same:</p>
+<p><span class="math display">\[
+\text{Identify the observation}
+\rightarrow;
+\text{Identify the variables}
+\rightarrow;
+\text{Reshape the data}
+\rightarrow;
+\text{Check the tidy structure}
+\]</span></p>
+<p>Only after the data have the appropriate structure should we proceed with transformations, summaries, or analysis.</p>
+</div>
+</div>
+<p>The four datasets therefore illustrate a progression from a single reshaping problem to a combination of reshaping operations:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 35%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Dataset</th>
+<th>Structural problem</th>
+<th>Reshaping</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>tidyr_01_claims_by_year.csv</code></td>
+<td>Years stored in column names</td>
+<td><code>pivot_longer()</code></td>
+</tr>
+<tr class="even">
+<td><code>tidyr_02_policy_measures.csv</code></td>
+<td>Variables stored as values</td>
+<td><code>pivot_wider()</code></td>
+</tr>
+<tr class="odd">
+<td><code>tidyr_03_claims_year_measure.csv</code></td>
+<td>Multiple pieces of information in column names</td>
+<td><code>pivot_longer()</code> with <code>names_to</code> and <code>names_sep</code></td>
+</tr>
+<tr class="even">
+<td><code>tidyr_04_portfolio_summary.csv</code></td>
+<td>Problems in both rows and columns</td>
+<td><code>pivot_longer()</code> + <code>pivot_wider()</code></td>
+</tr>
+</tbody>
+</table>
+<p>The resulting tidy datasets can now be handled using the <code>dplyr</code> verbs introduced earlier in the chapter.</p>
+</section>
+</section>
+<section id="from-tidy-data-to-dplyr" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="from-tidy-data-to-dplyr"><span class="header-section-number">4.5</span> From Tidy Data to <code>dplyr</code></h2>
+<p>Tidying data is usually not the final goal. Once the data have been reshaped into a tidy structure, we can use the <code>dplyr</code> functions introduced earlier to transform, summarise, and analyse the data.</p>
+<p>For example, after tidying the portfolio data, we can calculate claim frequency by risk group and year:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>portfolio_tidy <span class="sc">|&gt;</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">frequency =</span> nclaims <span class="sc">/</span> exposure</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(risk_group, year) <span class="sc">|&gt;</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">frequency =</span> <span class="fu">sum</span>(nclaims) <span class="sc">/</span> <span class="fu">sum</span>(exposure),</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 3
+  risk_group year  frequency
+  &lt;chr&gt;      &lt;chr&gt;     &lt;dbl&gt;
+1 Middle     2024     0.170 
+2 Middle     2025     0.172 
+3 Middle     2026     0.139 
+4 Older      2024     0.102 
+5 Older      2025     0.108 
+6 Older      2026     0.154 
+7 Young      2024     0.163 
+8 Young      2025     0.0341
+9 Young      2026     0.0938</code></pre>
+</div>
+</div>
+<p>The roles of the two packages are therefore complementary:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>Main role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>tidyr</code></td>
+<td>Reshape and organise the structure of data</td>
+</tr>
+<tr class="even">
+<td><code>dplyr</code></td>
+<td>Transform, filter, group, and summarise data</td>
+</tr>
+</tbody>
+</table>
+<p>The overall workflow is:</p>
+<p><span class="math display">\[
+\boxed{
+\text{Recognise structure}
+\rightarrow
+\text{Tidy}
+\rightarrow
+\text{Transform}
+\rightarrow
+\text{Summarise}
+\rightarrow
+\text{Analyse}
+}
+\]</span></p>
+<p>Tidy data provide the structure that allows the subsequent <code>dplyr</code> operations to work naturally.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/03_Transforming_and_Summarizing_Data.html" class="pagination-link" aria-label="Chapter 3: Transforming and Summarizing Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 3: Transforming and Summarizing Data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>
