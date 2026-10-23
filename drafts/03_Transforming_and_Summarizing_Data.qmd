@@ -1,0 +1,1289 @@
+---
+title: "Chapter 3: Transforming and Summarizing Data"
+---
+
+
+
+
+# Chapter 3: Transforming and Summarizing Data
+
+## Learning Outcomes {.unnumbered}
+
+By the end of this chapter, students should be able to:
+
+<!-- * Explain the principles of tidy data and recognize common untidy structures. -->
+<!-- * Import, inspect, and describe an insurance dataset in R. -->
+<!-- * Select, filter, and transform variables using `dplyr`. -->
+<!-- * Combine data-manipulation operations using pipes. -->
+<!-- * Group and summarize insurance data by rating variables. -->
+<!-- * Calculate and interpret basic claims summaries, including claim count, aggregate claims, and severity. -->
+<!-- * Distinguish claim count, frequency, severity, and risk premium. -->
+<!-- * Interpret claims experience in relation to the volume of data supporting it. -->
+<!-- * Recognize the limitations of unadjusted group comparisons in actuarial analysis. -->
+
+<!-- **Learning Outcomes** -->
+
+1. Explain the principles of tidy data and recognize common untidy structures.
+2. Import, inspect, and describe an insurance dataset in R.
+3. Select, filter, and transform variables using `dplyr`.
+4. Combine data-manipulation operations using pipes.
+5. Group and summarize insurance data by rating variables.
+6. Calculate and interpret basic claims summaries, including claim count, aggregate claims, and severity.
+7. Distinguish claim count, frequency, severity, and risk premium.
+8. Interpret claims experience in relation to the volume of data supporting it.
+9. Recognize the limitations of unadjusted group comparisons in actuarial analysis.
+
+
+
+## Why Data Transformation Matters
+
+Insurance data are rarely collected in exactly the form needed for analysis. A dataset may contain individual policy records, claim records, exposure measures, and characteristics of policyholders or insured objects. Before these data can be used to answer an actuarial question, they often need to be **transformed, organized, and summarized**.
+
+Data transformation refers to changing the structure or representation of data so that they are suitable for a particular analysis. This may involve creating new variables, changing the units of measurement, grouping observations, filtering records, or combining information from different variables.
+
+For example, consider a motor insurance dataset containing the policyholder's age, ZIP code, number of claims, exposure, and aggregate claim amount. The raw variables may be sufficient for storing the data, but they do not immediately provide measures such as claim frequency or average claim severity. These measures must be calculated from the underlying data.
+
+$$
+\text{Raw data}
+\longrightarrow
+\text{Transformed data}
+\longrightarrow
+\text{Summary}
+\longrightarrow
+\text{Actuarial insight}.
+$$
+
+The purpose of transformation is therefore not simply to make the dataset look cleaner. It is to create variables and summaries that help answer a specific insurance question.
+
+For example, an insurer may want to investigate whether claim experience differs by age group. The original dataset may contain the exact age of each policyholder, but an analysis may require age groups such as 18--25, 26--35, 36--45, and so on. Similarly, comparing the number of claims between two groups without considering exposure can be misleading. A group with more policies will generally have more claims simply because it has more opportunities for claims to occur.
+
+This is why actuarial analysis often transforms the original data into measures that account for the volume of business. For example, claim frequency can be calculated as
+
+$$
+\text{Claim Frequency}
+=\frac{\text{Number of Claims}}
+{\text{Exposure}},
+$$
+
+while average claim severity can be calculated as
+
+$$
+\text{Average Severity}
+=\frac{\text{Aggregate Claim Amount}}
+{\text{Number of Claims}}.
+$$
+
+These quantities provide more meaningful information about the underlying risk than claim counts or aggregate claim amounts alone.
+
+::: {.callout-note}
+
+## Transformation depends on the question
+
+There is no single transformation that is appropriate for every analysis. The same raw dataset may be transformed in different ways depending on the actuarial question being investigated.
+
+For example, age may be used as an exact numerical variable when studying how risk changes with age, or it may be grouped into age bands when constructing an easily interpretable rating structure.
+
+Data summarization is the next step. A large dataset may contain thousands of individual observations, making it difficult to identify patterns by inspecting individual records. Summaries condense the data into a smaller set of informative quantities, such as counts, totals, averages, medians, and measures of variability.
+
+In insurance, summaries are often produced separately for different risk groups. For example, an insurer might compare exposure, claim frequency, and average severity across ZIP codes:
+
+| ZIP |  Exposure | Claims | Claim Frequency | Average Severity |
+| --: | --------: | -----: | --------------: | ---------------: |
+|   0 |    206.84 |     29 |           0.140 |           28,328 |
+|   1 | 11,080.63 |  1,593 |           0.144 |           72,931 |
+|   2 |  7,782.63 |  1,008 |           0.130 |           59,278 |
+|   3 |  7,587.56 |  1,038 |           0.137 |           56,829 |
+
+Such a table is much easier to interpret than the underlying individual policy records. It allows an analyst to compare both **risk experience** and **portfolio volume** across groups.
+
+However, a summary is not itself an explanation. Differences between groups may arise for many reasons, including differences in the underlying risk characteristics, random variation, or differences in the composition of the portfolio. Data transformation and summarization therefore provide the evidence needed for further analysis; they do not replace actuarial judgement.
+
+The central idea of this chapter is therefore:
+
+$$
+\boxed{
+\text{Transform the data to represent the question, then summarize it to reveal the evidence.}
+}
+$$
+
+These skills form an essential foundation for exploratory data analysis, statistical modelling, and insurance rating. Before fitting a model, an actuary should understand what the data contain, how the variables have been constructed, and what the basic summaries reveal about the portfolio.
+:::
+
+
+
+
+
+## Inspecting Data
+
+Before transforming or summarizing a dataset, we first need to understand its structure and the meaning of the information it contains. This initial inspection is an important part of the data-science workflow because subsequent calculations are meaningful only when the underlying data have been correctly understood.
+
+A dataset consists of **observations** and **variables**. An observation represents the unit being studied, while a variable records a characteristic of that unit. In insurance data, an observation might represent a policy, a policy-year, or another defined unit of exposure. Variables may describe the policyholder, the insured object, the exposure, or the claims arising during the observation period.
+
+For example, a claims experience dataset may contain variables such as:
+
+| Variable           | Description                                      | Possible type          |
+| ------------------ | ------------------------------------------------ | ---------------------- |
+| `age_policyholder` | Age of the policyholder                          | Numeric                |
+| `nclaims`          | Number of claims                                 | Numeric                |
+| `exposure`         | Amount of exposure during the observation period | Numeric                |
+| `amount`           | Aggregate claim amount                           | Numeric                |
+| `power`            | Vehicle power                                    | Numeric                |
+| `bm`               | Bonus-malus level                                | Categorical or ordinal |
+| `zip`              | Geographic area                                  | Categorical            |
+
+Some of these variables describe the **outcome of insurance experience**, while others describe characteristics that may be associated with that experience. In actuarial applications, variables that may be used to differentiate risks for rating purposes are commonly called **rating variables**. They may include characteristics such as age, geographic area, vehicle characteristics, or previous claims experience. 
+
+### Observations and variables
+
+The number of observations is one of the first things we should establish. It tells us how many units are represented in the dataset and provides context for all subsequent calculations.
+
+The number of observations, however, is not necessarily the same as the amount of insurance business represented by the data. In insurance, **exposure** provides an important measure of portfolio volume. For example, two groups may contain the same number of policy records but represent different amounts of exposure because policies may have been in force for different lengths of time.
+
+This distinction becomes particularly important when comparing claims experience. A group with more claims does not necessarily have a higher underlying claim risk if it also has substantially greater exposure.
+
+### Variable types
+
+Before performing calculations, each variable should be classified according to its meaning.
+
+A **numeric variable** represents a quantity for which numerical operations are meaningful. Examples include age, exposure, number of claims, and claim amount. Such variables can be summarized using quantities such as means, medians, minima, maxima, and standard deviations.
+
+A **categorical variable** represents membership in a group or category. Examples include vehicle type, geographic area, and rating class.
+
+A variable should be classified according to its **meaning**, rather than simply according to the way its values are stored. For example, a ZIP code may be recorded using numbers such as `0`, `1`, `2`, and `3`, but these numbers identify geographic groups rather than quantities. Calculating their arithmetic mean would therefore have no useful interpretation.
+
+::: {.callout-important}
+
+## Numeric values are not necessarily numeric variables
+
+The fact that a variable contains numbers does not mean that arithmetic operations on those numbers are meaningful.
+
+For example, if `zip` takes the values `0`, `1`, `2`, and `3`, it should normally be treated as a categorical variable. The value `3` does not represent three units of geographic area, nor is the average ZIP code an actuarial quantity of interest.
+:::
+
+Some variables may also have an **ordinal** interpretation. For example, a bonus-malus level may consist of ordered categories in which higher or lower levels indicate different positions in a rating system. Although the categories have an order, the numerical codes should not automatically be treated as measurements with equal numerical distances.
+
+### Inspecting the values
+
+Variable names and types are not sufficient. We should also examine the values recorded in each variable.
+
+For numeric variables, useful initial questions include:
+
+* What are the minimum and maximum values?
+* Are there missing values?
+* Are there zero or negative values?
+* Are there unusually large or small observations?
+* What units are being used?
+
+For categorical variables, we should consider:
+
+* What categories occur?
+* How many observations belong to each category?
+* Are there unexpected categories?
+* Are category labels recorded consistently?
+
+These checks are particularly important for insurance data. For example, a negative claim amount may indicate a data-entry or coding issue, while a zero claim count may be perfectly valid because most policyholders may have no claim during a given observation period.
+
+
+### Tidy data
+
+Once the basic structure of the data has been identified, the next question is whether the data are organized in a form that is convenient for analysis.
+
+A useful standard is **tidy data**. A dataset is tidy when:
+
+1. each variable has its own column;
+2. each observation has its own row; and
+3. each value has its own cell.
+
+This structure separates the concepts of observations and variables clearly. It also makes subsequent transformation, summarization, and visualization more systematic.
+
+For example, suppose a claims dataset records the policy number, year, and number of claims. A tidy representation might look like this:
+
+| Policy | Year | Claims |
+| ------ | ---: | -----: |
+| 120002 | 2009 |      0 |
+| 120002 | 2010 |      1 |
+| 120003 | 2009 |      2 |
+| 120003 | 2010 |      0 |
+
+Here, `Policy`, `Year`, and `Claims` are variables, while each row represents one policy-year observation. Each value occupies a single cell.
+
+The same information can, however, be stored in several other forms. These representations may be convenient for reporting or data entry, but they are less convenient for data analysis.
+
+#### Example 1: Variables stored in column names
+
+Consider the following representation:
+
+| Policy | Claims_2009 | Claims_2010 |
+| ------ | -----------: | -----------: |
+| 120002 |            0 |            1 |
+| 120003 |            2 |            0 |
+
+The values for `Year` have been incorporated into the column names. This means that `Year` is no longer an explicit variable in the dataset.
+
+This structure is often convenient for displaying results, but it becomes less convenient when we want to perform an operation such as:
+
+```r
+claims %>%
+  group_by(Year) %>%
+  summarise(total_claims = sum(Claims))
+```
+
+In the tidy representation, `Year` is a variable and can therefore be used directly for grouping and summarization. In the representation above, the years must first be extracted from the column names.
+
+This type of transformation is commonly referred to as converting data from **wide** to **long** format. In `tidyr`, the `pivot_longer()` function is used for this purpose.
+
+#### Example 2: Multiple variables stored in one column
+
+Suppose claims information is recorded as follows:
+
+| Policy | Year | Information |
+| ------ | ---: | ----------- |
+| 120002 | 2009 | Claims:0    |
+| 120002 | 2010 | Claims:1    |
+| 120003 | 2009 | Claims:2    |
+| 120003 | 2010 | Claims:0    |
+
+Here, the column `Information` contains both the name of the variable (`Claims`) and its value. The actual claim count is therefore not stored as a separate variable.
+
+A more useful representation is:
+
+| Policy | Year | Claims |
+| ------ | ---: | -----: |
+| 120002 | 2009 |      0 |
+| 120002 | 2010 |      1 |
+| 120003 | 2009 |      2 |
+| 120003 | 2010 |      0 |
+
+Separating the variable name from its values makes the data easier to filter, summarize, and visualize.
+
+#### Example 3: Multiple observations stored in one row
+
+Consider a dataset in which a policy's claims experience is recorded in a single row:
+
+| Policy | Claims_1 | Claims_2 | Claims_3 |
+| ------ | -------: | -------: | -------: |
+| 120002 |        0 |        1 |        0 |
+| 120003 |        2 |        0 |        1 |
+
+Suppose `Claims_1`, `Claims_2`, and `Claims_3` represent claims in three successive years. The year information is again encoded in the column names rather than represented by a separate variable.
+
+A tidy representation would instead have one row for each policy-year observation:
+
+| Policy | Year | Claims |
+| ------ | ---: | -----: |
+| 120002 |    1 |      0 |
+| 120002 |    2 |      1 |
+| 120002 |    3 |      0 |
+| 120003 |    1 |      2 |
+| 120003 |    2 |      0 |
+| 120003 |    3 |      1 |
+
+This structure makes it straightforward to perform operations such as calculating total claims by year or comparing claims experience across policies.
+
+The process of converting data from the first representation to the second is another example of transforming **wide data into long data**.
+
+::: {.callout-note}
+
+## Why tidy data matter
+
+Tidy data provide a consistent structure for subsequent operations. Once each observation, variable, and value has a clear place in the dataset, operations such as filtering observations, creating variables, grouping records, and calculating summaries become easier to express and interpret.
+
+Tidy data are not necessarily the only possible way to store data. Wide formats can be useful for reporting and presentation. The purpose of tidy data is to provide a structure that is particularly convenient for data manipulation and analysis.
+:::
+
+In practice, data imported from spreadsheets, databases, or other sources may not initially be tidy. A substantial part of data preparation therefore involves reshaping the data into a suitable structure before analysis. The `tidyr` package provides functions such as `pivot_longer()` and `pivot_wider()` for converting between long and wide representations.
+
+
+
+
+### From inspection to transformation
+
+Inspecting the data does not mean that we have finished preparing them. Rather, it gives us the information needed to decide **what transformation is appropriate**.
+
+For example, after inspecting a motor insurance dataset, we might decide to:
+
+* retain only variables relevant to the analysis;
+* select policies from a particular period;
+* create a claim frequency variable;
+* group policyholders into age bands;
+* classify ZIP codes as rating groups; or
+* calculate claim severity for observations with at least one claim.
+
+These operations correspond to the next stage of the workflow:
+
+$$
+\text{Inspect}
+\longrightarrow
+\text{Transform}
+\longrightarrow
+\text{Summarize}.
+$$
+
+In R, the `dplyr` package provides a set of functions designed for these common operations. The most important functions introduced in this chapter are `select()`, `filter()`, `mutate()`, `group_by()`, and `summarise()`. 
+
+::: {.callout-note}
+
+## Further reference: `dplyr`
+
+The `dplyr` package provides a consistent set of tools for transforming and summarizing data in R. This chapter introduces its core functions for common data-manipulation tasks.
+
+For the complete reference and additional examples, see the official [`dplyr` documentation](https://dplyr.tidyverse.org/).
+
+:::
+
+We begin by loading and briefly inspecting the claims dataset that will be used throughout this section. We then consider how data should be structured for analysis before introducing the operations used to manipulate and transform the data step by step.
+
+## The Claims Experience Dataset
+
+Throughout this chapter, we will use a claims dataset to demonstrate how R can be used to import, inspect, transform, and analyse insurance data. The dataset contains information on insured risks and their claims experience.
+
+### Importing the data
+
+The data are stored in the `data` folder of the project directory. We can therefore import the dataset using a relative file path without changing the working directory manually.
+
+```{r}
+library(dplyr)
+library(readr)
+
+claims <- read_csv("../data/ClaimsExperienceData.csv")
+```
+
+### Inspecting the data
+
+After importing a dataset, it is good practice to inspect its basic structure before beginning any analysis. This helps us understand the observations and variables available and whether R has assigned appropriate data types to the variables.
+
+```{r}
+glimpse(claims)
+```
+
+The `glimpse()` function provides a compact overview of the dataset, including the number of observations and variables, variable names, data types, and example values.
+
+We can also use `head()` to view the first few observations:
+
+```{r}
+head(claims)
+```
+
+### Description of the rating variables
+
+The following variables represent characteristics of the insured risks that may be related to claims outcomes.
+
+| Variable        | Description                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `EntityType`    | Categorical variable with six types: Village, City, County, Misc, School, or Town                                      |
+| `LnCoverage`    | Total building and content coverage, in logarithmic millions of dollars                                                |
+| `LnDeduct`      | Deductible, in logarithmic dollars                                                                                     |
+| `AlarmCredit`   | Categorical variable with four levels (0, 5, 10, or 15), representing credits for automatic smoke alarms in main rooms |
+| `NoClaimCredit` | Binary variable indicating whether there were no claims in the past two years                                          |
+| `Fire5`         | Binary variable indicating whether the fire class is below 5; the fire class ranges from 0 to 10                       |
+
+These variables are potential **rating factors** because they describe characteristics of the insured risks that may help explain differences in claims experience. Their roles will become clearer as we use the dataset for data manipulation and analysis.
+
+
+
+## Selecting and Filtering Data
+
+Once a dataset has been inspected and organized in a tidy form, the next step is to work with the observations and variables relevant to the question being investigated. A dataset may contain many variables and observations, but an analysis rarely requires all of them at once.
+
+Two common operations are therefore **selecting variables** and **filtering observations**. In `dplyr`, these operations are performed using `select()` and `filter()`.
+
+### Selecting variables
+
+The `select()` function is used to choose particular variables from a data frame. This is useful when a dataset contains many columns but only a subset is relevant to the current analysis.
+
+For example, suppose a claims dataset contains information on policy number, year, coverage, claim frequency, and several other variables. We may select only the variables needed to examine claims experience:
+
+```{r}
+claims %>%
+  select(PolicyNum, Year, LnCoverage, y, Freq)
+```
+
+The result contains the selected columns while retaining all observations.
+
+The names supplied to `select()` refer to variables in the data frame. We can therefore use `select()` to create a simpler view of a dataset without changing the original data.
+
+For example,
+
+```{r}
+new_table <- claims %>%
+  select(PolicyNum, Year, LnCoverage, y, Freq)
+```
+
+creates a new data frame containing only the selected variables. The original `claims` data remain unchanged.
+
+::: {.callout-note}
+
+## Selecting variables is not the same as deleting data
+
+`select()` determines which variables are included in the resulting data frame. Unless the result is assigned back to the original object, the original dataset is not modified.
+
+Selecting variables is particularly useful when checking whether related variables have been recorded consistently or when preparing a smaller table for further analysis.
+:::
+
+### Filtering observations
+
+While `select()` works with variables, `filter()` works with **observations**. It retains only the rows that satisfy a specified condition.
+
+For example, suppose we want to examine claims experience for the year 2010:
+
+```{r}
+claims %>%
+  filter(Year == 2010)
+```
+
+The condition `Year == 2010` is evaluated for each observation. Only observations for which the condition is `TRUE` are retained.
+
+The equality operator in R is `==`. It should not be confused with `=`, which is commonly used to assign a value to an object or to specify an argument.
+
+Filtering can also be used with other logical conditions. For example, to retain observations with positive claim counts:
+
+```{r}
+claims %>%
+  filter(Freq > 0)
+```
+
+This is useful when the analysis concerns claim severity, because observations with no claims do not have an observed claim severity.
+
+Multiple conditions can be combined. For example, we may want observations from 2010 that also have at least one claim:
+
+```{r}
+claims %>%
+  filter(Year == 2010 & Freq > 0)
+```
+
+The operator `&` means **and**: both conditions must be satisfied.
+
+Similarly, `|` means **or**. For example,
+
+```{r}
+claims %>%
+  filter(Year == 2009 | Year == 2010)
+```
+
+retains observations from either 2009 or 2010.
+
+### Selecting from a set of values
+
+When a variable needs to be compared with several possible values, the `%in%` operator provides a convenient alternative.
+
+For example,
+
+```{r}
+claims %>%
+  filter(Year %in% c(2009, 2010))
+```
+
+retains observations for which `Year` is either 2009 or 2010. The expression
+
+```r
+Year %in% c(2009, 2010)
+```
+
+checks whether the value of `Year` belongs to the specified set of values. This is often more readable than writing several equality conditions joined by `|`. The source material uses the same approach when filtering the claims data by multiple years. 
+
+### Combining selection and filtering
+
+In practice, selecting variables and filtering observations are often performed together.
+
+For example, we may want to examine only the policy number, year, coverage, and claim variables for policies observed in 2009 and 2010:
+
+```{r}
+claims %>%
+  select(PolicyNum, Year, LnCoverage, y, Freq) %>%
+  filter(Year %in% c(2009, 2010))
+```
+
+The operations are performed from left to right. First, the relevant variables are selected. The resulting data are then filtered to retain the required observations.
+
+This illustrates an important principle of data transformation:
+
+$$
+\text{Select relevant variables}
+\longrightarrow
+\text{Filter relevant observations}
+\longrightarrow
+\text{Continue the analysis}.
+$$
+
+The same operations could be performed separately by creating intermediate data frames. However, combining them into a sequence makes the analytical process easier to follow.
+
+### Why selection and filtering matter in actuarial analysis
+
+Selection and filtering are not merely programming operations. They determine **which part of the portfolio is being analyzed**.
+
+For example, an analyst might investigate:
+
+* policies written during a particular year;
+* policyholders within a particular age range;
+* policies belonging to a particular ZIP code;
+* observations with positive claims;
+* a particular set of rating classes.
+
+The resulting summaries describe only the observations that have been retained. Therefore, the filtering criteria should always be stated clearly when reporting an analysis.
+
+This is especially important when analyzing claims. If zero-claim observations are removed before calculating average severity, the resulting statistic describes the severity **conditional on a claim occurring**. It does not describe the average claim amount across all policyholders.
+
+::: {.callout-important}
+
+## Always ask: what observations are being analyzed?
+
+A summary statistic is meaningful only when we know which observations were included in its calculation.
+
+For example,
+
+$$
+\frac{\text{Aggregate Claim Amount}}
+{\text{Number of Claims}}
+$$
+
+describes average claim severity, whereas excluding observations with zero claims before calculating this quantity does not mean that zero claims have been ignored from the underlying portfolio; they simply do not contribute to the denominator because they contain no claim whose severity can be measured.
+:::
+
+Selection and filtering therefore provide the basic tools for defining the **scope of an analysis**. Once the relevant observations and variables have been identified, the next step is often to create new variables that express quantities more directly relevant to the actuarial question.
+
+
+
+
+
+## Creating and Transforming Variables
+
+After selecting the relevant observations and variables, the next step is often to create variables that are more useful for the analysis. A raw dataset may contain the information needed to calculate an actuarial quantity, but that quantity may not yet exist as a variable in the dataset.
+
+For example, a claims dataset may contain the total claim amount and the number of claims, but not the average claim severity. We can create a new variable from the existing variables:
+
+$$
+\text{Average Severity}
+=\frac{\text{Aggregate Claim Amount}}
+{\text{Number of Claims}}.
+$$
+
+In `dplyr`, the `mutate()` function is used to create new variables or transform existing ones. The basic form is:
+
+```r
+data %>%
+  mutate(new_variable = expression)
+```
+
+The expression on the right-hand side determines the values of the new variable. Existing variables can be used directly in the expression.
+
+### Creating a new variable
+
+Suppose the claims dataset contains `y`, representing aggregate claim amount, and `Freq`, representing the number of claims. We can create a variable called `yAvg` representing average claim severity:
+
+```{r}
+claims %>%
+  mutate(yAvg = y / Freq)
+```
+
+The new variable is calculated separately for each observation. The original variables remain available in the resulting data frame.
+
+We can also save the transformed data as a new object:
+
+```{r}
+claims_new <- claims %>%
+  mutate(yAvg = y / Freq)
+```
+
+This creates `claims_new` with the additional variable `yAvg`, while leaving `claims` unchanged.
+
+The source material similarly uses `mutate()` to create `LnCoverageChecked` from the underlying coverage variable and `yAvgChecked` from claim amount divided by claim frequency. 
+
+### Transforming an existing variable
+
+Creating a new variable is not limited to arithmetic operations. A transformation may also change the scale or representation of an existing quantity.
+
+For example, the source claims data contains coverage represented on a logarithmic scale. The underlying coverage variable can be transformed using
+
+```{r}
+claims %>%
+  mutate(LnCoverageChecked = log(BCcov / 10^6))
+```
+
+Here, the new variable is calculated by first converting coverage into millions of dollars and then taking its logarithm. 
+
+The important principle is that a transformation should have a clear interpretation. A variable should not be transformed simply because a particular function is available. The analyst should understand what the resulting quantity represents and why it is appropriate for the analysis.
+
+### Creating actuarial quantities
+
+Many useful insurance variables are derived from existing information.
+
+For example, suppose an observation contains claim count $N$ and exposure $E$. Claim frequency can be represented by
+
+$$
+\text{Frequency}
+=\frac{N}{E}.
+$$
+
+Similarly, if $Y$ denotes aggregate claim amount and $N$ denotes the number of claims, average claim severity is
+
+$$
+\text{Severity}
+=\frac{Y}{N},
+\qquad N>0.
+$$
+
+
+These quantities can be derived from the variables in the dataset. In particular, the average claim severity can be calculated as the total claim amount divided by the number of claims:
+
+```{r}
+claims %>%
+  mutate(
+    severity = y / Freq
+  )
+```
+
+
+
+The precise variable names and definitions depend on the dataset. The important idea is that **derived variables express information already contained in the data in a form that is more directly relevant to the actuarial question**.
+
+### Checking the result
+
+Creating a variable does not guarantee that the resulting values are meaningful. Derived variables should be checked, particularly when the calculation involves division, logarithms, or other operations with restrictions.
+
+For example, the calculation
+
+$$
+\frac{y}{\text{Freq}}
+$$
+
+is not defined when `Freq = 0`. In R, dividing zero claim observations may produce `NaN` when both the numerator and denominator are zero. The source material identifies this issue when calculating average claims and shows that the resulting `NaN` values arise from division by zero. 
+
+A better approach is usually to consider the meaning of the quantity before calculating it. Average claim severity is defined for observations where a claim has occurred, so observations with zero claims should be handled explicitly rather than simply replacing an undefined result after the calculation.
+
+For example:
+
+```{r}
+claims %>%
+  mutate(
+    severity = if_else(Freq > 0, y / Freq, NA_real_)
+  )
+```
+
+This records the severity as missing when there are no claims, reflecting the fact that there is no observed claim severity for such an observation.
+
+::: {.callout-important}
+
+## Undefined is not the same as zero
+
+An observation with zero claims does not have a claim severity of zero.
+
+If
+
+$$
+N=0,
+$$
+
+then
+
+$$
+\frac{Y}{N}
+$$
+
+is undefined. A zero claim count means that no claim occurred; it does not mean that the severity of a claim was zero.
+
+:::
+
+### Transforming variables for analysis
+
+Variable transformation can also make the data easier to analyze. A continuous variable may, for example, be converted into groups when the analysis requires comparisons between categories.
+
+Suppose age is recorded as an exact numerical variable. We might create age groups such as 18--25, 26--35, 36--45, and 46 or older. The resulting categorical variable can then be used to compare claims experience across age groups.
+
+The transformation should be guided by the purpose of the analysis. Grouping a continuous variable simplifies interpretation but also discards some information about the exact values. Consequently, grouping should be justified rather than performed automatically.
+
+### Transforming data as part of the workflow
+
+Creating variables is most useful when it is viewed as part of a sequence of operations rather than as an isolated calculation. For example, we may first select the relevant variables, filter the observations, and then create a derived variable:
+
+```{r}
+claims %>%
+  select(PolicyNum, Year, y, Freq) %>%
+  filter(Year == 2010) %>%
+  mutate(
+    severity = if_else(Freq > 0, y / Freq, NA_real_)
+  )
+```
+
+This sequence expresses the analytical logic directly:
+
+$$
+\text{Select}
+\longrightarrow
+\text{Filter}
+\longrightarrow
+\text{Transform}.
+$$
+
+The resulting data contain only the variables and observations needed for the analysis, together with the newly derived quantity.
+
+This approach becomes increasingly useful as the analysis becomes more complex. Rather than repeatedly creating intermediate datasets, we can combine several operations into a readable sequence using the **pipe**. The next section introduces this way of expressing a data-transformation workflow.
+
+
+
+
+
+## Combining Operations with Pipes
+
+Data transformation often involves several operations performed in sequence. For example, we may first select the variables of interest, then filter the observations, and finally create a new variable. Rather than writing each operation separately and creating intermediate data frames, we can connect the operations using the **pipe operator** `%>%`.
+
+The pipe passes the result of the operation on its left to the function on its right. For example,
+
+```{r}
+256 %>% sqrt()
+```
+
+is equivalent to
+
+```{r}
+sqrt(256)
+```
+
+The result of `sqrt(256)` can then be passed to another function:
+
+```{r}
+256 %>% sqrt() %>% log2()
+```
+
+This is equivalent to
+
+```{r}
+log2(sqrt(256))
+```
+
+The pipe is particularly useful with `dplyr` because its data-manipulation functions take the data frame as their first argument. Thus,
+
+```{r}
+claims %>%
+  select(PolicyNum, Year, LnCoverage, yAvg) %>%
+  filter(Year %in% c(2009, 2010))
+```
+
+is equivalent to performing the operations separately:
+
+```{r}
+new_table <- select(claims, PolicyNum, Year, LnCoverage, yAvg)
+
+new_table <- filter(new_table, Year %in% c(2009, 2010))
+```
+
+The pipe version makes the sequence of operations more explicit. The data flow can be read from left to right:
+
+$$
+\text{claims}
+\longrightarrow
+\text{select variables}
+\longrightarrow
+\text{filter observations}.
+$$
+
+We can extend the sequence by adding further transformations:
+
+```{r}
+claims %>%
+  select(PolicyNum, Year, y, Freq) %>%
+  filter(Year == 2010) %>%
+  mutate(yAvg = y / Freq)
+```
+
+Each step receives the result of the previous step. The complete workflow can therefore be read as:
+
+$$
+\text{Select}
+\longrightarrow
+\text{Filter}
+\longrightarrow
+\text{Transform}.
+$$
+
+This style is particularly useful when the analysis involves several transformations because each step corresponds to a recognizable analytical action. The source material uses the same principle to combine `select()`, `filter()`, and `head()` in a single sequence. 
+
+::: {.callout-note}
+
+## Reading a pipe
+
+When reading a sequence of piped operations, start from the left and proceed to the right.
+
+```r
+data %>%
+  operation_1() %>%
+  operation_2() %>%
+  operation_3()
+```
+
+means that the data are passed through `operation_1`, then the resulting data are passed through `operation_2`, and finally through `operation_3`.
+:::
+
+The pipe does not introduce a new statistical method. Its purpose is to make a sequence of data operations easier to write and understand. The resulting code should still be evaluated according to the actuarial question being addressed.
+
+Once the relevant observations have been selected and the required variables have been created, we can move from individual observations to **summaries of the data**.
+
+## Grouping and Summarizing Data
+
+A large dataset is often too detailed to interpret by inspecting individual observations. **Summary statistics** provide a way to reduce many observations to a small number of quantities that describe important features of the data.
+
+Common summary statistics include the mean, standard deviation, minimum, maximum, median, and quantiles. In actuarial analysis, other summaries such as total exposure, number of claims, aggregate claim amount, claim frequency, and average claim severity are also important.
+
+The `dplyr` package provides the `summarise()` function for calculating summary statistics.
+
+For example, suppose we want to calculate the mean and standard deviation of average claim severity for observations in 2010 where at least one claim occurred:
+
+```{r}
+summary_table <- claims %>%
+  filter(Year == 2010 & Freq > 0) %>%
+  summarise(
+    Mean = mean(yAvg),
+    SD = sd(yAvg)
+  )
+```
+
+The resulting data frame contains one row with the two requested summaries. The names `Mean` and `SD` are chosen by the analyst.
+
+The filtering step is important here. Average claim severity is meaningful only for observations with positive claim counts. The source material uses the same sequence of filtering to calculate the mean and standard deviation of average severity for 2010. 
+
+### Grouping observations
+
+A single summary for the entire dataset may hide important differences between groups. In exploratory analysis, we often want to calculate the same summaries separately for different levels of a variable.
+
+The `group_by()` function divides the data into groups. A subsequent `summarise()` then calculates the requested summaries separately within each group.
+
+For example, instead of calculating average severity for only 2010, we can calculate it separately for each year:
+
+```{r}
+summary_table_all_years <- claims %>%
+  group_by(Year) %>%
+  filter(Freq > 0) %>%
+  summarise(
+    Mean = mean(yAvg),
+    SD = sd(yAvg)
+  )
+```
+
+The result contains one row for each year, with the mean and standard deviation calculated using the observations belonging to that year. The source material demonstrates this use of `group_by(Year)` followed by `summarise()`. 
+
+The conceptual difference is:
+
+```r
+summarise(...)
+```
+
+calculates a summary for the selected data as a whole, whereas
+
+```r
+group_by(variable) %>%
+  summarise(...)
+```
+
+calculates the summary separately for each level of `variable`.
+
+This distinction is fundamental to actuarial analysis because risk experience is rarely homogeneous across an entire portfolio.
+
+
+### Grouping by rating variables
+
+Grouping becomes particularly useful when investigating **rating variables**. For example, we may want to compare claims experience across characteristics such as entity type, alarm credit, no-claim credit, or fire class. The same principle applies to insurance variables such as age group, ZIP code, vehicle type, or bonus-malus level.
+
+In the claims dataset, entity type is represented by several binary indicator variables, such as `TypeCounty`, `TypeMisc`, `TypeSchool`, and `TypeTown`, rather than by a single categorical variable. If we want to analyse claims experience by entity type, we can first combine these indicators into a single categorical variable.
+
+For example:
+
+
+```{r}
+claims <- claims %>%
+  mutate(
+    EntityType = case_when(
+      TypeCounty == 1 ~ "County",
+      TypeMisc == 1 ~ "Misc",
+      TypeSchool == 1 ~ "School",
+      TypeTown == 1 ~ "Town",
+      TypeVillage == 1 ~ "Village",
+      TRUE ~ "City"
+    )
+  )
+
+claims
+```
+
+The `case_when()` function checks the conditions in order and assigns the corresponding category. Here, the remaining observations are classified as `City`.
+
+Once `EntityType` has been created, we can use it with `group_by()` to compare claims experience across the different entity types. For example, if `yAvg` represents average claim severity:
+
+```{r}
+claims %>%
+  group_by(EntityType) %>%
+  summarise(
+    Mean = mean(yAvg, na.rm = TRUE),
+    SD = sd(yAvg, na.rm = TRUE)
+  )
+```
+
+This produces a summary of the mean and standard deviation of claim severity for each entity type. The same approach can be applied to other rating variables once they are represented in a form suitable for grouping.
+
+
+The resulting table allows us to compare the observed experience of different groups. However, differences in averages should always be considered together with the amount of data supporting each group. A group with very little exposure or few claims may have an extreme observed value simply because of random variation.
+
+
+### Summarizing insurance experience
+
+The same grouping principle can be used to produce more directly actuarial summaries.
+
+In this dataset, `Freq` represents the number of claims and `y` represents the aggregate claim amount. We can therefore calculate the total number of claims and aggregate claim amount for each rating group:
+
+```{r}
+claims %>%
+  group_by(EntityType) %>%
+  summarise(
+    claims = sum(Freq),
+    amount = sum(y)
+  )
+```
+
+These totals provide a simple description of the volume of claims and the total cost of claims within each group.
+
+If `yAvg` represents the average claim severity for each observation, we can also summarize severity by rating group:
+
+```{r}
+claims %>%
+  group_by(EntityType) %>%
+  summarise(
+    mean_severity = mean(yAvg, na.rm = TRUE),
+    sd_severity = sd(yAvg, na.rm = TRUE)
+  )
+```
+
+Alternatively, when `y` is the aggregate claim amount and `Freq` is the corresponding claim count, the overall average severity for each group can be calculated as:
+
+```{r}
+claims %>%
+  group_by(EntityType) %>%
+  summarise(
+    claims = sum(Freq),
+    amount = sum(y),
+    severity = amount / claims
+  )
+```
+
+Here, `severity` represents the average amount per claim within each `EntityType`. The calculation is based on the total claim amount divided by the total number of claims, rather than taking a simple average of individual observations.
+
+These summaries illustrate two important dimensions of claims experience:
+
+$$
+\text{Claims experience}
+=\text{Frequency}
+\times
+\text{Severity}.
+$$
+
+In this dataset, we can examine claim counts and severity directly. A conventional claim frequency, however, requires an appropriate measure of exposure. Since exposure is not available in this dataset, we do not calculate frequency as claims divided by exposure here. Exposure-based frequency measures will be introduced when a dataset containing exposure information is used.
+
+::: {.callout-important}
+
+## Volume and experience
+
+When comparing groups, do not look only at the calculated risk measure. It is also important to consider the **volume of observations or claims** supporting the measure.
+
+For example, two groups may have similar average severities but very different numbers of claims. Conversely, a group with an unusually high average severity may contain only a small number of claims, making the observed estimate relatively unstable.
+
+The number of observations, claim counts, and aggregate claim amounts therefore provide useful context when interpreting differences between rating groups.
+:::
+
+Grouping and summarizing provide a systematic way to compare claims experience across risk factors. These summaries form a useful starting point for actuarial analysis before more formal frequency, severity, and premium models are considered.
+
+
+
+## Insurance Summaries
+
+The grouping and summarizing operations introduced above allow us to move from individual observations to quantities that are more directly relevant to actuarial analysis. In insurance, we are often interested in the number and cost of claims and in measures that allow claims experience to be compared across groups.
+
+Several basic quantities are particularly important.
+
+### Claim count
+
+The **claim count** is the total number of claims observed within a group. In the current dataset, `Freq` represents the number of claims for each observation. We can therefore calculate the total claim count for each `EntityType` as follows:
+
+```{r}
+claims %>%
+  group_by(EntityType) %>%
+  summarise(
+    claims = sum(Freq)
+  )
+```
+
+The resulting value represents the total number of claims observed in each group.
+
+### Aggregate claim amount
+
+The **aggregate claim amount** is the total amount paid or incurred for claims within a group. If `y` represents the aggregate claim amount for each observation, it can be obtained by summing `y`:
+
+```{r}
+claims %>%
+  group_by(EntityType) %>%
+  summarise(
+    claims = sum(Freq),
+    amount = sum(y)
+  )
+```
+
+The claim count and aggregate claim amount describe two different aspects of claims experience. A group may have many claims but relatively low total claim costs, or relatively few claims but a high total claim amount.
+
+### Claim severity
+
+**Claim severity** measures the average amount associated with a claim. At the group level, it can be calculated as aggregate claim amount divided by the total number of claims:
+
+$$
+\text{Severity}_j
+=\frac{\text{Aggregate claims}_j}
+{\text{Claims}_j},
+$$
+
+where $j$ denotes a particular rating group.
+
+For example:
+
+```{r}
+claims %>%
+  group_by(EntityType) %>%
+  summarise(
+    claims = sum(Freq),
+    amount = sum(y),
+    severity = amount / claims
+  )
+```
+
+This calculation gives the average claim amount for each `EntityType`. It is preferable to simply taking the average of individual claim amounts when observations may represent different numbers of claims, because the group-level calculation uses the total claim amount and total number of claims.
+
+### Exposure and claim frequency
+
+In many insurance applications, claim counts are interpreted relative to the amount of **exposure** underlying the business. Exposure measures the amount of risk insured or the period for which the risk was covered. For example, one policy-year may represent one unit of exposure.
+
+When exposure is available, the claim frequency for group $j$ can be calculated as
+
+$$
+\text{Frequency}_j
+=\frac{\text{Claims}_j}
+{\text{Exposure}_j}.
+$$
+
+This is different from claim count. A group with 100 claims does not necessarily have a higher claim frequency than a group with 50 claims if the first group has substantially more exposure.
+
+The current claims dataset does not contain an exposure variable. Therefore, we do not calculate exposure-based claim frequency from this dataset. Instead, we focus on claim counts, aggregate claim amounts, and severity. Exposure-based frequency will be introduced when we work with a dataset containing an appropriate exposure measure.
+
+### Frequency, severity, and risk premium
+
+In actuarial analysis, frequency and severity are often combined to describe the expected claim cost per unit of exposure. Conceptually,
+
+$$
+\text{Risk premium}
+=\text{Frequency}
+\times
+\text{Severity}.
+$$
+
+Thus, when exposure is available,
+
+$$
+\text{Risk premium}_j
+=\frac{\text{Claims}_j}
+{\text{Exposure}_j}
+\times
+\frac{\text{Aggregate claims}_j}
+{\text{Claims}_j}
+=\frac{\text{Aggregate claims}_j}
+{\text{Exposure}_j}.
+$$
+
+This relationship provides an important connection between the basic summaries and later actuarial pricing models. Frequency describes how often claims occur, severity describes the average cost of a claim, and their product gives the expected claim cost per unit of exposure.
+
+For the current dataset, however, the quantities that can be directly summarized are claim count, aggregate claim amount, and severity:
+
+```{r}
+claims %>%
+  group_by(EntityType) %>%
+  summarise(
+    claims = sum(Freq),
+    amount = sum(y),
+    severity = amount / claims
+  )
+```
+
+These summaries provide a first description of claims experience across rating groups. They do not, by themselves, establish that one group should be charged a higher premium than another. Such a conclusion requires consideration of the amount of business represented by each group and, ultimately, an appropriate statistical model.
+
+::: {.callout-note}
+
+## Key actuarial quantities
+
+When exposure is available, the basic relationships can be summarized as
+
+$$
+\text{Frequency}
+=\frac{\text{Claims}}{\text{Exposure}},
+$$
+
+$$
+\text{Severity}
+=\frac{\text{Aggregate claims}}{\text{Claims}},
+$$
+
+and
+
+$$
+\text{Risk premium}
+=\text{Frequency}\times\text{Severity}.
+$$
+
+Equivalently,
+
+$$
+\text{Risk premium}
+=\frac{\text{Aggregate claims}}{\text{Exposure}}.
+$$
+
+The current dataset allows us to examine claims and severity, but not exposure-based frequency or risk premium.
+:::
+
+
+
+
+
+
+
+
+## Interpreting Insurance Summaries
+
+Calculating insurance summaries is only the first step. In actuarial analysis, the more important question is what these summaries tell us about the underlying claims experience. A difference between two groups does not automatically imply that one group represents a higher-risk class. The size and composition of each group must also be considered.
+
+### Comparing groups
+
+Suppose we summarize claims experience by `EntityType`:
+
+```{r}
+claims %>%
+  group_by(EntityType) %>%
+  summarise(
+    observations = n(),
+    claims = sum(Freq),
+    amount = sum(y),
+    severity = amount / claims
+  )
+```
+
+The resulting table allows us to compare groups using several measures. For example, one group may have a higher aggregate claim amount simply because it contains more observations. Another group may have fewer claims but a substantially higher average severity.
+
+It is therefore useful to consider **experience** and **volume** together.
+
+### Experience and volume
+
+The term **experience** refers to the observed claims results, such as the number or cost of claims. **Volume** refers to the amount of business supporting those results, such as the number of observations, claims, or exposure.
+
+For example, consider two groups:
+
+| Group | Observations | Claims | Aggregate claims | Severity |
+| ----- | -----------: | -----: | ---------------: | -------: |
+| A     |        1,000 |    100 |          500,000 |    5,000 |
+| B     |           20 |      5 |           40,000 |    8,000 |
+
+Group B has a higher observed severity, but this result is based on only five claims. Group A has considerably more claims and therefore provides more observations from which to assess the underlying claims experience.
+
+This does not mean that the result for Group B should be ignored. Rather, the difference should be interpreted with appropriate caution.
+
+::: {.callout-important}
+
+## Volume matters
+
+A calculated summary should always be considered together with the amount of data supporting it.
+
+A group with a small number of observations or claims can produce an extreme observed result simply through random variation. Conversely, a result based on a large volume of business may provide more stable evidence of an underlying difference in risk.
+
+Therefore, when comparing rating groups, ask both:
+
+* **What is the observed claims experience?**
+* **How much data support that experience?**
+
+:::
+
+### Claim count is not frequency
+
+It is also important to distinguish **claim count** from **claim frequency**.
+
+A claim count measures the number of claims:
+
+$$
+\text{Claims}*j = \sum_i N*{ij}.
+$$
+
+A claim frequency relates the number of claims to the amount of exposure:
+
+$$
+\text{Frequency}_j
+=\frac{\text{Claims}_j}{\text{Exposure}_j}.
+$$
+
+Consequently, comparing claim counts between groups can be misleading when the groups contain different amounts of business.
+
+For example, a group with 200 claims may appear to have worse experience than a group with 100 claims. However, if the first group has 10,000 exposure units while the second has only 1,000, their claim frequencies are
+
+$$
+\frac{200}{10{,}000}=0.02
+$$
+
+and
+
+$$
+\frac{100}{1{,}000}=0.10,
+$$
+
+respectively. The group with fewer claims actually has the higher claim frequency.
+
+### Observed differences are not necessarily causal
+
+Differences between rating groups should also be interpreted carefully. A group may have higher observed severity because of another characteristic that is associated with both the group and claim severity.
+
+For example, suppose one `EntityType` has higher observed claim severity. This does not by itself establish that the type of entity causes higher claim severity. The group may differ from other groups in coverage, deductible, location, or other risk characteristics.
+
+This is one reason why simple grouped summaries are useful for **exploratory analysis**, but are not sufficient on their own for determining rating relativities or premiums.
+
+### From summaries to actuarial judgment
+
+Grouped summaries provide an initial view of the claims experience associated with different rating variables. They help identify patterns, unusual observations, and potential differences between groups.
+
+However, actuarial analysis requires more than identifying which group has the largest observed value. A sound interpretation considers:
+
+1. the observed claims experience;
+2. the volume of business supporting the experience;
+3. the definition of the measure being compared;
+4. other characteristics that may differ between groups; and
+5. the uncertainty associated with the observed results.
+
+These considerations provide the bridge from **descriptive analysis** to **actuarial modelling**. Statistical models can then be used to assess the relationship between claims outcomes and multiple rating variables simultaneously, rather than relying only on unadjusted comparisons between groups.
+
+::: {.callout-note}
+
+## From data to actuarial decision
+
+The purpose of data manipulation and summarization is not simply to produce tables. The objective is to obtain evidence that can support actuarial judgment.
+
+A useful progression is:
+
+$$
+\text{Data}
+\rightarrow
+\text{Summary}
+\rightarrow
+\text{Comparison}
+\rightarrow
+\text{Interpretation}
+\rightarrow
+\text{Actuarial decision}.
+$$
+
+The summaries developed in this chapter provide the descriptive foundation for the statistical and actuarial models considered later.
+:::
+
+::: {.callout-note}
+
+## Beyond the examples in this chapter
+
+The operations introduced in this chapter cover the main `dplyr` tools needed for the analyses that follow, but they are not an exhaustive list. `dplyr` also provides functions for joining datasets, arranging observations, counting records, handling missing values, working with distinct observations, and performing more advanced grouped operations.
+
+The purpose here is to establish the core principles of data manipulation rather than to cover every available function. The same principles can be extended to more complex datasets and analyses as needed.
+
+:::

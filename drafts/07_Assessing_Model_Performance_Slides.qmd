@@ -1,0 +1,1144 @@
+---
+title: "Chapter 7: Assessing Model Performance"
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    theme: simple
+    scrollable: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load your global R packages
+library(tidyverse)
+library(tidymodels)
+
+insurance <- read_csv("../data/insuranceKaggle.csv")
+
+```
+
+
+# Assessing Model Performance
+
+## From Predictions to Model Evaluation
+
+In the previous chapter, we fitted linear regression models to insurance data and used them to make predictions.
+
+But a prediction is useful only if it is reasonably close to the actual outcome.
+
+> **How well does the model predict?**
+
+This chapter focuses on measuring and comparing predictive performance.
+
+---
+
+## Learning Outcomes
+
+By the end of this chapter, students should be able to:
+
+* explain why predictive models need to be evaluated;
+* distinguish between training and test performance;
+* calculate and interpret RMSE, MAE, $R^2$, and MAPE;
+* use `yardstick` to evaluate regression predictions;
+* use `metric_set()` to calculate multiple metrics; and
+* compare the predictive performance of regression models.
+
+---
+
+## Why Evaluate Model Performance?
+
+A fitted model can produce predictions for observed data.
+
+However, we need to know whether those predictions are accurate.
+
+| Actual charge | Predicted charge | Absolute error |
+| ------------: | ---------------: | -------------: |
+|       $15,000 |          $13,000 |         $2,000 |
+|       $50,000 |          $30,000 |        $20,000 |
+
+A performance measure summarizes prediction errors across many observations.
+
+> Different measures emphasize different aspects of prediction accuracy.
+
+---
+
+## Prediction Error
+
+For observation $i$, let
+
+* $y_i$ = actual outcome
+* $\hat{y}_i$ = predicted outcome
+
+The prediction error is
+
+$$
+e_i = y_i-\hat{y}_i.
+$$
+
+For example,
+
+$$
+y_i=15{,}000,
+\qquad
+\hat{y}_i=13{,}000,
+$$
+
+so
+
+$$
+e_i=2{,}000.
+$$
+
+---
+
+## Why Not Average the Errors?
+
+Prediction errors can be positive or negative.
+
+For example:
+
+$$
+-2{,}000
+\qquad\text{and}\qquad
+2{,}000.
+$$
+
+Their average is zero, even though both predictions are imperfect.
+
+We therefore transform the errors before averaging them.
+
+Common approaches include:
+
+$$
+|e_i|
+\qquad\text{and}\qquad
+e_i^2.
+$$
+
+
+# Training and Test Data
+
+## Training Data and Test Data
+
+A predictive model should be evaluated using observations that were **not used to fit the model**.
+
+$$
+\text{Complete dataset}
+\longrightarrow
+\begin{cases}
+\text{Training data} & \text{fit the model}\\
+\text{Test data} & \text{evaluate predictions}
+\end{cases}
+$$
+
+The basic workflow is:
+
+**Split → Fit → Predict → Evaluate**
+
+---
+
+## Why Not Evaluate on Training Data?
+
+Suppose a model is fitted using 800 observations.
+
+We could calculate prediction errors for those same observations.
+
+However, the model has already seen these observations.
+
+Training performance can therefore give an **optimistic impression** of performance on new observations.
+
+> **Good training performance does not necessarily imply good predictive performance.**
+
+---
+
+## A Simple Train–Test Split
+
+Suppose our insurance dataset contains 1,000 policies.
+
+| Dataset       | Purpose              | Observations |
+| ------------- | -------------------- | -----------: |
+| Training data | Fit the model        |          800 |
+| Test data     | Evaluate predictions |          200 |
+
+The model is fitted using **only the training data**.
+
+The test data are kept separate until predictions are evaluated.
+
+---
+
+## Splitting Data with `rsample`
+
+```{r}
+set.seed(123)
+
+insurance_split <- initial_split(
+  insurance,
+  prop = 0.80
+)
+
+insurance_train <- training(insurance_split)
+insurance_test  <- testing(insurance_split)
+```
+
+* `prop = 0.80` allocates approximately 80% to training.
+* The remaining observations are used for testing.
+* `set.seed()` makes the random split reproducible.
+
+---
+
+## Checking the Split
+
+```{r}
+nrow(insurance_train)
+nrow(insurance_test)
+```
+
+The exact numbers depend on the dataset.
+
+The important point is:
+
+> **The test observations were not used to fit the model.**
+
+---
+
+## Keep the Test Data Separate
+
+The test data should remain separate during model development.
+
+$$
+\boxed{
+\text{Fit}
+\rightarrow
+\text{Predict}
+\rightarrow
+\text{Evaluate}
+}
+$$
+
+If the test observations are used to fit or tune the model, they are no longer an independent test of predictive performance.
+
+
+
+# Regression Performance Metrics
+
+## Common Regression Metrics
+
+Four useful measures are:
+
+| Metric    | Main idea                                  |
+| --------- | ------------------------------------------ |
+| **RMSE**  | Penalizes large errors strongly            |
+| **MAE**   | Average absolute prediction error          |
+| **$R^2$** | Proportion of variation explained          |
+| **MAPE**  | Average error relative to the actual value |
+
+Each metric answers a slightly different question.
+
+---
+
+## Mean Absolute Error
+
+The **Mean Absolute Error (MAE)** is
+
+$$
+\operatorname{MAE}
+=
+\frac{1}{n}
+\sum_{i=1}^{n}
+|y_i-\hat{y}_i|.
+$$
+
+It measures the average absolute difference between actual and predicted values.
+
+> **How far away are our predictions from the actual charges, on average?**
+
+MAE is expressed in the same units as the response.
+
+---
+
+## Interpreting MAE
+
+Suppose
+
+$$
+\operatorname{MAE}=4{,}500.
+$$
+
+The model's predictions differ from the actual charges by about **$4,500 on average**, in absolute terms.
+
+A smaller MAE indicates smaller typical prediction errors.
+
+---
+
+## Root Mean Squared Error
+
+The **Root Mean Squared Error (RMSE)** is
+
+$$
+\operatorname{RMSE}
+=
+\sqrt{
+\frac{1}{n}
+\sum_{i=1}^{n}
+(y_i-\hat{y}_i)^2
+}.
+$$
+
+The errors are squared before averaging.
+
+Therefore, **large prediction errors receive greater weight**.
+
+---
+
+## Interpreting RMSE
+
+Suppose
+
+$$
+\operatorname{RMSE}=7{,}000.
+$$
+
+The model has an RMSE of $7,000.
+
+A smaller RMSE indicates better predictive performance.
+
+> RMSE is particularly sensitive to unusually large prediction errors.
+
+---
+
+## MAE versus RMSE
+
+Consider two models with similar typical errors.
+
+| Model   |    MAE |   RMSE |
+| ------- | -----: | -----: |
+| Model A | $4,500 | $5,500 |
+| Model B | $4,500 | $8,000 |
+
+Both models have the same MAE.
+
+Model B has a larger RMSE because its large errors receive greater weight.
+
+> **MAE describes typical error; RMSE emphasizes large errors.**
+
+---
+
+## Coefficient of Determination
+
+The coefficient of determination, $R^2$, is
+
+$$
+R^2
+=
+1-
+\frac{
+\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
+}{
+\sum_{i=1}^{n}(y_i-\bar{y})^2
+}.
+$$
+
+For a standard linear regression with an intercept,
+
+$$
+R^2
+=
+\text{proportion of variation explained by the model}.
+$$
+
+---
+
+## Interpreting $R^2$
+
+Suppose
+
+$$
+R^2=0.65.
+$$
+
+The model explains approximately **65% of the variation** in the observed charges.
+
+The remaining variation is not explained by the predictors included in the model.
+
+> $R^2$ describes explained variation; it does not directly measure the size of prediction errors.
+
+---
+
+## $R^2$ Is Not Prediction Accuracy
+
+A high $R^2$ does not automatically mean that individual predictions are accurate.
+
+For insurance data, substantial variation may remain even when the model explains an important part of the overall variation.
+
+Therefore, it is useful to examine $R^2$ together with:
+
+$$
+\boxed{\text{RMSE and MAE}}
+$$
+
+---
+
+## Mean Absolute Percentage Error
+
+The **Mean Absolute Percentage Error (MAPE)** is
+
+$$
+\operatorname{MAPE}
+=
+\frac{100}{n}
+\sum_{i=1}^{n}
+\left|
+\frac{y_i-\hat{y}_i}{y_i}
+\right|.
+$$
+
+It expresses prediction error relative to the actual outcome.
+
+> **How large are the prediction errors relative to the actual values?**
+
+---
+
+## A Limitation of MAPE
+
+MAPE involves division by the actual value:
+
+$$
+\left|
+\frac{y_i-\hat{y}_i}{y_i}
+\right|.
+$$
+
+If $y_i=0$, MAPE is undefined.
+
+Very small actual values can also produce very large percentage errors.
+
+Therefore, MAPE should be interpreted carefully.
+
+---
+
+## Comparing the Metrics
+
+| Metric    | Measures                  | Large errors     |
+| --------- | ------------------------- | ---------------- |
+| **MAE**   | Typical absolute error    | Less influence   |
+| **RMSE**  | Squared-error magnitude   | More influence   |
+| **$R^2$** | Explained variation       | —                |
+| **MAPE**  | Relative prediction error | Can be sensitive |
+
+No single metric describes every aspect of model performance.
+
+
+# Evaluating and Comparing Models
+
+## Fit the Model Using Training Data
+
+```{r}
+lm_mod <- linear_reg() %>%
+  set_engine("lm")
+
+lm_fit <- lm_mod %>%
+  fit(
+    charges ~ age,
+    data = insurance_train
+  )
+```
+
+The model is fitted using **only `insurance_train`**.
+
+---
+
+## Predict the Test Data
+
+```{r}
+test_predictions <- predict(
+  lm_fit,
+  new_data = insurance_test
+)
+```
+
+The predictions contain the estimated charges for the test observations.
+
+```{r}
+head(test_predictions)
+```
+
+---
+
+## Combine Predictions with Actual Values
+
+```{r}
+test_results <- bind_cols(
+  insurance_test %>%
+    select(charges),
+  test_predictions
+)
+```
+
+We now have both quantities needed for evaluation:
+
+| Actual `charges` | Predicted `.pred` |
+| ---------------: | ----------------: |
+|          $12,400 |           $14,100 |
+|           $8,900 |           $11,200 |
+|          $23,500 |           $18,900 |
+|              ... |               ... |
+
+---
+
+## Evaluating Predictions with `yardstick`
+
+The `yardstick` package provides functions for calculating model performance metrics.
+
+```{r}
+rmse(
+  test_results,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+Here:
+
+* `truth` identifies the actual outcome;
+* `estimate` identifies the model prediction.
+
+---
+
+## Calculating MAE and $R^2$
+
+```{r}
+mae(
+  test_results,
+  truth = charges,
+  estimate = .pred
+)
+
+rsq(
+  test_results,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+Each function returns a performance measure for the test predictions.
+
+---
+
+## Calculating MAPE
+
+```{r}
+mape(
+  test_results,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+MAPE measures prediction error relative to the actual charges.
+
+Use it with care when actual outcomes can be zero or very small.
+
+---
+
+## Calculate Several Metrics at Once
+
+`metric_set()` allows us to calculate several metrics using the same data.
+
+```{r}
+regression_metrics <- metric_set(
+  rmse,
+  mae,
+  rsq,
+  mape
+)
+```
+
+Then:
+
+```{r}
+regression_metrics(
+  test_results,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+---
+
+## Reading the Results
+
+The test-set results are:
+
+| Metric | Estimate |
+| ------ | -------: |
+| RMSE   |  $10,253 |
+| MAE    |   $8,509 |
+| $R^2$  |    0.176 |
+| MAPE   |     135% |
+
+The measures describe different aspects of prediction performance.
+
+* **RMSE:** prediction errors are influenced strongly by large errors.
+* **MAE:** the average absolute prediction error is about $8,509.
+* **$R^2$:** the model explains about 17.6% of the variation in charges.
+* **MAPE:** the average absolute percentage error is about 135%.
+
+
+---
+
+## What Makes a Model Better?
+
+For error-based metrics:
+
+$$
+\boxed{\text{Smaller is better}}
+$$
+
+for:
+
+* RMSE
+* MAE
+* MAPE
+
+For $R^2$:
+
+$$
+\boxed{\text{Larger is better}}
+$$
+
+when comparing models on the same evaluation data.
+
+The most relevant metric depends on the modelling objective.
+
+---
+
+# Interpreting Model Performance
+
+## Interpreting Model Performance
+
+A model’s performance should be interpreted by considering the performance measures **together**.
+
+Each metric describes a different aspect of prediction error.
+
+> **No single performance measure provides a complete picture of model performance.**
+
+---
+
+## Test-Set Performance: `charges ~ age`
+
+The `charges ~ age` model produces the following results on the test data:
+
+| Metric |      Value |
+| ------ | ---------: |
+| RMSE   | $10,253.22 |
+| MAE    |  $8,509.31 |
+| $R^2$  |      0.176 |
+| MAPE   |    134.92% |
+
+The measures provide different information about the model's predictions.
+
+---
+
+## Interpreting RMSE and MAE
+
+**RMSE = $10,253.22**
+
+* Larger prediction errors receive greater weight.
+* The relatively large RMSE indicates that some prediction errors are substantial.
+
+**MAE = $8,509.31**
+
+* Predictions differ from actual charges by about **$8,509 on average** in absolute terms.
+* MAE is expressed in the same units as insurance charges.
+
+---
+
+## Interpreting $R^2$
+
+$$
+R^2 = 0.176
+$$
+
+The model accounts for approximately **17.6% of the variation** in insurance charges.
+
+This means that age alone accounts for only part of the differences in charges among individuals.
+
+> **$R^2$ measures explained variation, not the size of prediction errors.**
+
+---
+
+## Interpreting MAPE
+
+$$
+\operatorname{MAPE}=134.92\%
+$$
+
+The model has a large average percentage error.
+
+Percentage-based measures should be interpreted carefully because they can become very large when actual outcome values are relatively small.
+
+Therefore, MAPE should be considered together with measures such as MAE and RMSE.
+
+---
+
+## Putting the Measures Together
+
+The four measures tell us different things:
+
+| Measure | What it tells us                                            |
+| ------- | ----------------------------------------------------------- |
+| RMSE    | How large errors are, with greater emphasis on large errors |
+| MAE     | Average absolute prediction error                           |
+| $R^2$   | Proportion of variation explained by the model              |
+| MAPE    | Average error relative to the actual value                  |
+
+Considering them together gives a more complete picture of predictive performance.
+
+---
+
+## What Do These Results Suggest?
+
+The `charges ~ age` model does **not provide highly accurate individual predictions**.
+
+The test results show:
+
+* relatively large prediction errors;
+* only 17.6% of variation explained; and
+* a large average percentage error.
+
+However, this does **not** mean that the model is useless.
+
+A simple model can still be useful for:
+
+* demonstrating the modelling process;
+* understanding the relationship between age and charges; and
+* providing a baseline for comparison with more complex models.
+
+---
+
+## Performance Depends on the Modelling Objective
+
+A metric value should not be interpreted in isolation.
+
+Its meaning depends on:
+
+* what is being predicted;
+* the scale of the outcome;
+* the purpose of the model; and
+* how the predictions will be used.
+
+> **Performance measures should always be interpreted in the context of the modelling objective and the outcome being predicted.**
+
+---
+
+## Improving Predictive Performance
+
+The `charges ~ age` model uses only one predictor.
+
+Insurance charges may also depend on other characteristics, such as:
+
+* BMI;
+* smoking status;
+* number of children; and
+* region.
+
+Including relevant predictors may improve predictive performance.
+
+However, the improvement should be assessed using data that were **not used to fit the model**.
+
+---
+
+## Comparing Models Fairly
+
+When comparing two models, use:
+
+$$
+\boxed{
+\text{same test data}
++
+\text{same performance measures}
+}
+$$
+
+This allows us to determine whether a more complex model provides different predictive performance from a simpler model under the same evaluation conditions.
+
+---
+
+## From Interpretation to Model Comparison
+
+We have now evaluated the performance of the `charges ~ age` model.
+
+Next, we compare two regression models:
+
+$$
+\text{charges} \sim \text{age}
+$$
+
+and
+
+$$
+\text{charges} \sim \text{age}+\text{bmi}.
+$$
+
+Both models will be evaluated using the **same test data** and the **same performance measures**.
+
+
+
+---
+
+## Comparing Two Models
+
+Model performance becomes more useful when we compare different models for the same prediction task.
+
+Suppose we want to predict insurance charges using:
+
+$$
+\text{Model 1: } \text{charges} \sim \text{age}
+$$
+
+and
+
+$$
+\text{Model 2: } \text{charges} \sim \text{age}+\text{bmi}.
+$$
+
+Both models are fitted using the same training data and evaluated using the same test data.
+
+---
+
+## Fitting the Models
+
+```{r}
+# Model 1: age only
+model_age <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(charges ~ age, data = insurance_train)
+
+# Model 2: age and BMI
+model_age_bmi <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(charges ~ age + bmi, data = insurance_train)
+```
+
+The only difference between the models is the addition of `bmi`.
+
+---
+
+## Generate Test Predictions
+
+```{r}
+test_age <- insurance_test %>%
+  bind_cols(
+    predict(model_age, new_data = insurance_test)
+  )
+
+test_age_bmi <- insurance_test %>%
+  bind_cols(
+    predict(model_age_bmi, new_data = insurance_test)
+  )
+```
+
+Each model generates predictions for the **same test observations**.
+
+---
+
+## Evaluate the Two Models
+
+We use the same `regression_metrics` object introduced earlier.
+
+```{r}
+regression_metrics(
+  test_age,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+```{r}
+regression_metrics(
+  test_age_bmi,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+Using the same metrics makes the two models directly comparable.
+
+---
+
+## Comparing Predictive Performance
+
+The test-set results are:
+
+| Metric |   Age only |  Age + BMI |
+| ------ | ---------: | ---------: |
+| RMSE   | $10,253.22 | $10,156.70 |
+| MAE    |  $8,509.31 |  $8,351.08 |
+| $R^2$  |      0.176 |      0.178 |
+| MAPE   |    134.92% |    132.23% |
+
+The `age + bmi` model has slightly better performance on all four measures.
+
+---
+
+## What Does the Comparison Suggest?
+
+Adding `bmi` produces a **small improvement** in predictive performance on the test data.
+
+* RMSE decreases from $10,253.22 to $10,156.70.
+* MAE decreases from $8,509.31 to $8,351.08.
+* $R^2$ increases from 0.176 to 0.178.
+* MAPE decreases from 134.92% to 132.23%.
+
+The differences are relatively small.
+
+---
+
+## Why Use the Same Test Data?
+
+A fair model comparison requires the models to be evaluated on the **same observations**.
+
+Otherwise, differences in performance may partly reflect differences in the evaluation samples.
+
+$$
+\boxed{
+\text{Same models}
++
+\text{same test data}
++
+\text{same metrics}
+}
+$$
+
+provides a consistent basis for comparison.
+
+---
+
+## Adding a Predictor Does Not Guarantee a Large Improvement
+
+The second model includes additional information through `bmi`.
+
+However, the improvement in test-set performance is small.
+
+> **Adding a predictor does not necessarily produce a substantial improvement in predictive performance.**
+
+The usefulness of an additional predictor should therefore be assessed using data that were not used to fit the model.
+
+---
+
+## Key Idea
+
+When comparing predictive models:
+
+* use the **same test data**;
+* use the **same performance measures**; and
+* examine the **size of the improvement**, not simply whether one model has a better metric.
+
+This provides a consistent basis for assessing whether a change in the model improves its predictions.
+
+---
+
+## From Model Comparison to Generalization
+
+The comparison above uses **test-set performance**.
+
+But why is test performance more informative about prediction on new observations than training performance?
+
+In the next section, we examine **generalization** and why a model can perform well on its training data but less well on unseen data.
+
+
+---
+
+## Generalization
+
+A predictive model should perform well not only on observations used to fit it, but also on new observations.
+
+This ability is called **generalization**.
+
+$$
+\boxed{
+\text{Good predictive model}
+\approx
+\text{useful predictions on new data}
+}
+$$
+
+The test set provides one way to assess generalization.
+
+---
+
+## Overfitting
+
+**Overfitting** occurs when a model captures patterns specific to the training data that do not generalize well to new observations.
+
+Conceptually:
+
+$$
+\text{Training performance}
+\quad \uparrow
+$$
+
+while
+
+$$
+\text{Test performance}
+\quad \downarrow
+$$
+
+A model can fit the training data very well without making accurate predictions for new data.
+
+---
+
+## Model Complexity
+
+A more complex model can fit the training data more closely.
+
+However, greater complexity does not guarantee better predictions for new observations.
+
+The goal is not:
+
+> **Fit the training data as closely as possible.**
+
+The goal is:
+
+> **Make useful predictions for new observations.**
+
+---
+
+## A Complete Evaluation Workflow
+
+```text
+Insurance data
+      ↓
+Split into training and test data
+      ↓
+Fit model using training data
+      ↓
+Generate test predictions
+      ↓
+Compare predictions with actual outcomes
+      ↓
+Calculate performance metrics
+      ↓
+Interpret predictive performance
+      ↓
+Compare alternative models
+```
+
+
+# Exercises and Summary
+
+## Exercise 1: Create a Train–Test Split
+
+**Split the `insurance` dataset into training and test data.**
+
+* Use 80% for training.
+* Set a seed for reproducibility.
+* Check the number of observations in each set.
+
+---
+
+## Exercise 2: Fit and Predict
+
+**Fit a linear regression model for `charges` using `age`.**
+
+Use the training data to fit the model and generate predictions for the test data.
+
+---
+
+## Exercise 3: Evaluate the Predictions
+
+**Calculate RMSE, MAE, and $R^2$ for the test predictions.**
+
+Then briefly describe what each measure tells you about the model.
+
+---
+
+## Exercise 4: Compare Two Models
+
+**Compare the predictive performance of two regression models.**
+
+For example:
+
+$$
+\text{charges} \sim \text{age}
+$$
+
+and
+
+$$
+\text{charges}
+\sim
+\text{age}+\text{bmi}+\text{smoker}.
+$$
+
+Use the same test data for both models.
+
+---
+
+## Exercise 5: Interpret Model Performance
+
+Suppose two models produce:
+
+| Model   |   RMSE |    MAE | $R^2$ |
+| ------- | -----: | -----: | ----: |
+| Model A | $6,500 | $4,100 |  0.70 |
+| Model B | $5,200 | $3,400 |  0.82 |
+
+**Compare the models using the three measures.**
+
+Explain what the results suggest about their predictive performance.
+
+---
+
+## Key Takeaways
+
+$$
+\boxed{
+\text{Fit}
+\rightarrow
+\text{Predict}
+\rightarrow
+\text{Evaluate}
+}
+$$
+
+* Training performance does not tell the whole story.
+* Test data provide an assessment on unseen observations.
+* **MAE** measures typical absolute error.
+* **RMSE** gives greater weight to large errors.
+* **$R^2$** measures explained variation.
+* **MAPE** measures relative error.
+* `yardstick` provides a consistent framework for evaluation.
+* Model performance should be interpreted in relation to the modelling objective.
+
+---
+
+## Looking Ahead
+
+In the next chapter, we will extend linear regression to **multiple regression**.
+
+Instead of using a single predictor, we will use several predictors simultaneously to explain and predict insurance outcomes.
+
+$$
+Y
+=
+\beta_0
++
+\beta_1X_1
++
+\beta_2X_2
++\cdots+
+\beta_pX_p
++\varepsilon
+$$
+
+

@@ -1,0 +1,398 @@
+---
+title: "Multiple Linear Regression Models"
+---
+
+Revised question: Would it be a good starting point to compare multiple regression models only? If so, could you provide a single, comprehensive R code chunk that fits several regression models and assesses their predictive performance?
+
+More natural academic phrasing: Develop a reproducible `tidymodels` workflow to compare alternative multiple regression specifications for medical insurance charges, including nonlinear terms and interactions, and evaluate their out-of-sample predictive performance using RMSE, MAE, and $R^2$.
+
+Yes. I think this is an excellent starting point. Before moving to random forests or boosting, we can investigate how far multiple linear regression with alternative specifications can take us.
+
+The key distinction is that we will keep the same response variable, `charges`, and compare models that differ in their treatment of predictors:
+
+- Model 1: Main-effects multiple linear regression.
+- Model 2: Regression with selected nonlinear terms, such as quadratic effects of `age` and `bmi`.
+- Model 3: Regression with an interaction between `smoker` and `bmi`.
+- Model 4: Regression with an interaction between `smoker` and `age`.
+- Model 5: Regression with both nonlinear effects and selected interactions.
+- Model 6: Regression on `log(charges)` to investigate whether a log-scale relationship improves prediction.
+
+These models remain within the linear-model framework: they are linear in their unknown coefficients, even when the predictors include squared terms or interactions. We can fit them using `parsnip::linear_reg()` with the `"lm"` engine.
+
+## Complete R code: Multiple regression model comparison
+
+The following is a single, comprehensive code block. It fits six candidate models, evaluates their predictions on a common test set, ranks their performance, and produces diagnostic plots.
+
+It also includes a log-response model with a smearing correction, so its predictions can be evaluated on the original medical-charges scale.
+
+```
+# ============================================================
+# Multiple regression models for medical insurance charges
+# Using tidymodels and parsnip
+# ============================================================
+
+library(tidymodels)
+library(parsnip)
+library(dplyr)
+library(purrr)
+library(tidyr)
+library(ggplot2)
+library(broom)
+
+set.seed(123)
+
+# ------------------------------------------------------------
+# 1. Prepare the data
+# ------------------------------------------------------------
+
+# Assumption: the original data frame is named `insurance`.
+# Change this name if your data frame has a different name.
+
+insurance_data <- insurance |>
+  select(
+    age, sex, bmi, children, smoker, region, charges
+  ) |>
+  mutate(
+    sex = factor(sex),
+    smoker = factor(smoker),
+    region = factor(region),
+    log_charges = log(charges)
+  ) |>
+  drop_na()
+
+# Check that charges are positive before taking logarithms
+stopifnot(all(insurance_data$charges > 0))
+
+glimpse(insurance_data)
+
+# Training/test split: 80% / 20%
+insurance_split <- initial_split(
+  insurance_data,
+  prop = 0.80
+)
+
+insurance_train <- training(insurance_split)
+insurance_test  <- testing(insurance_split)
+
+cat("Training observations:", nrow(insurance_train), "\n")
+cat("Test observations:", nrow(insurance_test), "\n")
+
+
+# ------------------------------------------------------------
+# 2. Specify the candidate regression models
+# ------------------------------------------------------------
+
+# Model 1: Main-effects multiple linear regression
+f1 <- charges ~
+  age + sex + bmi + children + smoker + region
+
+
+# Model 2: Quadratic effects of age and BMI
+f2 <- charges ~
+  age + I(age^2) +
+  sex +
+  bmi + I(bmi^2) +
+  children + smoker + region
+
+
+# Model 3: Interaction between smoking and BMI
+f3 <- charges ~
+  age + sex +
+  smoker * bmi +
+  children + region
+
+
+# Model 4: Interaction between smoking and age
+f4 <- charges ~
+  smoker * age +
+  sex + bmi + children + region
+
+
+# Model 5: Quadratic effects and smoking interactions
+f5 <- charges ~
+  age + I(age^2) +
+  sex +
+  bmi + I(bmi^2) +
+  children + region +
+  smoker * (age + bmi)
+
+
+# Model 6: Log-response multiple regression
+f6 <- log_charges ~
+  age + sex + bmi + children + smoker + region
+
+
+model_formulas <- list(
+  "M1 Main effects" = f1,
+  "M2 Quadratic terms" = f2,
+  "M3 Smoker-BMI interaction" = f3,
+  "M4 Smoker-age interaction" = f4,
+  "M5 Quadratic and interactions" = f5,
+  "M6 Log-response" = f6
+)
+
+
+# ------------------------------------------------------------
+# 3. Specify the parsnip model
+# ------------------------------------------------------------
+
+lm_spec <- linear_reg() |>
+  set_engine("lm")
+
+
+# ------------------------------------------------------------
+# 4. Build workflows and fit all candidate models
+# ------------------------------------------------------------
+
+model_workflows <- purrr::map(
+  model_formulas,
+  \(formula) {
+    workflow() |>
+      add_model(lm_spec) |>
+      add_formula(formula)
+  }
+)
+
+fitted_models <- purrr::map(
+  model_workflows,
+  \(model_workflow) {
+    fit(
+      model_workflow,
+      data = insurance_train
+    )
+  }
+)
+
+# Check the fitted models
+names(fitted_models)
+
+
+# ------------------------------------------------------------
+# 5. Calculate the smearing correction for the log model
+# ------------------------------------------------------------
+
+# The log-response model predicts E[log(charges) | X].
+# Exponentiating its prediction alone generally does not
+# estimate E[charges | X].
+#
+# Duan's smearing factor:
+# mean(exp(training residuals on the log scale))
+
+log_model_engine <- extract_fit_engine(
+  fitted_models[["M6 Log-response"]]
+)
+
+smearing_factor <- mean(
+  exp(residuals(log_model_engine))
+)
+
+cat(
+  "Log-model smearing factor:",
+  round(smearing_factor, 4),
+  "\n"
+)
+
+
+# ------------------------------------------------------------
+# 6. Generate test-set predictions
+# ------------------------------------------------------------
+
+test_predictions <- purrr::imap(
+  fitted_models,
+  \(model, model_name) {
+
+    predictions <- predict(
+      model,
+      new_data = insurance_test
+    )
+
+    # Convert log-scale predictions back to the
+    # original charges scale, with smearing correction.
+    if (model_name == "M6 Log-response") {
+      predictions <- predictions |>
+        mutate(
+          .pred = exp(.pred) * smearing_factor
+        )
+    }
+
+    bind_cols(
+      insurance_test |> select(charges),
+      predictions
+    ) |>
+      mutate(model = model_name, .before = 1)
+  }
+)
+
+all_predictions <- bind_rows(test_predictions)
+
+
+# ------------------------------------------------------------
+# 7. Assess predictive performance
+# ------------------------------------------------------------
+
+regression_metrics <- metric_set(
+  rmse,
+  mae,
+  rsq
+)
+
+evaluation_results <- all_predictions |>
+  group_by(model) |>
+  group_modify(
+    \(data, key) {
+      regression_metrics(
+        data = data,
+        truth = charges,
+        estimate = .pred
+      ) |>
+        select(.metric, .estimate)
+    }
+  ) |>
+  ungroup()
+
+# Present one row per model
+evaluation_table <- evaluation_results |>
+  pivot_wider(
+    names_from = .metric,
+    values_from = .estimate
+  ) |>
+  arrange(rmse)
+
+print(evaluation_table, n = Inf)
+
+
+# ------------------------------------------------------------
+# 8. Compare test-set RMSE
+# ------------------------------------------------------------
+
+ggplot(
+  evaluation_table,
+  aes(
+    x = reorder(model, rmse),
+    y = rmse
+  )
+) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Comparison of Multiple Regression Models",
+    subtitle = "Performance evaluated on the held-out test set",
+    x = NULL,
+    y = "Test RMSE"
+  ) +
+  theme_minimal()
+
+
+# ------------------------------------------------------------
+# 9. Compare observed and predicted charges
+# ------------------------------------------------------------
+
+ggplot(
+  all_predictions,
+  aes(
+    x = charges,
+    y = .pred
+  )
+) +
+  geom_point(alpha = 0.45) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    linetype = "dashed"
+  ) +
+  facet_wrap(~ model, scales = "free") +
+  labs(
+    title = "Observed versus Predicted Medical Charges",
+    x = "Observed charges",
+    y = "Predicted charges"
+  ) +
+  theme_minimal()
+
+
+# ------------------------------------------------------------
+# 10. Examine residuals for the best model by test RMSE
+# ------------------------------------------------------------
+
+best_model_name <- evaluation_table$model[1]
+
+best_predictions <- all_predictions |>
+  filter(model == best_model_name) |>
+  mutate(
+    residual = charges - .pred
+  )
+
+cat(
+  "\nBest model by test RMSE:",
+  best_model_name,
+  "\n"
+)
+
+# Residuals against predicted values
+ggplot(
+  best_predictions,
+  aes(
+    x = .pred,
+    y = residual
+  )
+) +
+  geom_point(alpha = 0.5) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = paste("Residual Plot:", best_model_name),
+    x = "Predicted charges",
+    y = "Residuals"
+  ) +
+  theme_minimal()
+
+
+# ------------------------------------------------------------
+# 11. Inspect coefficients of the best model
+# ------------------------------------------------------------
+
+best_model_fit <- fitted_models[[best_model_name]]
+
+coefficient_table <- tidy(
+  extract_fit_engine(best_model_fit),
+  conf.int = TRUE
+)
+
+print(coefficient_table, n = Inf)
+
+
+# ------------------------------------------------------------
+# 12. Summarize the experiment
+# ------------------------------------------------------------
+
+cat("\nFinal model comparison\n")
+cat("======================\n")
+
+print(
+  evaluation_table |>
+    mutate(
+      across(
+        c(rmse, mae, rsq),
+        \(x) round(x, 4)
+      )
+    ),
+  n = Inf
+)
+
+cat("\nSelected model:", best_model_name, "\n")
+```
+
+## 4. How to interpret the results
+
+Focus on three questions when you run the code.
+
+1. Do nonlinear terms improve prediction? Compare M1 with M2. A lower test RMSE for M2 would support using quadratic terms, although it would not establish that the true relationship is quadratic.
+2. Do smoking interactions matter? Compare M1 with M3 and M4, then compare those results with M5. This examines whether the relationship between medical charges and BMI or age differs by smoking status.
+3. Does the log-response model help? Compare M6 with the other models using the original-scale test metrics. The smearing correction estimates the conditional mean under suitable assumptions, but a single global factor may be imperfect if the residual distribution varies with predictors.
+
+A lower test RMSE is useful, but it does not automatically imply that a model is statistically preferable. We should also consider MAE, residual patterns, coefficient uncertainty, model complexity, and the intended use of the predictions.
+
+One further distinction: M1–M5 use ordinary least squares with different specifications. M6 also uses ordinary least squares, but its response is transformed. This is a useful controlled first experiment before considering ridge, lasso, or nonlinear machine-learning methods.
+
+Please run the code and send me the `evaluation_table` output. We can then determine which specifications are promising and decide whether to proceed with cross-validation and formal model comparison.

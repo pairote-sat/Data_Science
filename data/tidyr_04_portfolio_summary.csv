@@ -1,0 +1,10 @@
+risk_group,measure,2024,2025,2026
+Young,exposure,134.6,146.5,159.9
+Young,nclaims,22,5,15
+Young,premium,288403,206554,228693
+Middle,exposure,123.3,128.1,137
+Middle,nclaims,21,22,19
+Middle,premium,157140,268681,318099
+Older,exposure,88.6,92.9,97.1
+Older,nclaims,9,10,15
+Older,premium,214187,259423,300269

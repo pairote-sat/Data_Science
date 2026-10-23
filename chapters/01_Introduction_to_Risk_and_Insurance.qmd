@@ -8,21 +8,13 @@ title: "Chapter 1: Introduction to Risk and Insurance"
 
 After studying this chapter, students should be able to:
 
-**Remember**
-
-1. **Define** the fundamental concepts of risk, peril, hazard, insurance, and insurance premiums.
-2. **Identify** the main types of insurance, the parties to an insurance contract, and the characteristics of normally insurable risks.
-
-**Understand**
-
-3. **Explain** the classifications of risk and the principles of risk transfer, risk pooling, and indemnity.
-4. **Describe** the insurance mechanism, the benefits of insurance, and the structure and regulation of the insurance industry in Thailand.
-5. **Explain** the roles of probability, the law of averages, and the law of large numbers in insurance.
-
-**Apply**
-
-6. **Classify** risks according to their characteristics and determine whether they are normally insurable.
-7. **Interpret** the basic components and principles of insurance premium determination in simple insurance scenarios.
+1. Define the fundamental concepts of risk, peril, hazard, insurance, and insurance premiums.
+2. Identify the main types of insurance, the parties to an insurance contract, and the characteristics of normally insurable risks.
+3. Explain the classifications of risk and the principles of risk transfer, risk pooling, and indemnity.
+4. Describe the insurance mechanism, the benefits of insurance, and the structure and regulation of the insurance industry in Thailand.
+5. Explain the roles of probability, the law of averages, and the law of large numbers in insurance.
+6. Classify risks according to their characteristics and determine whether they are normally insurable.
+7. Interpret the basic components and principles of insurance premium determination in simple insurance scenarios.
 
 ---
 

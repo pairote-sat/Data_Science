@@ -1,0 +1,857 @@
+---
+title: "Chapter 6: Linear Regression with tidymodels"
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    theme: simple
+    scrollable: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+
+# Chapter 6: Linear Regression with tidymodels
+
+## From Data Exploration to Modelling
+
+In previous chapters, we used `dplyr` and `ggplot2` to explore insurance data.
+
+We now take the next step:
+
+$$
+\boxed{
+\begin{gathered}
+\text{Inspect} \rightarrow \text{Transform} \rightarrow \text{Summarize} \\
+\rightarrow \text{Visualize} \rightarrow \text{Model} \rightarrow \text{Evaluate}
+\end{gathered}
+}
+$$
+
+
+The goal is to use the patterns in the data to build a model for **insurance charges**.
+
+## Why Linear Regression?
+
+Linear regression provides a simple introduction to statistical modelling.
+
+It allows us to:
+
+* describe relationships between variables;
+* estimate model parameters;
+* make predictions for new observations;
+* examine prediction errors; and
+* introduce ideas used in more advanced models.
+
+We begin with **simple linear regression** and then extend it to **multiple linear regression**.
+
+## Insurance Charges Data
+
+We use the `insurance` dataset stored in the project's `data/` folder.
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+insurance <- read_csv("../data/insuranceKaggle.csv")
+
+glimpse(insurance)
+```
+
+The response variable will be:
+
+$$
+\boxed{\texttt{charges}}
+$$
+
+Potential predictors include:
+
+| Variable   | Type        | Description          |
+| :--------- | :---------- | :------------------- |
+| `age`      | Numeric     | Age of policyholder  |
+| `sex`      | Categorical | Sex                  |
+| `bmi`      | Numeric     | Body mass index      |
+| `smoker`   | Categorical | Smoking status       |
+| `region`   | Categorical | Residential region   |
+| `children` | Numeric     | Number of dependents |
+
+## Response and Predictors
+
+In regression, we distinguish between:
+
+$$
+\boxed{
+\text{Predictor variables}
+\quad\longrightarrow\quad
+\text{Response variable}
+}
+$$
+
+
+For our insurance data:
+
+* **Response:** `charges`
+* **Predictors:** `age`, `sex`, `bmi`, `smoker`, `region`, `children`
+
+Our initial question is:
+
+> How can we use policyholder characteristics to predict insurance charges?
+
+
+## Explore Before Modelling
+
+Before fitting a model, we examine the relationship between `charges` and potential predictors.
+
+- **Numeric predictor:** scatter plot
+- **Categorical predictor:** boxplot
+
+---
+
+## Insurance Charges vs. Age
+
+```{r}
+#| out-width: "90%"
+#| fig-width: 10
+#| fig-height: 5
+#| fig-align: "center"
+
+ggplot(insurance, aes(x = age, y = charges)) +
+  geom_point(alpha = 0.6) +
+  theme_bw(base_size = 16) + 
+  labs(
+    title = "Insurance Charges by Age",
+    x = "Age",
+    y = "Charges"
+  )
+```
+
+
+
+## Age and Charges
+
+The plot suggests a **positive association** between age and charges.
+
+Older policyholders tend to have higher charges, but there is substantial variation among individuals of the same age.
+
+This suggests that:
+
+$$
+\text{Age explains some, but not all, variation in charges.}
+$$
+
+
+## BMI and Charges
+
+```{r}
+#| out-width: "90%"
+#| fig-width: 10
+#| fig-height: 5
+#| fig-align: "center"
+
+ggplot(insurance, aes(x = bmi, y = charges)) +
+  geom_point(alpha = 0.6) +
+  theme_bw(base_size = 16) +
+  labs(
+    title = "Insurance Charges by BMI",
+    x = "BMI",
+    y = "Charges"
+  )
+```
+
+---
+
+## BMI and Charges: Observations
+
+* There appears to be a positive association between `bmi` and `charges`.
+* The relationship is less clear than for `age`.
+
+---
+
+## Smoker and Charges
+
+```{r}
+#| out-width: "90%"
+#| fig-width: 10
+#| fig-height: 5
+#| fig-align: "center"
+
+ggplot(insurance, aes(x = smoker, y = charges)) +
+  geom_boxplot() +
+  theme_bw(base_size = 16) +
+  labs(
+    title = "Insurance Charges by Smoking Status",
+    x = "Smoker",
+    y = "Charges"
+  )
+```
+
+---
+
+## Smoker and Charges: Observations
+
+* There is a substantial difference in charges between smokers and non-smokers.
+* This suggests that `smoker` may be an important predictor of `charges`.
+
+
+## Other Categorical Predictors: Sex
+
+```{r}
+#| label: fig-sex
+#| fig-cap: "Insurance charges by sex."
+#| out-width: "90%"
+#| fig-width: 10
+#| fig-height: 5
+#| fig-align: "center"
+
+ggplot(insurance, aes(x = sex, y = charges)) +
+  geom_boxplot() +
+  theme_bw(base_size = 16)
+```
+
+---
+
+## Other Categorical Predictors: Region
+
+```{r}
+#| label: fig-region
+#| fig-cap: "Insurance charges by region."
+#| out-width: "90%"
+#| fig-width: 10
+#| fig-height: 5
+#| fig-align: "center"
+
+ggplot(insurance, aes(x = region, y = charges)) +
+  geom_boxplot() +
+  theme_bw(base_size = 16)
+```
+
+---
+
+## Key Takeaways on Predictors
+
+* The marginal relationships for `sex` and `region` appear weaker.
+
+**Important Note:**
+
+> A weak marginal relationship does not necessarily imply that a predictor is unimportant in a multiple regression model.
+
+
+## Initial Assessment
+
+Our visual exploration gives an initial indication of the potential predictors.
+
+| Predictor  | Initial assessment         |
+| :--------- | :------------------------- |
+| `age`      | Positive association       |
+| `bmi`      | Positive association       |
+| `smoker`   | Strong group difference    |
+| `sex`      | Weak marginal relationship |
+| `region`   | Weak marginal relationship |
+| `children` | To be investigated         |
+
+Visual exploration helps us formulate a model, but it is **not sufficient on its own for feature selection**.
+
+
+## Distribution of Charges
+
+Before modelling, it is useful to examine the distribution of our response variable.
+
+```{r}
+#| out-width: "90%"
+#| fig-width: 10
+#| fig-height: 5
+#| fig-align: "center"
+
+ggplot(insurance, aes(x = charges)) +
+  geom_histogram(bins = 50) +
+  theme_bw(base_size = 16) +
+  labs(
+    title = "Distribution of Insurance Charges",
+    x = "Charges",
+    y = "Count"
+  )
+```
+
+---
+
+## Distribution of Charges: Insights
+
+* The distribution of `charges` is strongly **right-skewed**, with some unusually large observations.
+* These observations may have a strong influence on the fitted model.
+
+**Statistical Clarification:**
+
+> The distribution of the response itself does **not** determine whether the assumptions of ordinary least squares are satisfied. We examine the residuals after fitting the model.
+
+
+
+
+# Build and Fit a Model
+
+## A Prediction-Focused Workflow
+
+Our main goal is to predict insurance charges for new observations.
+
+We therefore use the following workflow:
+
+$$
+\boxed{
+\text{Split}
+\rightarrow
+\text{Specify}
+\rightarrow
+\text{Fit}
+\rightarrow
+\text{Predict}
+\rightarrow
+\text{Evaluate}
+}
+$$
+
+The `tidymodels` framework provides tools for carrying out this workflow consistently.
+
+## Why `tidymodels`?
+
+For a simple regression, base R can fit the model directly:
+
+```r
+lm(charges ~ age, data = insurance)
+```
+
+This is perfectly valid.
+
+In this course, we use `tidymodels` because it provides a consistent workflow that can be extended to:
+
+* model evaluation;
+* prediction;
+* preprocessing;
+* multiple models; and
+* more advanced modelling methods.
+
+## The `parsnip` Package
+
+`parsnip` provides a consistent interface for specifying and fitting models.
+
+For linear regression:
+
+
+```{r}
+library(tidymodels)
+
+linear_reg()
+```
+
+This specifies the **type of model**.
+
+At this stage, the model has not been fitted to any data.
+
+## Model Specification and Engine
+
+There are two separate ideas:
+
+**Model specification**
+
+```r
+linear_reg()
+```
+
+describes the type of model.
+
+**Model engine**
+
+```r
+set_engine("lm")
+```
+
+specifies the computational implementation.
+
+For our model:
+
+```{r}
+lm_mod <- linear_reg() %>%
+  set_engine("lm")
+
+lm_mod
+```
+
+The `"lm"` engine uses R's ordinary least-squares implementation.
+
+## Fitting the Model
+
+Suppose we use `age` to predict `charges`.
+
+The model is
+
+$$
+\text{charges}
+=
+\beta_0+\beta_1\text{age}+\varepsilon.
+$$
+
+In R, the model formula is:
+
+```r
+charges ~ age
+```
+
+We fit the model using:
+
+```{r}
+lm_fit <- lm_mod %>%
+  fit(charges ~ age, data = insurance)
+
+lm_fit
+```
+
+The modelling process is therefore:
+
+$$
+\boxed{
+\text{Specify}
+\rightarrow
+\text{Choose engine}
+\rightarrow
+\text{Fit}
+}
+$$
+
+## Interpreting the Fitted Model
+
+Suppose the fitted model is
+
+$$
+\widehat{\text{charges}}
+=
+3165.9+257.7\,\text{age}.
+$$
+
+The coefficient of `age` is:
+
+$$
+\boxed{257.7}
+$$
+
+Thus, according to the fitted model, a one-year increase in age is associated with an estimated increase of approximately **257.7 units in charges**, on average.
+
+For a 10-year age difference:
+
+$$
+257.7(10)=2{,}577.
+$$
+
+The predicted difference between ages 40 and 50 is therefore approximately **2,577 units**.
+
+## The Intercept
+
+The intercept is:
+
+$$
+\hat{\beta}_0=3165.9.
+$$
+
+It represents the predicted charge when:
+
+$$
+\text{age}=0.
+$$
+
+Although this is mathematically part of the regression equation, age 0 is outside the meaningful range of this dataset.
+
+Therefore, the intercept has little practical interpretation here.
+
+## Tidy Model Results
+
+The `broom` package converts model results into a tidy data frame.
+
+```{r}
+library(broom)
+
+tidy(lm_fit)
+```
+
+Important columns include:
+
+| Column      | Meaning               |
+| :---------- | :-------------------- |
+| `term`      | Model term            |
+| `estimate`  | Estimated coefficient |
+| `std.error` | Standard error        |
+| `statistic` | Test statistic        |
+| `p.value`   | p-value               |
+
+For our prediction-focused analysis, the `estimate` column gives the coefficients used by the fitted model.
+
+
+## Visualizing the Fitted Line
+
+We can display the observed data together with the fitted regression line.
+
+```{r}
+#| out-width: "90%"
+#| fig-width: 10
+#| fig-height: 5
+#| fig-align: "center"
+
+ggplot(insurance, aes(x = age, y = charges)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_bw(base_size = 16) +
+  labs(
+    title = "Insurance Charges vs Age",
+    x = "Age",
+    y = "Charges"
+  )
+```
+
+---
+
+## Components of the Regression Line
+
+* The points represent the **observed charges** ($Y$).
+* The line represents the **predicted charges** ($\hat{Y}$) generated from the fitted model.
+* The vertical distance between any individual observation and the line is its **residual** ($e_i = Y_i - \hat{Y}_i$).
+
+
+
+## What Does the Plot Tell Us?
+
+The fitted line captures the general positive relationship between age and charges.
+
+However, there is substantial variation around the line.
+
+This tells us that:
+
+$$
+\boxed{
+\text{Age alone does not explain all variation in charges.}
+}
+$$
+
+Other characteristics, such as `bmi` and `smoker`, may provide additional predictive information.
+
+# Predictions
+
+## Predicting Charges for New Ages
+
+Once the model has been fitted, we can use it to predict charges for new observations.
+
+For example:
+
+```{r}
+new_points <- tibble(
+  age = c(30, 40, 50)
+)
+
+predict(
+  lm_fit,
+  new_data = new_points
+)
+```
+
+The `.pred` column contains the predicted **mean charge** for each age.
+
+## Confidence Intervals for the Mean
+
+We can also obtain 95% confidence intervals for the estimated mean charges:
+
+```{r}
+predict(
+  lm_fit,
+  new_data = new_points,
+  type = "conf_int"
+)
+```
+
+The output contains:
+
+* `.pred` — predicted mean charge;
+* `.pred_lower` — lower confidence limit;
+* `.pred_upper` — upper confidence limit.
+
+## Mean Response vs Individual Prediction
+
+A confidence interval describes uncertainty about the **mean response**.
+
+It should not be interpreted as the likely range of charges for an individual policyholder.
+
+For an individual future observation, we need a **prediction interval**, which is wider because it includes both:
+
+$$
+\boxed{
+\text{uncertainty in the mean}
++
+\text{individual variation}
+}
+$$
+
+This distinction becomes important when using regression for prediction.
+
+# From Simple to Multiple Regression
+
+## Why Add More Predictors?
+
+The simple model
+
+$$
+\widehat{\text{charges}}
+=
+\hat{\beta}_0+\hat{\beta}_1\text{age}
+$$
+
+uses only one predictor.
+
+But the data contain other potentially useful variables:
+
+$$
+\texttt{bmi},\quad
+\texttt{smoker},\quad
+\texttt{sex},\quad
+\texttt{region},\quad
+\texttt{children}.
+$$
+
+A multiple regression model allows us to consider several predictors simultaneously.
+
+## Next Step
+
+We have followed the basic modelling workflow:
+
+$$
+\boxed{
+\text{Explore}
+\rightarrow
+\text{Specify}
+\rightarrow
+\text{Fit}
+\rightarrow
+\text{Interpret}
+\rightarrow
+\text{Predict}
+}
+$$
+
+The simple model shows that age is associated with insurance charges, but substantial variation remains unexplained.
+
+Next, we extend the model to **multiple linear regression** and investigate whether additional predictors improve our predictions.
+
+
+
+
+
+
+
+
+
+
+Below are only the exercises from the chapter, converted to a Quarto slide-style format. Solutions and explanatory text have been removed.
+
+
+
+
+---
+
+# Exercises
+
+## Exercise 1: Age and Charges by Smoking Status
+
+**Create a scatter plot of `age` versus `charges`, coloured by `smoker`.**
+
+- Add an appropriate title and axis labels.
+- Describe the relationship for smokers and non-smokers.
+
+---
+
+## Exercise 2: BMI and Charges by Smoking Status
+
+**Create a scatter plot of `bmi` versus `charges`, coloured by `smoker`.**
+
+- Add an appropriate title and axis labels.
+- Describe the pattern you observe.
+
+---
+
+## Exercise 3: Age and Charges by Sex
+
+**Create a scatter plot of `age` versus `charges`, coloured by `sex`.**
+
+- Add an appropriate title and axis labels.
+- Comment on whether the relationship appears different between the two groups.
+
+---
+
+## Exercise 4: BMI and Charges by Sex
+
+**Create a scatter plot of `bmi` versus `charges`, coloured by `sex`.**
+
+- Add an appropriate title and axis labels.
+- Describe the patterns you observe.
+
+---
+
+## Exercise 5: Age and Charges by Region
+
+**Create a scatter plot of `age` versus `charges`, coloured by `region`.**
+
+- Add an appropriate title and axis labels.
+- Comment on any noticeable differences across regions.
+
+---
+
+## Exercise 6: BMI and Charges by Region
+
+**Create a scatter plot of `bmi` versus `charges`, coloured by `region`.**
+
+- Add an appropriate title and axis labels.
+- Describe what you observe.
+
+---
+
+## Exercise 7: Selecting Potential Predictors
+
+**Based on your visual exploration, identify the predictors you would initially consider for a regression model.**
+
+Explain your reasoning using the patterns observed in the plots.
+
+---
+
+# Examining the Distribution
+
+## Exercise 8: Distribution of Charges
+
+**Examine the distribution of `charges` using a histogram.**
+
+- Choose an appropriate number of bins.
+- Add a title and axis labels.
+- Describe the shape of the distribution.
+- Comment on unusually large observations.
+
+---
+
+# Build and Fit a Model
+
+## Exercise 9: Specify a Linear Regression Model
+
+**Use `parsnip` to specify a linear regression model.**
+
+- Use `linear_reg()`.
+- Set the engine to `"lm"`.
+- Store the specification as `lm_mod`.
+- Display the model specification.
+
+---
+
+## Exercise 10: Fit the Linear Regression Model
+
+**Use `lm_mod` to fit a model predicting `charges` from `age`.**
+
+Store the fitted model as `lm_fit`.
+
+---
+
+## Exercise 11: Inspect the Model Estimates
+
+**Use `lm_fit` to examine the estimated regression coefficients.**
+
+- Write down the fitted regression equation.
+- Interpret the coefficient of `age`.
+- Calculate the difference in predicted charges between ages 40 and 50.
+
+---
+
+## Exercise 12: Tidy the Model Results
+
+**Use `broom::tidy()` to obtain the model results in a tidy data frame.**
+
+Identify:
+
+- `term`
+- `estimate`
+- `std.error`
+- `statistic`
+- `p.value`
+
+---
+
+## Exercise 13: Visualize the Regression Estimates
+
+**Create a dot-and-whisker plot of the regression estimates.**
+
+- Display the coefficient estimates and uncertainty intervals.
+- Add a vertical reference line at zero.
+- Add an appropriate title and axis labels.
+
+---
+
+## Exercise 14: Observed Data and Fitted Line
+
+**Plot the observed insurance charges together with the fitted regression line.**
+
+- Plot `age` against `charges`.
+- Add the fitted regression line.
+- Add an appropriate title and axis labels.
+
+---
+
+# Predicting Insurance Charges
+
+## Exercise 15: Predict Charges for New Ages
+
+**Use `lm_fit` to predict mean insurance charges for ages 30, 40, and 50.**
+
+- Create a tibble containing the three ages.
+- Use `predict()` to obtain the predictions.
+- Display the results.
+
+---
+
+## Exercise 16: Confidence Intervals
+
+**Obtain 95% confidence intervals for the predicted mean charges.**
+
+- Use `predict()` with `type = "conf_int"`.
+- Display the predictions and confidence intervals.
+- Explain what the confidence interval represents.
+
+---
+
+# Visualizing Model Predictions
+
+## Exercise 17: Predicted Charges with Confidence Intervals
+
+**Visualize predicted mean charges across the observed range of `age`.**
+
+- Create 100 equally spaced age values.
+- Obtain predicted mean charges and 95% confidence intervals.
+- Combine the results into one data frame.
+- Plot the prediction line with a shaded confidence band.
+- Add an appropriate title and axis labels.
+
+---
+
+## Exercise 18: Observed and Predicted Charges
+
+**Extend the previous plot to include the original observations.**
+
+- Plot observed `charges` against `age`.
+- Add the predicted mean charges.
+- Add the 95% confidence interval.
+- Add an appropriate title and axis labels.
+
+---
+
+# From Simple to Multiple Regression
+
+## Exercise 19: Reflect on the Simple Regression Model
+
+**Consider the limitations of using `age` alone to predict `charges`.**
+
+- What information does the model capture?
+- What variation remains unexplained?
+- Which additional predictors might improve the model?
+- Why might multiple linear regression be more useful?
+
+

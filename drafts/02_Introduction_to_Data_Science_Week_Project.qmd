@@ -1,0 +1,99 @@
+---
+title: "Week 2: Exploratory Analysis of Motor Insurance Data"
+format:
+  pdf:
+    toc: false
+---
+
+# Excel Exercise: Exploratory Analysis of the MTPL Portfolio
+
+Use the `MTPL` dataset to explore the portfolio experience. Use Excel formulas, PivotTables, and charts to complete the analysis. For frequency and risk premium, calculate the measures from aggregated claims and exposure.
+
+1. **Understand the dataset.**
+   (a) How many portfolio records are there?
+   (b) What variables are included?
+   (c) Classify each variable as numeric or categorical.
+
+2. **Summarise the portfolio.**
+   Calculate the total exposure, total number of claims, and total claim amount.
+
+3. **Calculate the overall portfolio measures.**
+   Calculate:
+   (a) claim frequency;
+   (b) average claim severity;
+   (c) risk premium per unit of exposure.
+
+4. **Explore ZIP code.**
+   How many different ZIP codes are represented in the portfolio?
+
+5. **Create a ZIP code summary table.**
+   Using a PivotTable, calculate for each ZIP code:
+   (a) number of records;
+   (b) exposure;
+   (c) number of claims;
+   (d) claim frequency;
+   (e) average claim severity;
+   (f) risk premium.
+
+6. **Compare ZIP code experience.**
+   Which ZIP code has the highest and lowest:
+   (a) frequency;
+   (b) severity;
+   (c) risk premium?
+
+7. **Visualise ZIP code exposure.**
+   Create a column chart of exposure by ZIP code. Which ZIP code has the largest portfolio volume?
+
+8. **Visualise ZIP code frequency.**
+   Create a column chart of claim frequency by ZIP code. Describe the main pattern.
+
+9. **Compare frequency and exposure.**
+   Create a combination chart showing claim frequency and exposure by ZIP code, using a secondary axis for exposure. Which ZIP code has relatively high or low frequency given its exposure?
+
+10. **Assess ZIP code as a rating factor.**
+    Based on the tables and charts, does ZIP code appear to differentiate claim risk? Give one or two reasons for your conclusion.
+
+11. **Explore policyholder age.**
+    What are the minimum and maximum ages, and how many different ages are represented?
+
+12. **Create an age summary table.**
+    For each age, calculate:
+    (a) number of claims;
+    (b) exposure;
+    (c) observed claim frequency.
+
+13. **Visualise age and frequency.**
+    Create a scatter plot of age against observed claim frequency. What general pattern do you observe?
+
+14. **Consider exposure when interpreting age.**
+    Identify ages with relatively low exposure. Why should the observed frequencies at these ages be interpreted cautiously?
+
+15. **Fit a linear trend.**
+    Add a linear trendline to the age–frequency plot. Record the fitted equation and $R^2$. Does the linear trend appear to describe the relationship adequately?
+
+16. **Fit polynomial trends.**
+    Add:
+    (a) a quadratic trendline;
+    (b) a cubic trendline;
+    (c) a fourth-degree polynomial trendline.
+    Record the equation and $R^2$ for each model.
+
+17. **Compare the polynomial models.**
+    How does the fitted relationship change as the polynomial degree increases? Which model provides a reasonable description of the observed pattern?
+
+18. **Create age segments.**
+    Based on the observed age–frequency pattern, propose reasonable age boundaries. Explain briefly why you selected these boundaries.
+
+19. **Summarise the age segments.**
+    Create a PivotTable showing, for each age segment:
+    (a) number of records;
+    (b) exposure;
+    (c) number of claims;
+    (d) claim frequency.
+    Create a chart comparing frequency across the age segments.
+
+20. **Discuss the findings.**
+    (a) What did you learn about claim frequency from the ZIP code analysis?
+    (b) What did you learn about the relationship between age and claim frequency?
+    (c) Which factor appears more useful for further investigation as a rating factor?
+    (d) Why should these results be regarded as exploratory rather than as the final insurance tariff?

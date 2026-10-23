@@ -1,0 +1,134 @@
+---
+title: "Chapter 2 — Introduction to Data Science"
+subtitle: "Workbook"
+format:
+  html:
+    toc: false
+  pdf:
+    toc: false
+---
+
+Complete this workbook by hand during or after the lecture. Write your answers clearly  and submit  the completed workbook through Google Classroom by the specified deadline. All responses should be your own work.
+
+1. Which of the following is **not** one of the four foundations of data science?
+
+    (a) Data
+    (b) Statistics
+    (c) Computing
+    (d) Regulation
+
+2. State whether each statement is **True** or **False**.
+
+    (a) Raw claim counts are sufficient for comparing the risk of two insurance portfolios.  
+
+
+    (b) Exposure should be considered when measuring claim frequency.  
+
+
+    (c) Data science replaces actuarial judgement in insurance decision-making.  
+
+
+
+3. Briefly explain the difference between **claim frequency** and **claim severity**.
+
+$$
+\text{Claim frequency}
+=
+\frac{\text{Number of claims}}{\text{Exposure}}
+$$
+
+$$
+\text{Average severity}
+=
+\frac{\text{Total claim amount}}{\text{Number of claims}}.
+$$
+
+
+
+4. An insurer observes the following experience during one year:
+   - Exposure = 2,000 policy-years
+   - Number of claims = 120
+   - Total claim amount = 360,000
+
+   (a) Calculate the observed claim frequency.
+
+   $$
+   \text{Claim frequency}
+   =
+   \frac{\text{Number of claims}}{\text{Exposure}}.
+   $$
+
+   (b) Calculate the average claim severity.
+
+   $$
+   \text{Average severity}
+   =
+   \frac{\text{Total claim amount}}{\text{Number of claims}}.
+   $$
+
+   (c) Calculate the approximate expected loss per unit exposure.
+
+   $$
+   \text{Expected loss per unit exposure}
+   \approx
+   \text{Claim frequency}
+   \times
+   \text{Average severity}.
+   $$
+
+ 
+
+5. Put the following stages of the **Data Science Life Cycle** in the correct order.
+
+    - Explore the Data
+    - Communicate the Results
+    - Acquire the Data
+    - Model the Data
+    - Define the Problem
+    - Deploy and Monitor
+    - Prepare the Data
+
+Write the corresponding sequence:
+
+$$
+\boxed{
+\text{1}
+\rightarrow
+\text{2}
+\rightarrow
+\text{3}
+\rightarrow
+\text{4}
+\rightarrow
+\text{5}
+\rightarrow
+\text{6}
+\rightarrow
+\text{7}
+}
+$$
+
+
+
+
+6. Match each data-science team role with the most appropriate description.
+
+| Role | Description |
+|---|---|
+| A. Data analyst | 1. Builds and maintains data infrastructure |
+| B. Data scientist | 2. Applies insurance and risk expertise |
+| C. Data engineer | 3. Analyses and communicates information in data |
+| D. Actuary | 4. Develops analytical and predictive models |
+
+
+
+7. An insurer develops a model that identifies motor insurance claims with unusual characteristics.
+
+    The model assigns a high score to some claims because their characteristics are unusual compared with historical claims.
+
+    (a) Which insurance application is being described?
+    (b) Does a high model score prove that a claim is fraudulent?
+    (c) Briefly explain why actuarial or professional judgement may still be required.
+
+
+

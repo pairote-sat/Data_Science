@@ -1,0 +1,231 @@
+---
+title: "French Motor: complete modelling workflow"
+---
+
+```{r}
+# Load packages -----------------------------------------------------------
+
+library(tidyverse)
+library(tidymodels)
+library(broom)
+library(poissonreg)
+
+
+# 1. Load data ------------------------------------------------------------
+
+load("data/freMTPL2freq.RData")
+
+mtpl_freq <- freMTPL2freq
+
+
+# 2. Create group_id from original risk characteristics ------------------
+
+mtpl_freq <- mtpl_freq %>%
+  group_by(
+    across(-c(IDpol, Exposure, ClaimNb))
+  ) %>%
+  mutate(
+    group_id = cur_group_id()
+  ) %>%
+  ungroup()
+
+
+# 3. Prepare modelling data -----------------------------------------------
+
+mtpl_freq_model <- mtpl_freq %>%
+  mutate(
+    ClaimNb = pmin(as.integer(ClaimNb), 4),
+    VehAge = pmin(VehAge, 20),
+    DrivAge = pmin(DrivAge, 90),
+    BonusMalus = pmin(BonusMalus, 150),
+    Density = round(log(Density), 2),
+    VehGas = factor(VehGas),
+    Exposure = pmin(Exposure, 1),
+
+    area_glm = factor(Area),
+
+    veh_power_glm =
+      factor(pmin(VehPower, 9)),
+
+    veh_age_glm = cut(
+      VehAge,
+      breaks = c(-Inf, 0, 10, Inf),
+      labels = c(
+        "new",
+        "1_10",
+        "over_10"
+      )
+    ),
+
+    driver_age_glm = cut(
+      DrivAge,
+      breaks = c(
+        -Inf, 20, 25, 30,
+        40, 50, 70, Inf
+      ),
+      labels = c(
+        "under_20",
+        "20_25",
+        "25_30",
+        "30_40",
+        "40_50",
+        "50_70",
+        "over_70"
+      )
+    ),
+
+    bonus_malus_glm =
+      pmin(BonusMalus, 150),
+
+    density_glm = Density,
+
+    Region = relevel(
+      factor(Region),
+      ref = "R24"
+    )
+  ) %>%
+  mutate(
+    veh_age_glm =
+      relevel(veh_age_glm, ref = "1_10"),
+
+    driver_age_glm =
+      relevel(driver_age_glm, ref = "40_50")
+  )
+
+
+# 4. Check group_id -------------------------------------------------------
+
+mtpl_freq_model %>%
+  select(
+    IDpol,
+    ClaimNb,
+    Exposure,
+    group_id
+  ) %>%
+  head(10)
+
+sum(is.na(mtpl_freq_model$group_id))
+
+
+# 5. Grouped train/test split --------------------------------------------
+
+set.seed(100)
+
+mtpl_split <- group_initial_split(
+  mtpl_freq_model,
+  group = group_id,
+  prop = 0.80
+)
+
+mtpl_train <- training(mtpl_split)
+mtpl_test <- testing(mtpl_split)
+
+# 6. Verify the train/test split -----------------------------------------
+
+length(
+  intersect(
+    unique(mtpl_train$group_id),
+    unique(mtpl_test$group_id)
+  )
+)
+
+
+# 7. Specify the Poisson GLM ---------------------------------------------
+
+freq_glm_spec <- poisson_reg() %>%
+  set_engine("glm")
+
+
+# 8. Fit the Poisson GLM -------------------------------------------------
+
+freq_glm_fit <- freq_glm_spec %>%
+  fit(
+    ClaimNb ~
+      area_glm +
+      veh_power_glm +
+      veh_age_glm +
+      driver_age_glm +
+      bonus_malus_glm +
+      density_glm +
+      VehBrand +
+      VehGas +
+      Region +
+      offset(log(Exposure)),
+    data = mtpl_train
+  )
+
+
+# 9. Examine model coefficients ------------------------------------------
+
+tidy(freq_glm_fit)
+
+
+# 10. Generate training predictions --------------------------------------
+
+freq_train_results <- mtpl_train %>%
+  bind_cols(
+    predict(
+      freq_glm_fit,
+      new_data = mtpl_train,
+      type = "numeric"
+    )
+  )
+
+
+# 11. Generate test predictions ------------------------------------------
+
+freq_test_results <- mtpl_test %>%
+  bind_cols(
+    predict(
+      freq_glm_fit,
+      new_data = mtpl_test,
+      type = "numeric"
+    )
+  )
+
+
+# 12. Compare observed and predicted portfolio frequency ----------------
+
+freq_test_results %>%
+  summarise(
+    observed_frequency =
+      sum(ClaimNb) / sum(Exposure),
+
+    predicted_frequency =
+      sum(.pred) / sum(Exposure)
+  )
+
+
+
+# 13. Calculate Poisson deviance ------------------------------------------
+
+freq_test_results <- freq_test_results %>%
+  mutate(
+    poisson_deviance = 2 * if_else(
+      ClaimNb == 0,
+      .pred,
+      ClaimNb * log(ClaimNb / .pred) -
+        (ClaimNb - .pred)
+    )
+  )
+
+
+# 14. Summarise test-set Poisson deviance --------------------------------
+
+freq_test_results %>%
+  summarise(
+    observed_frequency =
+      sum(ClaimNb) / sum(Exposure),
+
+    predicted_frequency =
+      sum(.pred) / sum(Exposure),
+
+    frequency_difference =
+      predicted_frequency - observed_frequency,
+
+    mean_poisson_deviance =
+      mean(poisson_deviance)
+  )
+
+```
+

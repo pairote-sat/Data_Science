@@ -1,0 +1,215 @@
+---
+title: "Candidate regression models"
+---
+
+Revised question: Could you provide R code using `tidymodels` and `parsnip` to fit and compare several plausible regression models for this insurance medical-charges dataset? Since exploratory data analysis (EDA) has already been completed, please focus on model fitting, evaluation, and reporting metrics such as RMSE. I will run the code and share the results so that we can discuss the findings.
+
+More natural academic phrasing: Develop a reproducible modelling workflow using `tidymodels` to compare candidate regression models for medical insurance charges, evaluate their out-of-sample predictive performance, and identify promising models for further investigation.
+
+Yes. I suggest starting with a model-comparison experiment, rather than developing the grading logic yet. We can use `parsnip` to specify different regression algorithms, `recipes` to preprocess the predictors, and `workflows` and `tune` to manage model fitting and tuning.
+
+The response variable is `charges`, which is typically strongly right-skewed and may have a nonlinear relationship with predictors such as `age` and `bmi`. Smoking status is also likely to be an important predictor. Since you have already performed EDA, we can proceed directly to candidate models and predictive evaluation.
+
+## 1. Candidate regression models
+
+I recommend comparing the following models on the same training/test split.
+
+| Model                            | `parsnip` specification          | Purpose                                  |
+| -------------------------------- | -------------------------------- | ---------------------------------------- |
+| Multiple linear regression       | `linear_reg()` with `lm`         | Baseline model                           |
+| Ridge regression                 | `linear_reg()` with `glmnet`     | Regularized linear model                 |
+| Lasso regression                 | `linear_reg()` with `glmnet`     | Regularization and variable selection    |
+| Elastic net                      | `linear_reg()` with `glmnet`     | Combines ridge and lasso penalties       |
+| Generalized additive model (GAM) | `gen_additive_mod()` with `mgcv` | Smooth nonlinear effects                 |
+| Random forest                    | `rand_forest()` with `ranger`    | Nonlinear relationships and interactions |
+| Gradient boosting                | `boost_tree()` with `xgboost`    | Flexible nonlinear prediction            |
+
+We can also examine a log-response model, predicting `log(charges)`, as an additional candidate. This may be useful when charges are highly skewed, but predictions must be transformed back to the original monetary scale before calculating the primary RMSE and MAE.
+
+## 2. Complete R code for model comparison
+
+The code below assumes your data frame is named `insurance`. If it has a different name, change that one reference. The analysis uses an 80% training set and a 20% test set, with all models evaluated on the same test observations.
+
+The first comparison uses fixed, reasonable starting hyperparameters. We can tune the strongest candidates after seeing the initial results.
+
+### Step 1: Load packages and prepare the data
+
+```{r}
+library(tidymodels)
+library(parsnip)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(ggplot2)
+
+# If necessary, install the additional model engines:
+# install.packages(c("glmnet", "ranger", "xgboost", "earth"))
+
+set.seed(123)
+
+# Replace insurance with the name of your data frame if necessary.
+insurance_data <- insurance |>
+  select(age, sex, bmi, children, smoker, region, charges) |>
+  mutate(
+    sex = factor(sex),
+    smoker = factor(smoker),
+    region = factor(region)
+  ) |>
+  drop_na()
+
+# Check the data
+glimpse(insurance_data)
+
+summary(insurance_data$charges)
+
+# Training/test split
+insurance_split <- initial_split(
+  insurance_data,
+  prop = 0.80
+)
+
+insurance_train <- training(insurance_split)
+insurance_test  <- testing(insurance_split)
+
+# Report sample sizes
+tibble(
+  Dataset = c("Training", "Test"),
+  Observations = c(
+    nrow(insurance_train),
+    nrow(insurance_test)
+  )
+)
+```
+
+The preprocessing below uses dummy variables for categorical predictors. It does not normalize every predictor because the linear regression model should remain straightforward to interpret, while `glmnet` performs its own predictor standardization by default.
+
+### Step 2: Define the preprocessing recipe
+
+```{r}
+insurance_recipe <- recipe(
+  charges ~ .,
+  data = insurance_train
+) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_zv(all_predictors())
+```
+
+The recipe is estimated using the training data only. This avoids information leakage from the test set.
+
+### Step 3: Specify candidate models
+
+```
+# 1. Multiple linear regression
+lm_spec <- linear_reg() |>
+  set_engine("lm")
+
+# 2. Ridge regression
+ridge_spec <- linear_reg(
+  penalty = 0.01,
+  mixture = 0
+) |>
+  set_engine("glmnet")
+
+# 3. Lasso regression
+lasso_spec <- linear_reg(
+  penalty = 0.01,
+  mixture = 1
+) |>
+  set_engine("glmnet")
+
+# 4. Elastic net regression
+elastic_net_spec <- linear_reg(
+  penalty = 0.01,
+  mixture = 0.5
+) |>
+  set_engine("glmnet")
+
+# 5. Random forest
+rf_spec <- rand_forest(
+  trees = 500,
+  mtry = 3,
+  min_n = 5
+) |>
+  set_engine(
+    "ranger",
+    importance = "permutation"
+  ) |>
+  set_mode("regression")
+
+# 6. Gradient boosting
+xgb_spec <- boost_tree(
+  trees = 1000,
+  tree_depth = 3,
+  learn_rate = 0.03,
+  min_n = 5,
+  loss_reduction = 0,
+  sample_size = 0.8
+) |>
+  set_engine("xgboost") |>
+  set_mode("regression")
+
+# 7. Multivariate adaptive regression splines
+mars_spec <- mars(
+  num_terms = 20,
+  prod_degree = 2
+) |>
+  set_engine("earth") |>
+  set_mode("regression")
+```
+
+These models cover several different approaches:
+
+- `lm`: a transparent baseline with additive linear effects.
+- Ridge, lasso, and elastic net: regularized linear models.
+- Random forest: nonlinear effects and interactions.
+- XGBoost: flexible boosted-tree prediction.
+- MARS: nonlinear piecewise-linear relationships.
+
+For the initial experiment, the regularization strengths and tree settings are illustrative rather than optimized. We should not interpret this comparison as the final ranking of each algorithm's potential.
+
+### Step 4: Create workflows and fit all models
+
+```
+model_specs <- list(
+  Linear_Regression = lm_spec,
+  Ridge = ridge_spec,
+  Lasso = lasso_spec,
+  Elastic_Net = elastic_net_spec,
+  Random_Forest = rf_spec,
+  XGBoost = xgb_spec,
+  MARS = mars_spec
+)
+
+model_workflows <- purrr::map(
+  model_specs,
+  \(spec) {
+    workflow() |>
+      add_recipe(insurance_recipe) |>
+      add_model(spec)
+  }
+)
+
+# Fit all candidate models
+fitted_models <- purrr::map(
+  model_workflows,
+  fit,
+  data = insurance_train
+)
+
+names(fitted_models)
+```
+
+If an engine is missing, install its corresponding package. For example, XGBoost requires `xgboost`, while MARS requires `earth`. If a model fails to fit, you can temporarily remove that model from `model_specs` and continue with the others.
+
+### Step 5: Evaluate out-of-sample predictions
+
+We will calculate three standard regression metrics on the original `charges` scale.
+
+$$ \begin \operatorname &= \sqrt\sum\_^(y_i-\hati)^2},\ \operatorname &= \frac1\sum^|y_i-\hat_i|,\ R^2 &= 1-\frac^(y_i-\hat_i)^2} ^(y_i-\bar)^2}. \end $$
+
+Lower RMSE and MAE indicate better predictive accuracy. Higher $R^2$ indicates that the predictions explain more of the variation in the test-set charges.
+
+```
+# Generate predictions for the same test observations
+test_predictions 
+```

@@ -8,6 +8,11 @@ book:
     - index.qmd
     - chapters/01_Introduction_to_Risk_and_Insurance.qmd
     - chapters/02_Introduction_to_Data_Science.qmd
+    - chapters/03_Transforming_and_Summarizing_Data.qmd
+    - chapters/04_Tidy_Data.qmd
+    - chapters/05_Data_Visualization_with_ggplot2.qmd
+    - chapters/06_Regression_with_Tidymodels.qmd
+    - chapters/07_Assessing_Model_Performance.qmd
     
 format:
   html:

@@ -1,0 +1,255 @@
+---
+title: "multiple linear regression models without nonlinear effects or interaction terms"
+---
+
+Revised question: I mean multiple linear regression models without nonlinear effects or interaction terms. Can we compare models fitted using different subsets of the available predictors?
+
+More natural academic phrasing: Compare alternative additive multiple linear regression models using different subsets of the available predictors, excluding nonlinear terms and interaction effects, and assess their out-of-sample predictive performance.
+
+Yes. We will use ordinary multiple linear regression only, with different combinations of the six predictors: `age`, `sex`, `bmi`, `children`, `smoker`, and `region`.
+
+Every model will have the same additive structure. No squared terms, transformations of predictors, or interaction terms will be included.
+
+## 1. Candidate models
+
+| Model | Predictors                                     | Purpose                                   |
+| ----- | ---------------------------------------------- | ----------------------------------------- |
+| M1    | All six predictors                             | Full baseline                             |
+| M2    | `age + bmi + smoker`                           | Core predictors                           |
+| M3    | `age + bmi + smoker + children`                | Add number of dependents                  |
+| M4    | `age + bmi + smoker + sex`                     | Add sex                                   |
+| M5    | `age + bmi + smoker + region`                  | Add region                                |
+| M6    | `age + bmi + smoker + children + sex`          | Add dependents and sex                    |
+| M7    | `age + bmi + smoker + children + region`       | Add dependents and region                 |
+| M8    | `age + bmi + smoker + sex + region`            | Add sex and region                        |
+| M9    | `age + bmi + children + smoker + sex + region` | Same full model as M1, written explicitly |
+
+M1 and M9 are duplicates, so we only need one full model. We can also include reduced models to investigate how predictive performance changes when one or more predictors are omitted.
+
+## 2. Complete R code
+
+This code reuses your existing `insurance_train` and `insurance_test` objects to preserve the same test observations.
+
+```
+# ============================================================
+# Compare additive multiple linear regression models
+# No nonlinear terms and no interaction terms
+# ============================================================
+
+library(tidymodels)
+library(parsnip)
+library(dplyr)
+library(purrr)
+library(tidyr)
+library(ggplot2)
+
+# ------------------------------------------------------------
+# 1. Define candidate models
+# ------------------------------------------------------------
+
+model_formulas <- list(
+
+  M1_Full =
+    charges ~ age + sex + bmi + children + smoker + region,
+
+  M2_Core =
+    charges ~ age + bmi + smoker,
+
+  M3_Add_Children =
+    charges ~ age + bmi + smoker + children,
+
+  M4_Add_Sex =
+    charges ~ age + bmi + smoker + sex,
+
+  M5_Add_Region =
+    charges ~ age + bmi + smoker + region,
+
+  M6_Children_Sex =
+    charges ~ age + bmi + smoker + children + sex,
+
+  M7_Children_Region =
+    charges ~ age + bmi + smoker + children + region,
+
+  M8_Sex_Region =
+    charges ~ age + bmi + smoker + sex + region,
+
+  M9_Demographics =
+    charges ~ age + bmi + smoker + children + sex + region,
+
+  M10_Without_Smoker =
+    charges ~ age + bmi + children + sex + region,
+
+  M11_Age_BMI =
+    charges ~ age + bmi,
+
+  M12_BMI_Smoker =
+    charges ~ bmi + smoker,
+
+  M13_Age_Smoker =
+    charges ~ age + smoker
+)
+
+# Remove duplicate formula specifications
+model_formulas <- model_formulas[
+  !duplicated(
+    vapply(model_formulas, \(f) paste(deparse(f), collapse = ""),
+           character(1))
+  )
+]
+
+
+# ------------------------------------------------------------
+# 2. Specify ordinary least squares regression
+# ------------------------------------------------------------
+
+lm_spec <- linear_reg() |>
+  set_engine("lm")
+
+
+# ------------------------------------------------------------
+# 3. Create workflows and fit the models
+# ------------------------------------------------------------
+
+model_workflows <- purrr::map(
+  model_formulas,
+  \(formula) {
+    workflow() |>
+      add_model(lm_spec) |>
+      add_formula(formula)
+  }
+)
+
+fitted_models <- purrr::map(
+  model_workflows,
+  \(model_workflow) {
+    fit(
+      model_workflow,
+      data = insurance_train
+    )
+  }
+)
+
+
+# ------------------------------------------------------------
+# 4. Predict on the same test set
+# ------------------------------------------------------------
+
+all_predictions <- purrr::imap_dfr(
+  fitted_models,
+  \(model, model_name) {
+    predict(
+      model,
+      new_data = insurance_test
+    ) |>
+      bind_cols(
+        insurance_test |> select(charges)
+      ) |>
+      mutate(
+        model = model_name,
+        .before = 1
+      )
+  }
+)
+
+
+# ------------------------------------------------------------
+# 5. Evaluate test-set performance
+# ------------------------------------------------------------
+
+evaluation_table <- all_predictions |>
+  group_by(model) |>
+  group_modify(
+    \(data, key) {
+      metric_set(rmse, mae, rsq)(
+        data = data,
+        truth = charges,
+        estimate = .pred
+      ) |>
+        select(.metric, .estimate)
+    }
+  ) |>
+  ungroup() |>
+  pivot_wider(
+    names_from = .metric,
+    values_from = .estimate
+  ) |>
+  arrange(rmse)
+
+print(evaluation_table, n = Inf)
+
+
+# ------------------------------------------------------------
+# 6. Compare RMSE
+# ------------------------------------------------------------
+
+ggplot(
+  evaluation_table,
+  aes(
+    x = reorder(model, rmse),
+    y = rmse
+  )
+) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Additive Multiple Linear Regression",
+    subtitle = "Test-set comparison",
+    x = NULL,
+    y = "RMSE"
+  ) +
+  theme_minimal()
+
+
+# ------------------------------------------------------------
+# 7. Compare MAE
+# ------------------------------------------------------------
+
+ggplot(
+  evaluation_table,
+  aes(
+    x = reorder(model, mae),
+    y = mae
+  )
+) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Mean Absolute Error by Model",
+    x = NULL,
+    y = "MAE"
+  ) +
+  theme_minimal()
+
+
+# ------------------------------------------------------------
+# 8. Examine the coefficients of the best model
+# ------------------------------------------------------------
+
+best_model_name <- evaluation_table$model[1]
+
+best_model_fit <- fitted_models[[best_model_name]]
+
+coefficient_table <- broom::tidy(
+  extract_fit_engine(best_model_fit),
+  conf.int = TRUE
+)
+
+cat("Best model by test RMSE:", best_model_name, "\n")
+
+print(coefficient_table, n = Inf)
+```
+
+## 3. How we will interpret the results
+
+The most useful comparisons are between M1 and M2–M8.
+
+- If M2 performs nearly as well as M1, the additional predictors may contribute little to test-set prediction accuracy.
+- If removing `smoker` in M10 substantially worsens performance, smoking status is an important predictive variable.
+- If M3, M4, or M5 performs better than M2, the added predictor may improve prediction.
+- If M1 has the lowest RMSE, retaining all six predictors may be justified for predictive purposes.
+
+However, a predictor can be statistically significant without materially improving out-of-sample prediction, and a small difference in RMSE does not establish that one model is genuinely better.
+
+One important note: M1 and M9 are identical specifications, and the code removes duplicate formulas automatically. The remaining models provide a range of reduced additive specifications for comparison.
+
+Run the code and share the resulting `evaluation_table`. We can then identify the most promising additive regression models before moving on to cross-validation or grading logic.

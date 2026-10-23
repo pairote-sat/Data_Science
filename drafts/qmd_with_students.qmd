@@ -1,0 +1,110 @@
+---
+title: "Chapter 6: Linear Regression with Tidymodels"
+author: "PS"
+---
+
+```{r}
+#| label: setup
+
+library(readr)
+library(dplyr)
+library(ggplot2)
+
+
+```
+
+# Linear Regresion with Claiam dataset
+
+We use the insurance dataset stored in the project’s data/ folder. We first load the dataset.
+
+
+```{r}
+#| label: load_data
+
+insurance <- read_csv("../data/insuranceKaggle.csv")
+
+glimpse(insurance)
+```
+
+
+## Insurance Charges vs. Age
+
+
+```{r}
+#| label: plot charge vs age
+
+ggplot(insurance, aes(x = age, y = charges)) +
+  geom_point(alpha = 0.6) +
+  theme_bw(base_size = 16) + 
+  labs(
+    title = "Insurance Charges by Age",
+    x = "Age",
+    y = "Charges"
+  )
+
+```
+
+
+
+## Smoker and Charges
+
+```{r}
+#| label: plot charge vs smoker
+
+ggplot(insurance, aes(x = smoker, y = charges)) +
+  geom_boxplot() +
+  theme_bw(base_size = 16) +
+  labs(
+    title = "Insurance Charges by Smoking Status",
+    x = "Smoker",
+    y = "Charges"
+  )
+```
+
+
+
+
+For a simple regression, base R can fit the model directly:
+
+```{r}
+#| label: lm fit
+
+lm_model <- lm(charges ~ age, data = insurance)
+
+summary(lm_model)
+
+```
+
+From the model fitting, the simple regression line is given by 
+
+$$ \hat{\text{charge}} = `r lm_model$coefficients[1]` + `r lm_model$coefficients[2]` \text{age}. $$
+
+Generate the prediction and add it to the data frame
+
+```{r}
+insurance$prediction <- predict(lm_model, insurance)
+```
+
+
+
+## Residual Plots
+
+
+```{r}
+insurance$residual <- residuals(lm_model)
+```
+
+
+Plot the standard residuals vs fitted plot (diagnostic plot)
+
+```{r}
+insurance %>% ggplot(aes(x=prediction , y=  residual)) +
+  geom_point() +
+  labs(
+    title = "Residual vs. Fitted Values",
+    x = "Fitted values",
+    y = "Residuals (errors)"
+  )
+```
+
+

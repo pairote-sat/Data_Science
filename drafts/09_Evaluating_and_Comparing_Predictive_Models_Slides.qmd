@@ -1,0 +1,1271 @@
+---
+title: "Chapter 9: Evaluating and Comparing Predictive Models"
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    theme: simple
+    scrollable: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# Load your global R packages
+library(tidyverse)
+library(tidymodels)
+
+
+
+# Load data
+insurance <- read_csv("../data/insuranceKaggle.csv")
+
+# Split into training and testing sets
+set.seed(123)
+
+insurance_split <- initial_split(
+  insurance,
+  prop = 0.8
+)
+
+insurance_train <- training(insurance_split)
+insurance_test  <- testing(insurance_split)
+
+# Define preprocessing
+insurance_recipe <- recipe(
+  charges ~ age + bmi + smoker,
+  data = insurance_train
+) |>
+  step_dummy(all_nominal_predictors())
+
+# Specify linear regression
+lm_model <- linear_reg() |>
+  set_engine("lm")
+
+# Build workflow
+insurance_workflow <- workflow() |>
+  add_recipe(insurance_recipe) |>
+  add_model(lm_model)
+
+# Fit model using training data
+lm_fit <- fit(
+  insurance_workflow,
+  data = insurance_train
+)
+
+```
+
+# Part 1: Evaluating Predictive Models
+
+## Why Evaluate Predictive Models?
+
+A fitted model produces predictions, but how well do those predictions match actual outcomes?
+
+- **Model fitting:** Learn relationships from training data.
+- **Prediction:** Estimate outcomes for new observations.
+- **Evaluation:** Measure how close predictions are to actual values.
+
+Our focus is **predictive performance**: how accurately a model predicts insurance charges for observations it has not seen during training.
+
+## What Does Good Performance Mean?
+
+Different modelling goals require different evaluation priorities.
+
+| Inferential modelling | Predictive modelling |
+|---|---|
+| Understand relationships between variables | Predict outcomes accurately |
+| Interpret coefficients and statistical significance | Measure prediction errors |
+| Assess assumptions and uncertainty | Evaluate performance on unseen data |
+
+In this chapter, we focus on prediction. A model that explains relationships well does not necessarily produce the most accurate predictions.
+
+## From a Workflow to Predictions
+
+Recall the workflow developed in the previous chapter. After fitting the model, we generate predictions on the test data.
+
+```{r}
+# Generate predictions on the test data
+insurance_test_results <- insurance_test |>
+  bind_cols(
+    predict(lm_fit, new_data = insurance_test)
+  )
+```
+
+The resulting data contain:
+
+- `charges`: the actual insurance charges;
+- `.pred`: the predicted insurance charges.
+
+We can now evaluate the predictions using `yardstick`.
+
+
+## Common Regression Metrics
+
+Four useful metrics for comparing regression models are RMSE, MAE, $R^2$, and MAPE.
+
+| Metric | What does it measure? | Preferred direction |
+|---|---|---|
+| RMSE | Prediction error, with greater weight on large errors | Lower |
+| MAE | Average absolute prediction error | Lower |
+| $R^2$ | Predictive performance relative to variation in the observed outcomes | Higher |
+| MAPE | Average absolute prediction error relative to actual values, expressed as a percentage | Lower |
+
+Each metric describes a different aspect of predictive performance. No single measure provides a complete picture, so it is useful to examine them together.
+
+## RMSE and MAE: Measuring Prediction Errors
+
+Let $y_i$ denote the actual value, $\hat{y}_i$ the predicted value, and $n$ the number of observations.
+
+**Root Mean Squared Error (RMSE)**
+
+$$
+\operatorname{RMSE}
+=
+\sqrt{\frac{1}{n}\sum_{i=1}^{n}
+(y_i-\hat{y}_i)^2}
+$$
+
+**Mean Absolute Error (MAE)**
+
+$$
+\operatorname{MAE}
+=
+\frac{1}{n}\sum_{i=1}^{n}
+|y_i-\hat{y}_i|
+$$
+
+Both metrics are expressed in the original units of the response. RMSE penalizes large errors more heavily because the errors are squared, whereas MAE provides a direct measure of the average absolute prediction error.
+
+For insurance charges, both RMSE and MAE are expressed in the same monetary units as `charges`.
+
+## Understanding $R^2$
+
+The traditional coefficient of determination is
+
+$$
+R^2
+=
+1-
+\frac{\sum_{i=1}^{n}(y_i-\hat{y}_i)^2}
+{\sum_{i=1}^{n}(y_i-\bar{y})^2},
+$$
+
+where $\bar{y}$ is the mean of the actual outcomes in the evaluation data.
+
+This metric compares the model's squared prediction errors with the variation in the actual outcomes around their mean.
+
+- $R^2=1$: perfect predictions.
+- $R^2=0$: the model has the same squared-error performance as predicting the mean of the actual outcomes.
+- $R^2<0$: the model performs worse in squared error than predicting that mean.
+
+A higher $R^2$ generally indicates better predictive performance under this definition. However, $R^2$ should be interpreted alongside RMSE and MAE because it does not directly express prediction errors in monetary units.
+
+## Understanding MAPE
+
+Mean Absolute Percentage Error (MAPE) measures the absolute prediction error relative to the actual value and expresses the result as a percentage.
+
+$$
+\operatorname{MAPE}
+=
+\frac{100}{n}\sum_{i=1}^{n}
+\left|\frac{y_i-\hat{y}_i}{y_i}\right|.
+$$
+
+For example, suppose an actual insurance charge is \$2,000 and the predicted charge is \$1,800. The absolute percentage error is
+
+$$
+\frac{|2000-1800|}{2000}\times 100\%=10\%.
+$$
+
+MAPE is easy to interpret because it expresses errors as percentages rather than monetary amounts. However, it has important limitations:
+
+- MAPE is undefined when an actual value is zero.
+- MAPE can become extremely large when actual values are close to zero.
+- MAPE gives equal weight to percentage errors, which can cause observations with small actual values to have a disproportionate influence.
+
+For insurance charges, MAPE should therefore be interpreted cautiously, particularly when some policyholders have relatively low charges. RMSE and MAE provide useful complementary measures.
+
+## Calculate Metrics with `yardstick`
+
+The `yardstick` package allows us to calculate multiple regression metrics together using `metric_set()`.
+
+```{r}
+#| id: calculate-regression-metrics
+
+library(tidymodels)
+
+regression_metrics <- metric_set(
+  rmse,
+  mae,
+  rsq_trad,
+  mape
+)
+
+regression_metrics(
+  insurance_test_results,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+Here:
+
+- `truth` identifies the actual outcomes.
+- `estimate` identifies the model predictions.
+- `metric_set()` combines several metrics into one evaluation function.
+- `rsq_trad()` calculates the traditional coefficient of determination, rather than the squared-correlation version returned by `rsq()`.
+
+The same evaluation code can be reused for different models, provided their predictions are stored in the expected format. When comparing models, all metrics should be calculated using the same test observations.
+
+## Key Takeaways
+
+- A fitted model must be evaluated to assess its predictive performance.
+- RMSE and MAE measure prediction errors in the response's original units.
+- $R^2$ compares squared prediction errors with the variation in the observed outcomes.
+- MAPE expresses absolute prediction errors as percentages but is problematic when actual values are zero or close to zero.
+- `yardstick` provides a consistent way to calculate and compare multiple metrics.
+- **For a fair comparison, evaluate all candidate models on the same test data.**
+
+Next, we will introduce additional regression models and investigate whether they can improve predictions of insurance charges.
+
+
+
+
+
+
+
+
+# Part 2: Ridge Regression
+
+## Why Consider Different Regression Models?
+
+Our linear regression model provides a useful starting point, but it may not always produce the best predictions.
+
+- Relationships between predictors and the response may be more complex than a straight-line relationship.
+- Highly correlated predictors can make estimated coefficients unstable.
+- Models with too much flexibility may overfit the training data.
+
+We will investigate three alternatives:
+
+- **Ridge regression:** controls coefficient size.
+- **Regression trees:** model relationships through successive splits.
+- **Random forests:** combine predictions from many trees.
+
+Our objective is to compare their predictive performance on the same test data.
+
+## Ridge Regression: The Main Idea
+
+Ridge regression extends ordinary linear regression by adding a penalty for large coefficients.
+
+It is a form of **regularisation**: controlling model complexity to help reduce overfitting and improve prediction stability.
+
+Instead of minimising only the sum of squared errors, ridge regression minimises
+
+$$
+\underbrace{\sum_{i=1}^{n}(y_i-\hat y_i)^2}_{\text{Prediction error}}
++
+\underbrace{\lambda\sum_{j=1}^{p}\beta_j^2}_{\text{Penalty}}.
+$$
+
+Here:
+
+- $\beta_j$ is the coefficient of predictor $j$.
+- $\lambda\geq 0$ controls the strength of the penalty.
+- The intercept is not penalised.
+
+The penalty is called an **L2 penalty** because it uses squared coefficients.
+
+## What Does the Penalty Do?
+
+The penalty controls how strongly ridge regression discourages large coefficients.
+
+| Penalty parameter | Effect |
+|---|---|
+| $\lambda = 0$ | Ordinary least squares; no penalty |
+| Small $\lambda$ | Coefficients shrink slightly towards zero |
+| Large $\lambda$ | Coefficients shrink more strongly towards zero |
+
+As $\lambda$ increases, the model prioritizes smaller coefficients over fitting the training data as closely as possible. This can reduce overfitting, but too much shrinkage can lead to underfitting.
+
+**Important:** Ridge regression generally keeps all predictors in the model. It shrinks their coefficients towards zero but does not usually make them exactly zero.
+
+## Visualising Coefficient Shrinkage
+
+The following figure shows how ridge regression coefficients change as the penalty increases.
+
+```{r}
+#| id: tree-2
+#| echo: true
+#| output: true
+#| fig-height: 4.5
+#| fig-width: 8
+
+# Prepare the predictors using the same preprocessing steps
+ridge_recipe <- recipe(
+  charges ~ .,
+  data = insurance_train
+) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_normalize(all_numeric_predictors())
+
+ridge_recipe_prep <- prep(ridge_recipe, training = insurance_train)
+
+ridge_train_baked <- bake(
+  ridge_recipe_prep,
+  new_data = insurance_train
+)
+
+x_ridge <- ridge_train_baked |>
+  select(-charges) |>
+  as.matrix()
+
+y_ridge <- ridge_train_baked$charges
+
+# Fit a ridge path over a range of penalty values
+ridge_path <- glmnet::glmnet(
+  x = x_ridge,
+  y = y_ridge,
+  alpha = 0
+)
+
+plot(
+  ridge_path,
+  xvar = "lambda",
+  label = TRUE,
+  main = "Ridge Regression: Coefficient Paths"
+)
+```
+
+
+- Each curve represents the estimated coefficient of a predictor.
+- **Moving from right to left:** the penalty $\lambda$ increases, and the coefficients generally shrink towards zero.
+- Ridge regression typically keeps all predictors in the model; their coefficients are not usually reduced exactly to zero.
+
+The figure illustrates how coefficients change with the penalty. It does not identify the penalty value that gives the best test-set predictions.
+
+
+## Ridge Regression: Coefficient Paths
+
+
+```{r}
+#| id: ridge-plot-only
+#| echo: false
+#| output: true
+#| fig-height: 5
+#| fig-width: 9
+
+plot(
+  ridge_path,
+  xvar = "lambda",
+  label = TRUE,
+  main = "Ridge Regression: Coefficient Paths"
+)
+```
+
+## Why Scale the Predictors?
+
+The ridge penalty depends on coefficient magnitudes. If predictors are measured on very different scales, their coefficients may not be directly comparable under the penalty.
+
+For example:
+
+- Age is measured in years.
+- BMI is measured in BMI units.
+- Smoking status is represented by indicator variables.
+
+We therefore standardise the predictors before fitting ridge regression.
+
+Our recipe uses `step_normalize()` for numeric predictors after creating dummy variables. We also disable `glmnet`'s internal standardisation because the recipe has already performed this step.
+
+## Fit Ridge Regression with `parsnip`
+
+We specify ridge regression using `linear_reg()` and the `glmnet` engine.
+
+```{r}
+#| id: ridge-fit
+#| eval: true
+
+# Specify ridge regression
+ridge_model <- linear_reg(
+  penalty = 0.1,
+  mixture = 0
+) |>
+  set_engine("glmnet", standardize = FALSE)
+
+# Build the workflow
+ridge_workflow <- workflow() |>
+  add_recipe(ridge_recipe) |>
+  add_model(ridge_model)
+
+# Fit using the training data
+ridge_fit <- fit(
+  ridge_workflow,
+  data = insurance_train
+)
+```
+
+The key arguments are:
+
+- `penalty = 0.1`: specifies the strength of regularisation.
+- `mixture = 0`: selects ridge regression.
+- `set_engine("glmnet")`: uses the `glmnet` implementation.
+
+For now, we use a fixed penalty to understand the method. Later, we can use cross-validation to select an appropriate value.
+
+## Evaluate Ridge Regression
+
+Generate predictions on the test data and calculate the same metrics used for ordinary linear regression.
+
+```{r}
+#| id: ridge-evaluate
+#| eval: true
+
+# Generate test predictions
+ridge_test_results <- insurance_test |>
+  bind_cols(
+    predict(ridge_fit, new_data = insurance_test)
+  )
+
+# Evaluate predictive performance
+regression_metrics <- metric_set(
+  rmse,
+  mae,
+  rsq_trad
+)
+
+regression_metrics(
+  ridge_test_results,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+Compare these results with the linear regression results from Part 1.
+
+- Lower RMSE and MAE indicate smaller prediction errors.
+- Higher traditional $R^2$ indicates better squared-error performance relative to the test-set mean benchmark.
+- A small improvement may not justify the added modelling complexity.
+
+## Compare Linear and Ridge Regression
+
+We can summarise both models using the same test data and metrics.
+
+```{r} 
+#| id: ridge-compare
+#| eval: true
+
+linear_metrics <- regression_metrics(
+  insurance_test_results,
+  truth = charges,
+  estimate = .pred
+)
+
+ridge_metrics <- regression_metrics(
+  ridge_test_results,
+  truth = charges,
+  estimate = .pred
+)
+
+bind_rows(
+  "Linear regression" = linear_metrics,
+  "Ridge regression" = ridge_metrics,
+  .id = "model"
+)
+```
+
+The results show whether coefficient regularisation improves prediction for this dataset.
+
+Ridge regression does not necessarily outperform ordinary linear regression. Its benefit depends on the data, the predictors, and the penalty strength.
+
+## Key Takeaways
+
+- Ridge regression adds an L2 penalty to the residual sum of squares.
+- The penalty shrinks coefficients towards zero and can improve stability.
+- Predictors should be placed on comparable scales.
+- The penalty parameter controls the strength of regularisation.
+- Predictive performance must be assessed on data not used to fit the model.
+
+Next, we will consider regression trees, which model relationships through splits rather than a single linear equation.
+
+
+
+
+
+
+
+# Part 3: Regression Trees
+
+## Beyond Linear Relationships
+
+Ridge regression retains a linear model structure. What if the relationship between predictors and insurance charges is nonlinear?
+
+A **regression tree** predicts a numerical outcome by dividing observations into groups using decision rules.
+
+For example, a tree might first separate smokers from non-smokers, then divide each group according to age or BMI.
+
+Unlike linear regression, a tree can capture nonlinear relationships and interactions without specifying them in advance.
+
+## How Does a Regression Tree Work?
+
+A regression tree builds a sequence of splits.
+
+1. Start with all training observations in one node.
+2. Choose a predictor and cutoff that improve the separation of charges.
+3. Repeat the process within the resulting groups.
+4. Stop splitting according to the model's complexity controls.
+
+The final groups are called **terminal nodes** or **leaves**.
+
+Each terminal node predicts the mean response of the training observations within that node.
+
+## How Are Splits Selected?
+
+The tree seeks groups with similar response values.
+
+For a node containing $n$ observations, the sum of squared errors is
+
+$$
+\operatorname{SSE}
+=
+\sum_{i=1}^{n}(y_i-\bar y)^2,
+$$
+
+where $\bar y$ is the mean response in that node.
+
+For a candidate split, the algorithm compares the total SSE in the two child nodes with the SSE before splitting.
+
+$$
+\text{SSE reduction}
+=
+\text{SSE}_{\text{parent}}
+-
+\left(
+\text{SSE}_{L}+\text{SSE}_{R}
+\right).
+$$
+
+A good split produces a large reduction in SSE.
+
+The algorithm repeats this process to build the tree, subject to its complexity controls.
+
+
+## Structure of a Regression Tree
+
+A regression tree predicts insurance charges by repeatedly splitting the data according to predictor values.
+
+- **Decision nodes** specify the conditions used to split observations.
+- **Branches** represent the outcomes of these decisions.
+- **Terminal nodes (leaves)** provide the predicted charge, typically the mean charge of the training observations in that node.
+
+The figure illustrates the structure of a regression tree. In practice, the fitted tree determines the split variables, split points, and predicted values from the training data.
+
+```{r}
+#| id: regression-tree-illustration
+#| echo: false
+#| out-width: "70%"
+
+knitr::include_graphics(
+  "https://github.com/pairote-sat/SCMA248/raw/main/Images/tree.png"
+)
+```
+
+Source: [ResearchGate](https://www.researchgate.net/publication/365852091/figure/fig3/AS:11431281179239674@1691164465245/Illustration-of-decision-tree-regression.png)
+
+
+
+## Structure of a Regression Tree
+
+
+```{r}
+#| id: regression-tree-illustration-2
+#| echo: false
+#| out-width: "70%"
+
+knitr::include_graphics(
+  "https://github.com/pairote-sat/SCMA248/raw/main/Images/tree.png"
+)
+```
+
+Source: [ResearchGate](https://www.researchgate.net/publication/365852091/figure/fig3/AS:11431281179239674@1691164465245/Illustration-of-decision-tree-regression.png)
+
+
+## A Regression Tree for Insurance Charges
+
+We can fit a regression tree using `decision_tree()` from `parsnip` and the `rpart` engine.
+
+```{r} 
+#| id: tree-fit
+#| eval: true
+
+
+# Specify a regression tree
+tree_model <- decision_tree(
+  cost_complexity = 0.001,
+  tree_depth = 5,
+  min_n = 20
+) |>
+  set_engine("rpart") |>
+  set_mode("regression")
+
+# Use the original predictors
+tree_recipe <- recipe(
+  charges ~ .,
+  data = insurance_train
+)
+
+# Build the workflow
+tree_workflow <- workflow() |>
+  add_recipe(tree_recipe) |>
+  add_model(tree_model)
+
+# Fit the model
+tree_fit <- fit(
+  tree_workflow,
+  data = insurance_train
+)
+```
+
+Here:
+
+- `tree_depth` limits the maximum depth of the tree.
+- `min_n` specifies the minimum number of observations required in a node for a split to be considered.
+- `cost_complexity` penalises tree complexity.
+
+The selected values are illustrative settings, not necessarily optimal values.
+
+## Visualising the Fitted Tree
+
+The diagram shows the decision rules learned from the training data.
+
+```{r}
+#| id: ridge-path-2
+#| echo: true
+#| output: false
+
+
+
+
+
+
+library(rpart.plot)
+
+tree_engine <- extract_fit_engine(tree_fit)
+
+rpart.plot(
+  tree_engine,
+  type = 2,
+  extra = 101,
+  roundint = FALSE,
+  fallen.leaves = TRUE
+)
+```
+
+Read the tree from the top down:
+
+- **Root node:** contains all training observations.
+- **Internal nodes:** apply a decision rule to divide observations.
+- **Branches:** represent the possible outcomes of each decision.
+- **Terminal nodes:** provide the final predicted charge.
+
+The splits reveal which predictor thresholds the fitted tree uses. The actual structure depends on the training data and the chosen settings.
+
+
+## Visualising the Fitted Tree
+
+The diagram shows the decision rules learned from the training data.
+
+```{r}
+#| id: tree
+#| echo: false
+#| output: true
+#| fig-height: 6.5
+#| fig-width: 9.5
+
+
+library(rpart.plot)
+
+tree_engine <- extract_fit_engine(tree_fit)
+
+rpart.plot(
+  tree_engine,
+  type = 2,
+  extra = 101,
+  roundint = FALSE,
+  fallen.leaves = TRUE
+)
+```
+
+
+## Interpreting a Tree Prediction
+
+Suppose a path through the fitted tree identifies a group of policies satisfying several conditions.
+
+The predicted charge is the mean charge among the training observations in the corresponding terminal node.
+
+This creates a piecewise-constant prediction function: predictions remain constant within each terminal node and change when an observation crosses a decision boundary.
+
+Unlike a linear model, a regression tree does not represent each predictor's contribution using a single coefficient.
+
+## Controlling Overfitting
+
+A tree that grows too deep can fit the training observations closely but perform poorly on new data.
+
+| Parameter | Effect of increasing the parameter |
+|---|---|
+| `tree_depth` | Allows a greater maximum depth, potentially making the tree more complex |
+| `min_n` | Requires more observations for splitting, generally producing a simpler tree |
+| `cost_complexity` | Applies a stronger complexity penalty, generally favouring simpler trees |
+
+The tree must balance fitting the training data against generalising to unseen observations.
+
+**A more complex tree does not necessarily provide better predictions.**
+
+## Evaluate the Regression Tree
+
+Generate predictions on the same test observations used for the previous models.
+
+```{r} 
+#| id: tree-evaluate
+
+tree_test_results <- insurance_test |>
+  bind_cols(
+    predict(tree_fit, new_data = insurance_test)
+  )
+
+regression_metrics(
+  tree_test_results,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+Compare the results with linear and ridge regression.
+
+- Lower RMSE and MAE indicate smaller prediction errors.
+- Higher traditional $R^2$ indicates better squared-error performance relative to the test-set mean benchmark.
+- A tree may capture nonlinear patterns but can also lose predictive accuracy if it overfits.
+
+## Compare the Models So Far
+
+We can combine the evaluation results into one table.
+
+```{r} 
+#| id: tree-comparison
+
+summarise_model <- function(results, model_name) {
+  regression_metrics(
+    results,
+    truth = charges,
+    estimate = .pred
+  ) |>
+    select(.metric, .estimate) |>
+    pivot_wider(
+      names_from = .metric,
+      values_from = .estimate
+    ) |>
+    mutate(model = model_name, .before = 1)
+}
+
+model_comparison <- bind_rows(
+  summarise_model(
+    insurance_test_results,
+    "Linear regression"
+  ),
+  summarise_model(
+    ridge_test_results,
+    "Ridge regression"
+  ),
+  summarise_model(
+    tree_test_results,
+    "Regression tree"
+  )
+)
+
+model_comparison
+```
+
+All three models are evaluated using the same test data and metrics, making their predictive performance directly comparable.
+
+## Key Takeaways
+
+- Regression trees model relationships through successive splits.
+- Each terminal node predicts the mean response of its training observations.
+- Trees can capture nonlinear relationships and interactions automatically.
+- Tree complexity must be controlled to reduce overfitting.
+- Test-set evaluation determines whether a tree improves prediction over the linear models.
+
+Next, we will investigate random forests, which combine many regression trees to produce predictions that are often more stable than those from a single tree.
+
+
+
+
+
+
+# Part 4: Random Forest Regression
+
+## How Does Random Forest Work?
+
+Random Forest is an **ensemble learning method** that combines many decision trees to produce more stable predictions.
+
+Each tree is built using two sources of randomness:
+
+- **Bootstrap sampling:** Each tree is trained on a sample of the training data drawn with replacement.
+- **Random predictor selection:** At each split, only a randomly selected subset of predictors is considered.
+
+The predictions from all trees are then combined to produce the final result.
+
+For regression, the forest averages the predictions from all trees:
+
+$$
+\hat{y}_{RF}(x)=\frac{1}{B}\sum_{b=1}^{B}\hat{y}_b(x)
+$$
+
+where $B$ is the number of trees and $\hat{y}_b(x)$ is the prediction from tree $b$.
+
+For classification, the forest typically uses majority voting to determine the predicted class.
+
+**Key idea:** Combining many diverse trees can reduce prediction variance and improve predictive performance compared with a single regression tree.
+
+## Random Forest: An Illustration
+
+The figure illustrates how a Random Forest combines predictions from multiple decision trees. Each tree is trained using a bootstrap sample and considers random subsets of predictors at its splits. The individual predictions are aggregated to produce the final prediction.
+
+## Random Forest: An Illustration
+
+```{r} 
+#| id: random-forest-illustration
+#| echo: false
+#| out-width: "90%"
+
+knitr::include_graphics(
+  "https://raw.githubusercontent.com/pairote-sat/SCMA248/refs/heads/main/Images/rf.png"
+)
+```
+
+Source: [AIML.com](https://aiml.com/wp-content/uploads/2023/03/random-forest-classifier-3-2048x1171.png)
+
+## Fit a Random Forest
+
+We use `rand_forest()` from parsnip with the `ranger` engine.
+
+```{r} 
+#| id: rf-model
+
+rf_model <- rand_forest(
+  mtry = 5,
+  trees = 1000,
+  min_n = 5
+) |>
+  set_engine("ranger", importance = "permutation") |>
+  set_mode("regression")
+```
+
+Here, `mtry = 5` means that five candidate predictors are considered at each split. It does not mean that the forest uses only five predictors overall.
+
+## Build the Workflow
+
+Random Forest can handle numeric and factor predictors directly, so dummy encoding and normalization are not required.
+
+```{r} 
+#| id: rf-workflow
+
+rf_recipe <- recipe(charges ~ ., data = insurance_train)
+
+rf_workflow <- workflow() |>
+  add_recipe(rf_recipe) |>
+  add_model(rf_model)
+```
+
+## Fit and Predict
+
+We use the same training and test sets as the earlier models.
+
+```{r} 
+#| id: rf-fit-predict
+
+set.seed(123)
+
+rf_fit <- fit(rf_workflow, data = insurance_train)
+
+rf_test_results <- insurance_test |>
+  bind_cols(predict(rf_fit, new_data = insurance_test))
+```
+
+## Evaluate Random Forest
+
+```{r} 
+#| id: rf-evaluation
+
+regression_metrics(
+  rf_test_results,
+  truth = charges,
+  estimate = .pred
+)
+```
+
+Lower RMSE and MAE indicate smaller prediction errors, while a higher traditional $R^2$ generally indicates better predictive performance on the test set.
+
+## Understand Variable Importance
+
+Permutation importance measures how much prediction performance deteriorates when the values of a predictor are randomly permuted.
+
+```{r} 
+#| id: rf-variable-importance
+
+#library(vip)
+
+rf_engine <- extract_fit_engine(rf_fit)
+
+vip(rf_engine, num_features = 10) +
+  labs(title = "Random Forest: Permutation Variable Importance")
+```
+
+Higher importance scores indicate that a predictor contributes more to predictive performance under this measure. Variable importance does not establish causation or indicate the direction of a predictor's effect.
+
+
+
+
+
+# Compare All Models
+
+## Ensure a Fair Comparison
+
+For a fair comparison, all models should use the same training data, test data, response variable, predictors, and evaluation metrics. This allows us to compare modelling methods rather than differences caused by the choice of predictors or test observations.
+
+We will compare four models:
+
+- **Linear regression:** provides a simple, interpretable baseline.
+- **Ridge regression:** uses coefficient shrinkage to reduce sensitivity to correlated predictors.
+- **Regression tree:** captures nonlinear relationships and interactions through recursive splits.
+- **Random Forest:** combines predictions from many trees to improve predictive stability.
+
+All models will be evaluated on the same held-out test data.
+
+## Fit the Models and Generate Predictions
+
+First, fit the four models using the training data. The recipes handle categorical predictors appropriately for each modelling method. Linear regression and ridge regression require dummy encoding, while the tree-based models can handle categorical predictors directly.
+
+```{r}
+#| id: comparison-setup
+
+library(tidymodels)
+library(tidyverse)
+
+# Ensure the same training/test split is used throughout
+# insurance_train and insurance_test should already exist.
+```
+
+### Linear Regression
+
+Fit linear regression using all available predictors.
+
+```{r}
+#| id: comparison-linear
+
+linear_model_full <- linear_reg() |>
+  set_engine("lm")
+
+linear_recipe_full <- recipe(
+  charges ~ .,
+  data = insurance_train
+) |>
+  step_dummy(all_nominal_predictors())
+
+linear_workflow_full <- workflow() |>
+  add_recipe(linear_recipe_full) |>
+  add_model(linear_model_full)
+
+linear_fit_full <- fit(
+  linear_workflow_full,
+  data = insurance_train
+)
+
+linear_test_results_full <- insurance_test |>
+  bind_cols(
+    predict(linear_fit_full, new_data = insurance_test)
+  )
+```
+
+### Ridge Regression
+
+Ridge regression penalizes large coefficients. Numeric predictors are standardized, and categorical predictors are dummy encoded before fitting. The response variable, `charges`, remains on its original scale.
+
+```{r}
+#| id: comparison-ridge
+
+ridge_recipe <- recipe(
+  charges ~ .,
+  data = insurance_train
+) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_normalize(all_numeric_predictors())
+
+ridge_model <- linear_reg(
+  penalty = 0.1,
+  mixture = 0
+) |>
+  set_engine("glmnet", standardize = FALSE)
+
+ridge_workflow <- workflow() |>
+  add_recipe(ridge_recipe) |>
+  add_model(ridge_model)
+
+set.seed(123)
+
+ridge_fit <- fit(
+  ridge_workflow,
+  data = insurance_train
+)
+
+ridge_test_results <- insurance_test |>
+  bind_cols(
+    predict(ridge_fit, new_data = insurance_test)
+  )
+```
+
+The penalty value of `0.1` is an illustrative choice. In a more advanced analysis, the penalty can be tuned using resampling on the training data.
+
+### Regression Tree
+
+A regression tree predicts charges by dividing observations into groups according to predictor values.
+
+```{r}
+#| id: comparison-tree
+
+tree_recipe <- recipe(
+  charges ~ .,
+  data = insurance_train
+)
+
+tree_model <- decision_tree(
+  cost_complexity = 0.001,
+  tree_depth = 5,
+  min_n = 20
+) |>
+  set_engine("rpart") |>
+  set_mode("regression")
+
+tree_workflow <- workflow() |>
+  add_recipe(tree_recipe) |>
+  add_model(tree_model)
+
+tree_fit <- fit(
+  tree_workflow,
+  data = insurance_train
+)
+
+tree_test_results <- insurance_test |>
+  bind_cols(
+    predict(tree_fit, new_data = insurance_test)
+  )
+```
+
+The tree settings control its complexity. A deeper tree can capture more detailed patterns but may also overfit the training data.
+
+### Random Forest
+
+Random Forest combines predictions from many regression trees. Each tree is fitted using a bootstrap sample of the training observations, and only a random subset of predictors is considered at each split.
+
+```{r}
+#| id: comparison-random-forest
+
+rf_recipe <- recipe(
+  charges ~ .,
+  data = insurance_train
+)
+
+rf_model <- rand_forest(
+  mtry = 5,
+  trees = 1000,
+  min_n = 5
+) |>
+  set_engine("ranger", importance = "permutation") |>
+  set_mode("regression")
+
+rf_workflow <- workflow() |>
+  add_recipe(rf_recipe) |>
+  add_model(rf_model)
+
+set.seed(123)
+
+rf_fit <- fit(
+  rf_workflow,
+  data = insurance_train
+)
+
+rf_test_results <- insurance_test |>
+  bind_cols(
+    predict(rf_fit, new_data = insurance_test)
+  )
+```
+
+Here, `trees = 1000` specifies the number of trees, while `mtry = 5` specifies the number of candidate predictors considered at each split. The parameter `min_n = 5` controls the minimum number of training observations required in a node for a split to be considered.
+
+## Compare Test-Set Performance
+
+We use four metrics to evaluate the models:
+
+- **RMSE:** gives greater weight to large prediction errors.
+- **MAE:** measures the average absolute prediction error.
+- **$R^2$:** measures predictive performance relative to the variation in the test-set response, using the traditional test-set definition.
+- **MAPE:** expresses absolute prediction errors as percentages of actual values, but can be problematic when actual charges are zero or close to zero.
+
+Lower RMSE, MAE, and MAPE generally indicate better predictions. Higher $R^2$ generally indicates better predictive performance.
+
+```{r}
+#| id: comparison-metrics
+
+# Define the evaluation metrics
+regression_metrics <- metric_set(
+  rmse,
+  mae,
+  rsq_trad,
+  mape
+)
+
+# Function to summarise one model's performance
+summarise_model <- function(results, model_name) {
+  regression_metrics(
+    results,
+    truth = charges,
+    estimate = .pred
+  ) |>
+    select(.metric, .estimate) |>
+    pivot_wider(
+      names_from = .metric,
+      values_from = .estimate
+    ) |>
+    mutate(
+      model = model_name,
+      .before = 1
+    )
+}
+
+# Compare all four models on the same test data
+model_comparison <- bind_rows(
+  summarise_model(
+    linear_test_results_full,
+    "Linear regression"
+  ),
+  summarise_model(
+    ridge_test_results,
+    "Ridge regression"
+  ),
+  summarise_model(
+    tree_test_results,
+    "Regression tree"
+  ),
+  summarise_model(
+    rf_test_results,
+    "Random Forest"
+  )
+) |>
+  select(model, rmse, mae, rsq_trad, mape)
+
+model_comparison
+```
+
+Use the resulting table to identify which model performs best on the held-out test data. Do not assume that Random Forest must outperform every alternative.
+
+**Important:** MAPE can become misleading when actual charges are zero or very small. Interpret it cautiously and give particular attention to RMSE and MAE when comparing these insurance models.
+
+## Visualize Predictions
+
+A predicted-versus-actual plot shows how closely each model's predictions match the observed charges. Points near the diagonal represent predictions close to the actual values.
+
+```{r}
+#| id: comparison-prediction-plot
+
+comparison_df <- bind_rows(
+  linear_test_results_full |>
+    transmute(
+      charges,
+      predicted = .pred,
+      model = "Linear regression"
+    ),
+  ridge_test_results |>
+    transmute(
+      charges,
+      predicted = .pred,
+      model = "Ridge regression"
+    ),
+  tree_test_results |>
+    transmute(
+      charges,
+      predicted = .pred,
+      model = "Regression tree"
+    ),
+  rf_test_results |>
+    transmute(
+      charges,
+      predicted = .pred,
+      model = "Random Forest"
+    )
+)
+
+# Use the same axis limits for all panels
+axis_max <- max(
+  comparison_df$charges,
+  comparison_df$predicted,
+  na.rm = TRUE
+)
+
+ggplot(
+  comparison_df,
+  aes(x = charges, y = predicted)
+) +
+  geom_point(alpha = 0.35) +
+  geom_abline(
+    intercept = 0,
+    slope = 1,
+    linetype = "dashed"
+  ) +
+  facet_wrap(~ model) +
+  coord_equal(
+    xlim = c(0, axis_max),
+    ylim = c(0, axis_max)
+  ) +
+  labs(
+    title = "Predicted versus Actual Insurance Charges",
+    x = "Actual charges",
+    y = "Predicted charges"
+  ) +
+  theme_minimal()
+```
+
+The dashed diagonal represents perfect predictions. Points above the line indicate overprediction, while points below the line indicate underprediction.
+
+Insurance charges are strongly right-skewed, so a small number of large charges may dominate the plot's scale. Most observations may consequently appear compressed near the origin. The performance metrics provide a complementary numerical comparison.
+
+## Choosing a Predictive Model
+
+| Model | Main strength | Main limitation |
+|---|---|---|
+| Linear regression | Simple and interpretable | May miss nonlinear patterns |
+| Ridge regression | Shrinks coefficients and can reduce sensitivity to correlated predictors | Retains a linear prediction structure |
+| Regression tree | Captures nonlinear patterns and interactions | A single tree can be unstable |
+| Random Forest | Combines many trees to improve predictive stability | Less directly interpretable and more computationally demanding |
+
+The best model depends on predictive performance and the purpose of the analysis. A small improvement in RMSE may not justify a much more complex model when interpretability is important.
+
+The comparison above uses illustrative model settings rather than tuned hyperparameters. For a more rigorous comparison, tune each model using resampling on the training data, select settings without using the test data, and evaluate the selected models on the test set only after model selection is complete.
+
+## Chapter Summary
+
+By the end of this chapter, students should be able to:
+
+- Evaluate regression predictions using RMSE, MAE, $R^2$, and MAPE.
+- Distinguish training performance from test performance.
+- Explain regularization through ridge regression.
+- Describe how regression trees and Random Forest capture nonlinear relationships.
+- Compare models using the same test data and evaluation metrics.
+- Balance predictive accuracy with interpretability and model complexity.
+
+**Final principle:** Select a predictive model based on evidence from appropriate evaluation, not on its complexity or reputation alone.
+
+

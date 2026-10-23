@@ -1,0 +1,228 @@
+---
+title: "Week 4: Transforming and Summarizing Data"
+format:
+  pdf:
+    toc: false
+---
+
+# Chapter 3: Transforming and Summarizing Data
+
+
+## Data for the Practical Application
+
+The following six problems use the dataset **`ClaimsExperienceData`**. The data are based on the **Local Government Property Insurance Fund (LGPIF)**, an insurance pool administered by the Wisconsin Office of the Insurance Commissioner. The fund provides property insurance for local government entities such as counties, cities, towns, villages, and school districts.
+
+The dataset contains policy-level information on policyholders, coverage, deductibles, claims, premiums, and several risk characteristics. In these exercises, you will use `dplyr` to transform policy-level records into actuarially useful summaries of claim frequency and severity.
+
+### Main variables
+
+| Variable        | Description                                                                       |
+| --------------- | --------------------------------------------------------------------------------- |
+| `PolicyNum`     | Policy identifier                                                                 |
+| `Year`          | Policy year                                                                       |
+| `EntityType`    | Categorical variable with six types: Village, City, County, Misc, School, or Town |
+| `LnCoverage`    | Total building and content coverage, in logarithmic millions of dollars           |
+| `BCcov`         | Total building and content coverage                                               |
+| `Premium`       | Insurance premium                                                                 |
+| `Freq`          | Number of claims for the policy                                                   |
+| `Deduct`        | Deductible, in logarithmic dollars                                                |
+| `y`             | Claim amount                                                                      |
+| `lny`           | Logarithm of claim amount                                                         |
+| `yAvg`          | Average claim amount                                                              |
+| `AlarmCredit`   | Categorical variable with four levels: 0, 5, 10, or 15                            |
+| `NoClaimCredit` | Binary variable indicating no claims in the previous two years                    |
+| `Fire5`         | Binary variable indicating whether the fire class is below 5                      |
+
+### Understanding the Risk Characteristics
+
+Two variables require some additional context.
+
+**Alarm credit** measures the level of automatic smoke-alarm protection:
+
+| Credit | Description                                                                                    |
+| -----: | ---------------------------------------------------------------------------------------------- |
+|      0 | No automatic smoke alarms exist in any of the main rooms                                       |
+|      5 | Automatic smoke alarms exist in some of the main rooms                                         |
+|     10 | Automatic smoke alarms exist in all of the main rooms                                          |
+|     15 | The facility is monitored 24 hours a day, 7 days a week by a police, fire, or security company |
+
+A **fire rating** measures how well prepared a community and surrounding area are for fires. It considers factors such as local fire departments and water supply, as well as other factors affecting the ability to respond to a fire. The rating reflects the potential for a fire to cause severe damage before help arrives, with **1 being the best rating and 10 the worst**.
+
+In `ClaimsExperienceData`, `Fire5` is a binary indicator:
+
+* `Fire5 = 1`: the fire class is below 5;
+* `Fire5 = 0`: the fire class is 5 or above.
+
+Thus, `Fire5` does not contain the original fire rating; it indicates whether the original rating falls below 5.
+
+::: {.callout-note}
+
+### Working with the data
+
+Each row of `ClaimsExperienceData` represents a **policy-level observation**. The variable `Freq` records the number of claims associated with the policy, while `y` contains claim amounts.
+
+When calculating **claim frequency**, use the number of claims relative to the policies represented in the data. When calculating **claim severity**, consider only observations with positive claim amounts.
+:::
+
+The original LGPIF data cover property insurance for local government entities and include information on buildings, schools, libraries, and other insured property. The data therefore provide a useful setting for practising data manipulation in an actuarial context.
+
+## Problem 1 — Claim Frequency Distribution
+
+Using `ClaimsExperienceData`, construct a table showing the distribution of policies according to the number of claims.
+
+Your table should contain:
+
+* the number of claims: `0, 1, 2, ..., 8, 9 or more`;
+* the number of policies in each category;
+* the number of claims represented by each category;
+* the proportion of policies in each category;
+* a total column.
+
+For the `9 or more` category, combine all policies with **9 or more claims**.
+
+The final table should have the following structure:
+
+| Number     |  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 | 9 or more | Sum |
+| ---------- | -: | -: | -: | -: | -: | -: | -: | -: | -: | --------: | --: |
+| Policies   |    |    |    |    |    |    |    |    |    |           |     |
+| Claims     |    |    |    |    |    |    |    |    |    |           |     |
+| Proportion |    |    |    |    |    |    |    |    |    |           |     |
+
+**Concluding remark:** What does the distribution tell you about the frequency of claims in the portfolio?
+
+
+
+
+
+
+
+---
+
+## Problem 2 — Claim Severity Distribution
+
+Using the claims data, calculate summary statistics for **claim severity**, considering only observations with a positive claim amount.
+
+Report the following:
+
+* Minimum
+* First quartile
+* Median
+* Mean
+* Third quartile
+* Maximum
+
+Present your results as a single summary table.
+
+**Concluding remark:** Compare the mean and median. What does this suggest about the distribution of claim severity?
+
+---
+
+## Problem 3 — Claims Summary by Year
+
+For each policy year from 2006 to 2010, calculate:
+
+* average claim frequency;
+* average claim severity;
+* average coverage;
+* number of policyholders.
+
+Present the results with one row for each year.
+
+The resulting table should have the structure:
+
+| Year | Average Frequency | Average Severity | Average Coverage | Number of Policyholders |
+| ---- | ----------------: | ---------------: | ---------------: | ----------------------: |
+| 2006 |                   |                  |                  |                         |
+| 2007 |                   |                  |                  |                         |
+| 2008 |                   |                  |                  |                         |
+| 2009 |                   |                  |                  |                         |
+| 2010 |                   |                  |                  |                         |
+
+**Concluding remark:** Describe the main changes in claim frequency, claim severity, and coverage over the five years.
+
+---
+
+## Problem 4 — Portfolio Summary Statistics
+
+Calculate the following summary statistics for the portfolio:
+
+* claim frequency;
+* claim severity;
+* deductible;
+* coverage.
+
+For each variable, report:
+
+* minimum;
+* median;
+* mean;
+* maximum.
+
+Present the results in a single table.
+
+Use appropriate definitions for the statistics. In particular, **claim severity should be calculated from claims rather than from policies with no claims**.
+
+**Concluding remark:** Which variables appear to be particularly skewed? Explain briefly using the relationship between their mean, median, and maximum.
+
+---
+
+## Problem 5 — Claims Summary by Risk Characteristics
+
+Investigate claim experience according to the following risk characteristics:
+
+1. Entity type
+2. Fire class indicator (`Fire5`)
+3. No-claim credit indicator (`NoClaimCredit`)
+
+For each category, calculate:
+
+* number of policies;
+* average claim frequency;
+* average claim severity.
+
+Organise the results so that the three risk characteristics can be clearly distinguished.
+
+Your output should have the following general structure:
+
+| Variable      | Category | Number of Policies | Claim Frequency | Average Severity |
+| ------------- | -------- | -----------------: | --------------: | ---------------: |
+| EntityType    | Village  |                    |                 |                  |
+|               | City     |                    |                 |                  |
+|               | ...      |                    |                 |                  |
+| Fire5         | 0        |                    |                 |                  |
+|               | 1        |                    |                 |                  |
+| NoClaimCredit | 0        |                    |                 |                  |
+|               | 1        |                    |                 |                  |
+| **Total**     |          |                    |                 |                  |
+
+**Concluding remark:** Identify the main differences in claim experience across the categories. Do these univariate summaries necessarily imply that the risk characteristic itself causes the observed difference?
+
+---
+
+## Problem 6 — Claims Summary by Entity Type and Alarm Credit
+
+Investigate the relationship between **EntityType** and **Alarm Credit (`AC`)**.
+
+For each combination of entity type and alarm-credit category (`AC = 0, 5, 10, 15`), calculate:
+
+* claim frequency;
+* average claim severity;
+* number of policies.
+
+Present the results in a table that allows the four alarm-credit categories to be compared within each entity type.
+
+A suitable structure is:
+
+| Entity Type |  AC | Claim Frequency | Average Severity | Number of Policies |
+| ----------- | --: | --------------: | ---------------: | -----------------: |
+| Village     |   0 |                 |                  |                    |
+| Village     |   5 |                 |                  |                    |
+| Village     |  10 |                 |                  |                    |
+| Village     |  15 |                 |                  |                    |
+| City        |   0 |                 |                  |                    |
+| City        |   5 |                 |                  |                    |
+| ...         | ... |                 |                  |                    |
+
+You may reshape the result into a wider format if you think this makes the comparison easier to read.
+
+**Concluding remark:** Compare claim frequency and severity across alarm-credit categories. Are the patterns consistent across all entity types?

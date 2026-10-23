@@ -1,0 +1,322 @@
+---
+title: "Regression: complete modelling workflow"
+---
+
+```{r}
+# Load packages
+library(readr)
+library(tidyverse)
+library(tidymodels)
+library(broom)
+
+
+# Load data
+insurance <- read_csv("data/insuranceKaggle.csv")
+
+
+# 1. Inspect the data -----------------------------------------------------
+
+glimpse(insurance)
+
+summary(insurance %>% select(age, charges))
+
+
+# 2. Explore the response variable ---------------------------------------
+
+ggplot(insurance, aes(x = charges)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Distribution of Insurance Charges",
+    x = "Charges",
+    y = "Number of observations"
+  )
+
+
+# 3. Visualize the relationship between age and charges ------------------
+
+ggplot(insurance, aes(x = age, y = charges)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Insurance Charges versus Age",
+    x = "Age",
+    y = "Insurance charges"
+  )
+
+
+# 4. Split the data into training and testing sets -----------------------
+
+set.seed(123)
+
+insurance_split <- initial_split(
+  insurance,
+  prop = 0.80
+)
+
+insurance_train <- training(insurance_split)
+insurance_test  <- testing(insurance_split)
+
+
+# 5. Specify the linear regression model ---------------------------------
+
+lm_spec <- linear_reg() %>%
+  set_engine("lm")
+
+
+# 6. Fit the model using the training data -------------------------------
+
+lm_fit <- lm_spec %>%
+  fit(
+    charges ~ age,
+    data = insurance_train
+  )
+
+
+# 7. Examine the fitted model --------------------------------------------
+
+tidy(lm_fit)
+
+
+# 8. Generate predictions for the test data -------------------------------
+
+results <- insurance_test %>%
+  bind_cols(
+    predict(lm_fit, new_data = insurance_test)
+  )
+
+
+# 9. Examine observed and predicted charges ------------------------------
+
+results %>%
+  select(age, charges, .pred) %>%
+  head(10)
+
+
+# 10. Evaluate predictive performance ------------------------------------
+
+metrics(
+  results,
+  truth = charges,
+  estimate = .pred
+)
+
+rmse(results, truth = charges, estimate = .pred)
+
+mae(results, truth = charges, estimate = .pred)
+
+rsq(results, truth = charges, estimate = .pred)
+
+
+# 11. Plot observed versus predicted charges ------------------------------
+
+ggplot(results, aes(x = charges, y = .pred)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(
+    intercept = 0,
+    slope = 1,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Observed versus Predicted Insurance Charges",
+    x = "Observed charges",
+    y = "Predicted charges"
+  )
+
+
+# 12. Examine residuals --------------------------------------------------
+
+diagnostics <- augment(lm_fit$fit)
+
+ggplot(diagnostics, aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Residuals versus Fitted Values",
+    x = "Fitted charges",
+    y = "Residuals"
+  )
+
+
+# 13. Normal Q-Q plot ----------------------------------------------------
+
+ggplot(diagnostics, aes(sample = .std.resid)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(
+    title = "Normal Q-Q Plot of Standardized Residuals"
+  )
+```
+
+
+
+
+# Regression: Complete Modelling Workflow
+
+```{r}
+# Load packages
+library(readr)
+library(tidyverse)
+library(tidymodels)
+library(broom)
+
+
+# Load data
+insurance <- read_csv("data/insuranceKaggle.csv")
+
+
+# 1. Inspect the data -----------------------------------------------------
+
+glimpse(insurance)
+
+summary(insurance %>% select(age, charges))
+
+
+# 2. Explore the response variable ---------------------------------------
+
+ggplot(insurance, aes(x = charges)) +
+  geom_histogram(bins = 30) +
+  labs(
+    title = "Distribution of Insurance Charges",
+    x = "Charges",
+    y = "Number of observations"
+  )
+
+
+# 3. Visualize the relationship between age and charges ------------------
+
+ggplot(insurance, aes(x = age, y = charges)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Insurance Charges versus Age",
+    x = "Age",
+    y = "Insurance charges"
+  )
+
+
+# 4. Split the data into training and test sets ---------------------------
+
+set.seed(123)
+
+insurance_split <- initial_split(
+  insurance,
+  prop = 0.80
+)
+
+insurance_train <- training(insurance_split)
+insurance_test  <- testing(insurance_split)
+
+
+# 5. Specify the linear regression model ----------------------------------
+
+lm_spec <- linear_reg() %>%
+  set_engine("lm")
+
+
+# 6. Fit the model using the training data -------------------------------
+
+lm_fit <- lm_spec %>%
+  fit(
+    charges ~ age,
+    data = insurance_train
+  )
+
+
+# 7. Examine the fitted model ---------------------------------------------
+
+tidy(lm_fit)
+
+
+# 8. Generate predictions for the training data ---------------------------
+
+train_results <- insurance_train %>%
+  bind_cols(
+    predict(lm_fit, new_data = insurance_train)
+  )
+
+
+# 9. Generate predictions for the test data -------------------------------
+
+test_results <- insurance_test %>%
+  bind_cols(
+    predict(lm_fit, new_data = insurance_test)
+  )
+
+
+# 10. Compare training and test performance -------------------------------
+
+regression_metrics <- metric_set(
+  rmse,
+  mae,
+  rsq,
+  mape
+)
+
+regression_metrics(
+  train_results,
+  truth = charges,
+  estimate = .pred
+)
+
+regression_metrics(
+  test_results,
+  truth = charges,
+  estimate = .pred
+)
+
+
+# 11. Examine observed and predicted charges ------------------------------
+
+test_results %>%
+  select(age, charges, .pred) %>%
+  head(10)
+
+
+# 12. Plot observed versus predicted charges ------------------------------
+
+ggplot(test_results, aes(x = charges, y = .pred)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(
+    intercept = 0,
+    slope = 1,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Observed versus Predicted Insurance Charges",
+    x = "Observed charges",
+    y = "Predicted charges"
+  )
+
+
+# 13. Examine residuals on the training data ------------------------------
+
+diagnostics <- augment(lm_fit$fit)
+
+ggplot(diagnostics, aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Residuals versus Fitted Values",
+    x = "Fitted charges",
+    y = "Residuals"
+  )
+
+
+# 14. Normal Q-Q plot -----------------------------------------------------
+
+ggplot(diagnostics, aes(sample = .std.resid)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(
+    title = "Normal Q-Q Plot of Standardized Residuals"
+  )
+```
+
+```
+
