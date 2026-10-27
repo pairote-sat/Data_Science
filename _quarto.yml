@@ -13,6 +13,7 @@ book:
     - chapters/05_Data_Visualization_with_ggplot2.qmd
     - chapters/06_Regression_with_Tidymodels.qmd
     - chapters/07_Assessing_Model_Performance.qmd
+    - chapters/08_Preprocessing_and_Recipes.qmd
     
 format:
   html:

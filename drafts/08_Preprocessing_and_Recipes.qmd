@@ -1,0 +1,1024 @@
+---
+title: "Chapter 8: Preprocessing and Recipes"
+---
+
+## Introduction to Preprocessing and Recipes
+
+Before fitting a predictive model, we need to ensure that the data are suitable for modelling. Preprocessing involves preparing the predictors and outcome so that they can be used consistently by a modelling algorithm. Common tasks include handling missing values, encoding categorical predictors, and scaling numeric predictors. Depending on the modelling problem, preprocessing may also involve creating new features, such as interaction terms or polynomial terms.
+
+The preprocessing requirements depend on the model being fitted. For example, ridge regression generally benefits from scaling numeric predictors, whereas regression trees and random forests generally do not require scaling. Many modelling engines also require categorical predictors to be represented numerically.
+
+In this chapter, we use the `recipes` package from the `tidymodels` framework to define preprocessing steps. A recipe describes a sequence of transformations that can be applied consistently during model fitting and prediction. Rather than manually transforming the training and test datasets separately, we specify the required steps in a recipe and allow tidymodels to manage their application.
+
+### The Insurance Dataset
+
+We will use the `insurance` dataset introduced in the previous chapter on regression modelling. It contains information about insurance policyholders and their medical insurance charges. The response variable is `charges`, while the remaining variables are potential predictors.
+
+| Variable | Description | Type |
+|---|---|---|
+| `age` | Age of the policyholder | Numeric |
+| `sex` | Sex of the policyholder | Categorical |
+| `bmi` | Body mass index | Numeric |
+| `children` | Number of children covered by the insurance | Numeric count |
+| `smoker` | Smoking status | Categorical |
+| `region` | Residential region | Categorical |
+| `charges` | Medical insurance charges | Numeric outcome |
+
+If you are continuing from the previous chapter, the `insurance` dataset may already be available in your R environment. Otherwise, load it from the project's `data` folder:
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+
+insurance <- read_csv("../data/insuranceKaggle.csv")
+```
+
+The file path assumes that the CSV file is stored in the project's `data` folder. Adjust the path if your project uses a different directory structure.
+
+We can inspect the dataset before defining a recipe:
+
+```{r}
+glimpse(insurance)
+```
+
+The first step in preprocessing is to understand the data and identify any problems that need to be addressed. For example, we may need to investigate duplicate observations or missing values before fitting a model. We should not automatically remove observations or impute values without first considering the nature of the data.
+
+### Why Use Recipes?
+
+The `recipes` package provides a structured way to specify preprocessing operations. Each operation is represented by a step, such as `step_impute_median()` for imputing missing numeric values, `step_dummy()` for creating dummy variables, or `step_normalize()` for standardizing numeric predictors.
+
+A recipe separates the **specification of preprocessing steps** from their estimation and application. The `prep()` function estimates quantities required by the steps using the training data, while `bake()` applies the prepared transformations to data. This distinction is particularly important when evaluating predictive models: preprocessing parameters must be estimated using the training data only and then applied consistently to the test data.
+
+Recipes also integrate with the `workflows` package, which allows preprocessing steps and a model specification to be combined into a single object. This makes the modelling process easier to reproduce and helps prevent inconsistencies between the data used for training and the data used for prediction.
+
+In the following sections, we will develop recipes for handling missing values, encoding categorical predictors, and normalizing numeric predictors. We will then combine these steps into a complete recipe and use it in a tidymodels workflow.
+
+
+
+
+
+## Preparing Data Before Creating a Recipe
+
+Before defining preprocessing steps, we should inspect the dataset and identify data-quality issues that need to be addressed. Two important checks are duplicate observations and missing values.
+
+Some data-cleaning decisions, such as removing erroneous duplicate records, are made before creating a recipe. Other operations, such as imputing missing values, can be specified within a recipe so that they are estimated using the training data and applied consistently to new data.
+
+### Removing Duplicate Observations
+
+Duplicate observations may arise when data are combined from multiple sources or when records are accidentally entered more than once. If duplicate records are included unintentionally, they can give certain observations excessive weight in model fitting.
+
+We can check for completely duplicated rows using `duplicated()`:
+
+```{r}
+duplicated_rows <- insurance[duplicated(insurance), ]
+duplicated_rows
+```
+
+The function `duplicated()` returns `TRUE` for each row that duplicates an earlier row. The first occurrence is not marked as a duplicate.
+
+Alternatively, we can use `dplyr` to inspect the duplicated rows:
+
+```{r}
+library(dplyr)
+
+insurance |>
+  filter(duplicated(insurance))
+```
+
+If the duplicated records are confirmed to be erroneous, we can remove them using `distinct()`:
+
+```{r}
+insurance <- insurance |>
+  distinct()
+```
+
+The function `distinct()` retains unique rows by default, keeping the first occurrence of each completely duplicated row.
+
+It is important to distinguish exact duplicate rows from records that share some characteristics. For example, two policyholders may have the same age, BMI, smoking status, and insurance charges without representing duplicate records. Duplicate removal should therefore be based on an understanding of the data, rather than on the assumption that similar observations are necessarily errors.
+
+**Note:** Removing duplicate observations is a data-cleaning operation rather than a standard recipe step. It should be handled separately before creating a recipe when the records are confirmed to be duplicates. In addition, if the dataset contains a unique identifier, checking duplicates using that identifier may be more appropriate than checking entire rows.
+
+### Checking for Missing Values
+
+Missing values can prevent some modelling algorithms from fitting a model or require additional handling during preprocessing. Before deciding how to handle missing values, we should determine which variables contain missing observations and how many values are missing.
+
+We can count missing values in each column using base R:
+
+```{r}
+colSums(is.na(insurance))
+```
+
+Alternatively, `dplyr` provides a convenient way to summarize missing values across all columns:
+
+```{r}
+insurance |>
+  summarise(
+    across(everything(), ~ sum(is.na(.)))
+  )
+```
+
+The expression `across(everything(), ...)` applies the specified function to every column. Within each column, `is.na(.)` identifies missing values, and `sum()` counts them.
+
+To examine the percentage of missing values in each column, we can use:
+
+```{r}
+insurance |>
+  summarise(
+    across(everything(), ~ mean(is.na(.)) * 100)
+  )
+```
+
+Because `TRUE` is treated as 1 and `FALSE` as 0 in arithmetic operations, the mean of `is.na(.)` gives the proportion of missing values. Multiplying by 100 converts the proportion to a percentage.
+
+After identifying missing values, we must decide how to handle them based on the variable type, the amount of missing data, and the modelling objective. Common approaches include removing observations when appropriate, imputing numeric values with the mean or median, and imputing categorical values with the most frequent category or a separate missing category.
+
+In this chapter, we will use the `recipes` package to implement imputation. This allows the required quantities, such as a training-set median or most frequent category, to be estimated from the training data and then applied consistently to test data and future observations.
+
+The next section introduces how to define a recipe and how to prepare and apply it.
+
+
+
+
+
+
+
+## Creating and Understanding Recipes
+
+The `recipes` package allows us to specify preprocessing steps in a structured and reproducible way. A recipe describes how the data should be transformed before model fitting, including operations such as imputing missing values, encoding categorical predictors, and normalizing numeric predictors.
+
+### Specifying a Recipe
+
+We begin by defining a recipe for the `insurance` dataset. Recall that `charges` is the response variable, while `age`, `bmi`, `children`, `sex`, `smoker`, and `region` are potential predictors.
+
+```{r}
+insurance_recipe <- recipe(
+  charges ~ age + bmi + children + sex + smoker + region,
+  data = insurance
+)
+
+insurance_recipe
+```
+
+The `recipe()` function specifies the relationship between the outcome and predictors, as well as the data used to define the recipe. At this stage, no preprocessing has been performed.
+
+The formula follows the same general structure used in linear regression:
+
+$$
+\text{response} \sim \text{predictors}.
+$$
+
+For example, `charges ~ age + bmi` specifies `charges` as the outcome and `age` and `bmi` as predictors. The formula `charges ~ .` can be used when all remaining variables in the dataset should be predictors. However, explicitly listing the variables can make the intended model easier to understand.
+
+A recipe can also include transformations and interactions in its formula. For example, `age * bmi` represents the main effects of `age` and `bmi`, together with their interaction. In this chapter, we will focus on preprocessing steps rather than extending the regression formula.
+
+### Understanding `prep()` and `bake()`
+
+After specifying a recipe, we need to prepare it before applying its transformations. The `prep()` function estimates the quantities required by the preprocessing steps, using the training data. For example, it can estimate the median used for imputing missing numeric values or the mean and standard deviation used for normalization.
+
+The `bake()` function applies the prepared recipe to a dataset. It uses the quantities learned during preparation to perform the specified transformations.
+
+Consider a simple recipe that imputes missing numeric predictors with their medians and missing categorical predictors with their most frequent categories:
+
+```{r}
+insurance_recipe <- recipe(
+  charges ~ .,
+  data = insurance
+) |>
+  step_impute_median(all_numeric_predictors()) |>
+  step_impute_mode(all_nominal_predictors())
+```
+
+The code specifies the preprocessing operations, but the imputation values have not yet been estimated. We prepare the recipe and apply it to the training data as follows:
+
+```{r}
+insurance_prep <- prep(
+  insurance_recipe,
+  training = insurance
+)
+
+insurance_baked <- bake(
+  insurance_prep,
+  new_data = NULL
+)
+```
+
+Here, `prep()` estimates the imputation values from `insurance`. The argument `new_data = NULL` tells `bake()` to apply the prepared recipe to the training data used during preparation.
+
+In a predictive modelling exercise, we would instead prepare the recipe using the training dataset and then apply that same prepared recipe to both the training and test datasets. This ensures that the imputation values and other preprocessing parameters are not estimated from the test data.
+
+::: {.callout-note}
+**The roles of `recipe()`, `prep()`, and `bake()`**
+
+- `recipe()` specifies the preprocessing steps to be performed.
+- `prep()` estimates and stores the quantities required by those steps using the training data.
+- `bake()` applies the prepared transformations to a dataset.
+
+The key distinction is that **a recipe defines the preprocessing plan, `prep()` learns from the training data, and `bake()` applies what has been learned**.
+:::
+
+### Selecting Variables in Recipes
+
+Recipes often apply different transformations to different types of variables. For example, numeric predictors may require imputation or normalization, whereas categorical predictors may require imputation or dummy encoding.
+
+Selectors allow us to choose the variables to which a preprocessing step applies. Common selectors include:
+
+| Selector | Variables selected |
+|---|---|
+| `all_predictors()` | All predictor variables |
+| `all_outcomes()` | All outcome variables |
+| `all_numeric_predictors()` | Numeric predictors |
+| `all_nominal_predictors()` | Nominal or categorical predictors |
+| `starts_with("...")` | Variables whose names begin with a specified string |
+| `ends_with("...")` | Variables whose names end with a specified string |
+| `contains("...")` | Variables whose names contain a specified string |
+| `matches("...")` | Variables whose names match a regular expression |
+
+For example:
+
+```{r}
+recipe(charges ~ ., data = insurance) |>
+  step_impute_median(all_numeric_predictors())
+```
+
+The selector `all_numeric_predictors()` ensures that median imputation is applied to numeric predictors rather than to every numeric column. In particular, the outcome `charges` is excluded because it is not a predictor.
+
+Selectors make recipes more flexible and reduce the need to list each variable individually. They are especially useful when the same preprocessing operations need to be applied to several predictors.
+
+::: {.callout-tip}
+**Example: Selecting Variables by Name**
+
+The `starts_with()`, `ends_with()`, `contains()`, and `matches()` selectors can select predictors based on their variable names. For example, suppose a dataset contains variables such as `age_policyholder`, `age_spouse`, `region_code`, and `smoker_status`. We can use these selectors in a recipe as follows:
+
+```r
+recipe(charges ~ ., data = insurance) |>
+  step_normalize(starts_with("age")) 
+```
+
+This selects numeric predictors whose names begin with `"age"`.
+
+Other examples include:
+
+```r
+all_nominal_predictors() |>
+  # Not used as a selector pipeline; see examples below
+```
+
+```r
+step_dummy(contains("region"))
+```
+
+This selects categorical predictors whose names contain `"region"` for dummy encoding.
+
+```r
+step_normalize(ends_with("_score"))
+```
+
+This selects numeric predictors whose names end with `"_score"`.
+
+```r
+step_normalize(matches("^age|bmi$"))
+```
+
+This selects predictors whose names match the regular expression: names beginning with `"age"` or ending with `"bmi"`.
+
+These selectors are useful when datasets contain many variables with systematic naming conventions. However, the selected variables must be appropriate for the preprocessing step. For example, `step_normalize()` should be applied to numeric predictors, whereas `step_dummy()` is intended for categorical predictors.
+:::
+
+In the following sections, we will examine specific preprocessing steps in more detail, beginning with imputation for missing values.
+
+
+
+
+
+
+
+## Handling Missing Values
+
+Missing values are common in insurance data. For example, a policyholder's BMI or smoking status may not have been recorded. Many modelling algorithms cannot handle missing values directly, so these observations must be addressed before model fitting.
+
+A common approach is **imputation**, which replaces missing values with estimated or specified values. The appropriate method depends on the variable and the modelling objective. For example, numeric variables may be imputed using the mean or median, while categorical variables may be imputed using the most frequent category.
+
+In this section, we use the `recipes` package to perform imputation. An important advantage is that imputation values are estimated from the training data and then applied consistently to new data.
+
+### Creating a Dataset with Missing Values
+
+To demonstrate imputation, we create a small synthetic dataset containing missing values in numeric and categorical predictors. The dataset resembles the insurance data used in this course but is created specifically for illustration.
+
+```{r} 
+insurance_demo <- tibble(
+  age = c(25, 32, NA, 45, 52, 29, 40, NA),
+  bmi = c(22.5, 27.8, 31.2, NA, 26.5, 24.1, NA, 28.3),
+  smoker = factor(
+    c("yes", "no", "no", "yes", NA, "no", "yes", "no"),
+    levels = c("no", "yes")
+  ),
+  region = factor(
+    c(
+      "northwest", "southeast", "southwest", NA,
+      "northeast", "southwest", "northwest", "southeast"
+    ),
+    levels = c("northeast", "northwest", "southeast", "southwest")
+  ),
+  charges = c(3200, 4100, 3900, 5800, 6000, 4500, 5200, 4300)
+)
+
+insurance_demo
+```
+
+The dataset contains four predictors: `age` and `bmi` are numeric, while `smoker` and `region` are categorical. The response variable is `charges`.
+
+We can count the missing values in each variable:
+
+```{r}
+insurance_demo |>
+  summarise(across(everything(), ~ sum(is.na(.))))
+```
+
+This confirms that some predictors contain missing values. In this example, we will use mean imputation for numeric predictors and mode imputation for categorical predictors.
+
+### Specifying Imputation Steps in a Recipe
+
+The `recipes` package provides several imputation steps. Two useful functions are:
+
+- `step_impute_mean()` replaces missing numeric values with the mean estimated from the training data.
+- `step_impute_mode()` replaces missing categorical values with the most frequent category estimated from the training data.
+
+We specify these steps in a recipe as follows:
+
+```{r}
+#| echo: true
+
+rec_demo <- recipe(
+  charges ~ age + bmi + smoker + region,
+  data = insurance_demo
+) |>
+  step_impute_mean(all_numeric_predictors()) |>
+  step_impute_mode(all_nominal_predictors())
+
+rec_demo
+```
+
+::: {.callout-note title="Recipe"}
+**Inputs**
+
+Number of variables by role
+
+- outcome: 1
+- predictor: 4
+
+**Operations**
+
+- Mean imputation for: `all_numeric_predictors()`
+- Mode imputation for: `all_nominal_predictors()`
+:::
+
+The recipe specifies the preprocessing operations but has not yet estimated the imputation values or changed the data. The selectors `all_numeric_predictors()` and `all_nominal_predictors()` ensure that each imputation step is applied to the appropriate type of predictor.
+
+Notice that `charges` is the outcome and is not included in either imputation step. We are imputing the predictors used to model charges, not the response variable.
+
+### Preparing the Recipe with `prep()`
+
+The next step is to prepare the recipe. The `prep()` function estimates the quantities required by each preprocessing step using the training data.
+
+```{r}
+rec_prep <- prep(
+  rec_demo,
+  training = insurance_demo
+)
+
+rec_prep
+```
+
+::: {.callout-note title="Prepared Recipe"}
+
+**Inputs**
+
+Number of variables by role
+
+- outcome: 1
+- predictor: 4
+
+**Training information**
+
+Training data contained 8 data points and 5 incomplete rows.
+
+**Operations**
+
+- Mean imputation for: `age`, `bmi` — *Trained*
+- Mode imputation for: `smoker`, `region` — *Trained*
+
+:::
+
+The prepared recipe records the information learned from the training data. In this example, it estimates the means for `age` and `bmi` and the most frequent categories for `smoker` and `region`.
+
+We can inspect the actual values learned by each step using `tidy()`:
+
+```{r}
+tidy(rec_prep, number = 1)
+tidy(rec_prep, number = 2)
+```
+
+The first call displays the mean values learned by the numeric imputation step, while the second displays the modes learned by the categorical imputation step.
+
+For example, the observed values of `age` are 25, 32, 45, 52, 29, and 40. Their mean is approximately 37.17. Thus, the missing `age` values will be replaced with this estimated mean.
+
+For `smoker`, the category `"no"` occurs more frequently than `"yes"` among the observed values. Therefore, missing values of `smoker` will be replaced with `"no"`.
+
+This illustrates that `prep()` estimates and stores the values needed for imputation; it does not itself return the final imputed dataset.
+
+### Applying Imputation with `bake()`
+
+Once the recipe has been prepared, we use `bake()` to apply the learned transformations.
+
+```{r}
+insurance_baked <- bake(
+  rec_prep,
+  new_data = NULL
+)
+
+insurance_baked
+```
+
+The resulting dataset contains imputed values in place of the missing predictor values. For example, the missing `age` values are replaced with the mean estimated from the observed ages, and the missing `smoker` value is replaced with the mode.
+
+
+
+::: {.callout-note title="Why do we use `new_data = NULL`?"}
+When `new_data = NULL`, `bake()` applies the prepared recipe to the **training data used in `prep()`**. This is useful when we want to inspect the training data after preprocessing.
+
+If we have separate training and test datasets, we should apply the same prepared recipe to both datasets:
+
+```r
+insurance_train_baked <- bake(rec_prep, new_data = insurance_train)
+insurance_test_baked  <- bake(rec_prep, new_data = insurance_test)
+```
+
+The recipe is prepared using the training data only. The same imputation values learned from the training data are then applied to the test data, preventing information from the test data from leaking into the preprocessing process.
+:::
+
+We can verify that no missing values remain in the predictors:
+
+```{r}
+insurance_baked |>
+  summarise(across(everything(), ~ sum(is.na(.))))
+```
+
+In this example, `new_data = NULL` tells `bake()` to process the training data used when preparing the recipe. If we had a separate test dataset, we would pass it to `bake()` instead.
+
+### Applying the Same Recipe to Test Data
+
+In predictive modelling, preprocessing must be estimated using the training data only. The prepared recipe can then be applied to the test data without recalculating the imputation values.
+
+For illustration, we split the synthetic dataset into training and test observations:
+
+```{r}
+set.seed(124)
+
+demo_split <- initial_split(
+  insurance_demo,
+  prop = 0.75
+)
+
+demo_train <- training(demo_split)
+demo_test <- testing(demo_split)
+```
+
+We then prepare the recipe using only the training data and apply it to the test data:
+
+```{r}
+rec_train_prep <- prep(
+  rec_demo,
+  training = demo_train
+)
+
+demo_test_baked <- bake(
+  rec_train_prep,
+  new_data = demo_test
+)
+
+demo_test_baked
+```
+
+
+The imputation values used for the test observations come from `demo_train`, not from `demo_test`. This is essential for a fair assessment of predictive performance because the test data must not influence the preprocessing parameters.
+
+
+::: {.callout-note title="Applying the Recipe to Test Data"}
+
+Before preprocessing, `demo_test` contains missing values in three predictors: `bmi`, `smoker`, and `region`.
+
+```{r}
+demo_test
+```
+
+The prepared recipe replaces these missing values using the imputation values learned from the training data. Numeric predictors are imputed using their training-data means, while categorical predictors are imputed using their training-data modes. The observed values remain unchanged, and `charges` is retained without imputation because it is the outcome variable.
+
+:::
+
+
+In practice, when preprocessing is included in a tidymodels workflow, the workflow manages these steps during model fitting and prediction. We will introduce workflows later in this chapter.
+
+
+
+
+
+
+
+
+
+
+## Preprocessing Numeric Predictors
+
+Numeric predictors can have very different scales. In the insurance dataset, for example, `age` is measured in years, `bmi` typically takes values around 15–50, and `children` is a small nonnegative integer. Other datasets may contain predictors measured in thousands or millions.
+
+Differences in scale are not necessarily a problem for every statistical model. However, some modelling methods are sensitive to the scale of the predictors. Before fitting these models, it may be necessary to transform numeric predictors so that they are on comparable scales.
+
+### Why Normalize Numeric Predictors?
+
+One common preprocessing technique is **normalization**, also called *standardization*. It transforms a numeric variable by subtracting its mean and dividing by its standard deviation:
+
+$$
+x^* = \frac{x-\bar{x}}{s_x},
+$$
+
+where $x$ is the original value, $\bar{x}$ is the sample mean, and $s_x$ is the sample standard deviation.
+
+After normalization, the variable has mean approximately zero and standard deviation approximately one, provided its standard deviation is nonzero. The transformation changes the scale of a variable but preserves the relative ordering of its observations.
+
+For example, age and BMI are measured in different units. Normalization puts both variables on a comparable scale, making the numerical size of their values less dependent on their original units.
+
+The main motivation is that **some models use the numerical scale of predictors when estimating their parameters**. If predictors have very different scales, a model may assign disproportionate importance to variables because of their units or may be harder to fit reliably. Normalization can address these issues for models that are sensitive to predictor scale.
+
+### Which Models Need Normalization?
+
+Normalization is particularly important for methods that penalize model coefficients or rely on distances between observations.
+
+- **Ridge and lasso regression:** These methods penalize the sizes of regression coefficients. Without normalization, predictors measured on different scales can be penalized unevenly, making the penalty depend partly on their units rather than solely on their predictive contribution. Normalization helps ensure that the regularization penalty treats predictors more comparably.
+- **Distance-based methods:** Methods such as $k$-nearest neighbors use distances between observations. A predictor with a much larger numerical range can dominate these distances if the predictors are not appropriately scaled.
+- **Ordinary least squares regression:** Normalization is generally not required to obtain fitted values from a standard linear regression model. However, scaling may still be useful for numerical stability or when comparing coefficient magnitudes, provided the coefficients are interpreted on the transformed scale.
+- **Regression trees and random forests:** These methods generally do not require normalization. Their splits depend on the ordering of predictor values rather than the numerical magnitude of the units. A simple change of scale, such as standardization, usually does not change the possible splits or the resulting predictions.
+
+::: {.callout-important}
+Normalization is not automatically necessary for every model. Its usefulness depends on the modelling method. In particular, it is important for ridge and lasso regression, whereas tree-based models generally work well with numeric predictors on their original scales.
+:::
+
+### Normalizing Predictors with `step_normalize()`
+
+In `recipes`, the function `step_normalize()` adds normalization to a preprocessing recipe. The selector `all_numeric_predictors()` applies the step to all numeric predictors while excluding the outcome variable.
+
+```{r}
+library(tidymodels)
+
+insurance_recipe <- recipe(charges ~ ., data = insurance) |>
+  step_normalize(all_numeric_predictors())
+
+insurance_recipe
+```
+
+The recipe specifies the preprocessing operation but does not immediately calculate the means and standard deviations. These quantities are estimated when the recipe is prepared using the training data.
+
+```{r}
+insurance_prep <- prep(
+  insurance_recipe,
+  training = insurance
+)
+
+insurance_normalized <- bake(
+  insurance_prep,
+  new_data = NULL
+)
+
+insurance_normalized |>
+  select(age, bmi, children, charges) |>
+  summary()
+```
+
+The resulting data contain normalized values for the numeric predictors `age`, `bmi`, and `children`. The outcome `charges` remains on its original scale because it is not a predictor. Categorical predictors such as `sex`, `smoker`, and `region` are also unchanged by this step.
+
+### Why Must Normalization Be Learned from the Training Data?
+
+The means and standard deviations used for normalization must be calculated from the training data and then applied to new observations. This is handled by `prep()` and `bake()`.
+
+```{r}
+set.seed(123)
+
+insurance_split <- initial_split(insurance, prop = 0.75)
+insurance_train <- training(insurance_split)
+insurance_test <- testing(insurance_split)
+
+insurance_recipe <- recipe(charges ~ ., data = insurance_train) |>
+  step_normalize(all_numeric_predictors())
+
+insurance_prep <- prep(
+  insurance_recipe,
+  training = insurance_train
+)
+
+train_processed <- bake(insurance_prep, new_data = NULL)
+test_processed <- bake(insurance_prep, new_data = insurance_test)
+```
+
+The recipe estimates the normalization parameters using `insurance_train`. The same parameters are then applied to both the training and test data. Consequently, the test data do not influence the preprocessing parameters before model evaluation.
+
+If normalization were calculated separately for the test data, its values would be transformed using different means and standard deviations. This would make the training and test data inconsistent and could introduce information from the test set into the modelling process.
+
+::: {.callout-note}
+In a predictive modelling workflow, preprocessing steps must be learned from the training data and then applied consistently to new data. This principle helps prevent data leakage and supports a fair assessment of predictive performance.
+:::
+
+Normalization is one example of numeric preprocessing. Other transformations may be appropriate when predictors are highly skewed, contain extreme values, or require a different representation. The appropriate preprocessing steps should be selected according to the data and the modelling method rather than applied automatically to every model.
+
+
+
+
+
+
+
+
+
+
+## Preprocessing Categorical Predictors
+
+Categorical predictors, such as `smoker` and `region` in the `insurance` dataset, represent groups rather than numerical quantities. Before fitting a model, we need to consider how the modeling algorithm handles these variables.
+
+Some algorithms, including ordinary linear regression implemented by `lm`, require categorical predictors to be represented numerically. Other algorithms, such as many tree-based implementations, can handle categorical predictors directly. Therefore, dummy encoding is not always necessary; the appropriate preprocessing depends on the model and its requirements.
+
+### Creating Dummy Variables with `step_dummy()`
+
+A common approach is to convert categorical predictors into **dummy variables**, also called indicator variables. Each dummy variable takes the value 1 when an observation belongs to a particular category and 0 otherwise.
+
+For example, the `smoker` variable has two levels, `yes` and `no`. With the default treatment contrast, `step_dummy()` creates one dummy variable, typically `smoker_yes`, which equals 1 for smokers and 0 for non-smokers. The non-smoker category serves as the reference group.
+
+We first split the data into training and testing sets, then define a recipe using the training data.
+
+```{r}
+library(tidymodels)
+
+set.seed(123)
+insurance_split <- initial_split(insurance, prop = 0.8)
+
+insurance_train <- training(insurance_split)
+insurance_test  <- testing(insurance_split)
+
+insurance_recipe <- recipe(
+  charges ~ age + bmi + smoker,
+  data = insurance_train
+) %>%
+  step_dummy(all_nominal_predictors())
+```
+
+The selector `all_nominal_predictors()` identifies categorical predictors in the recipe. Consequently, `step_dummy()` converts `smoker` into a numeric dummy variable while leaving `age` and `bmi` unchanged.
+
+We then prepare the recipe using the training data.
+
+```{r}
+insurance_prepped <- prep(
+  insurance_recipe,
+  training = insurance_train
+)
+```
+
+The `prep()` function learns the information needed to apply the preprocessing steps, including the categorical levels observed in the training data. It does not fit the predictive model; it prepares the recipe for subsequent data transformation.
+
+We can apply the prepared recipe to both datasets:
+
+```{r}
+insurance_train_processed <- bake(
+  insurance_prepped,
+  new_data = insurance_train
+)
+
+insurance_test_processed <- bake(
+  insurance_prepped,
+  new_data = insurance_test
+)
+```
+
+Both datasets are transformed using the same learned preprocessing rules. This consistency is important because a predictive model must receive predictors with the same structure during training and prediction.
+
+### Handling New Categorical Levels
+
+A categorical predictor may contain a level in new data that was not observed when the recipe was prepared. For example, suppose the training data contain both `yes` and `no` in `smoker`, but a new dataset contains a previously unseen level, `unknown`.
+
+By default, `step_dummy()` does not automatically create a new dummy variable for an unseen level. When `bake()` encounters a level that was not represented in the learned encoding, it will generally produce an error. The model cannot simply accept a new category without a defined preprocessing rule.
+
+One solution is to use `step_novel()` before `step_dummy()`. This step maps previously unseen categorical levels to a designated novel level, which can then be represented by the dummy encoding.
+
+```{r}
+insurance_recipe_novel <- recipe(
+  charges ~ age + bmi + smoker,
+  data = insurance_train
+) %>%
+  step_novel(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+insurance_prepped_novel <- prep(
+  insurance_recipe_novel,
+  training = insurance_train
+)
+```
+
+Here, `step_novel()` creates a designated level for previously unseen categories before dummy variables are generated. The novel level is not learned as an ordinary observed category from the training data; its purpose is to provide a defined representation for new levels during preprocessing.
+
+However, creating a dummy variable for a novel level does not teach the predictive model how that category relates to the outcome. If the novel level never occurs in the training data, its dummy column will be zero throughout model fitting, so its effect cannot be estimated from the training data alone. Novel-level handling prevents a preprocessing failure, but it does not guarantee reliable predictions for genuinely new categories.
+
+### Practical Considerations
+
+- Use `step_dummy()` when the chosen model requires numeric predictors or when a consistent numeric representation is otherwise appropriate.
+- Use `step_novel()` when new data may contain categorical levels that were absent from the training data.
+- Keep preprocessing inside a recipe so that training and new data are transformed consistently.
+- Check the requirements of the chosen modeling engine. Dummy encoding is not universally necessary, and some models can handle categorical predictors directly.
+
+The key principle is that preprocessing should be determined by the modeling method and the data expected at prediction time, rather than applied automatically to every categorical variable.
+
+
+
+
+
+
+
+## Combining Preprocessing Steps into a Recipe
+
+In practice, a model may require several preprocessing steps. For example, when predicting insurance charges using age, BMI, and smoking status, we may need to impute missing values, convert the categorical predictor `smoker` into dummy variables, and normalize the numeric predictors.
+
+The `recipes` package allows us to combine these operations into a single recipe. The following example illustrates the complete preprocessing workflow.
+
+```{r}
+library(tidymodels)
+
+insurance_recipe <- recipe(
+  charges ~ age + bmi + smoker,
+  data = insurance
+) %>%
+  step_impute_median(all_numeric_predictors()) %>%
+  step_impute_mode(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors())
+```
+
+The steps are applied in the order in which they appear in the recipe:
+
+1. **Imputation:** Replace missing numeric predictor values with their medians and missing categorical predictor values with their most frequent levels.
+2. **Dummy encoding:** Convert `smoker` into a numeric indicator variable so that it can be used by models requiring numeric predictors.
+3. **Normalization:** Standardize the numeric predictors using their estimated means and standard deviations.
+
+The response variable `charges` is not imputed, dummy-encoded, or normalized because the recipe steps target predictors only.
+
+### Preparing and Applying the Recipe
+
+The recipe is prepared using the training data. During this stage, the required imputation values and normalization parameters are estimated.
+
+```{r}
+insurance_prep <- prep(insurance_recipe, training = insurance)
+
+insurance_processed <- bake(insurance_prep, new_data = NULL)
+```
+
+Here, `bake()` applies the prepared recipe to the training data and returns the processed dataset. The same prepared recipe can also be applied to validation, test, or future data, using the same imputation values and normalization parameters estimated from the training data.
+
+**Key point:** Preprocessing must be learned from the training data and then applied consistently to other datasets. This prevents information from the evaluation data from influencing the preprocessing process.
+
+
+
+
+## Exercise: Preprocessing with Recipes
+
+In this exercise, you will use the `insurance` dataset to create a recipe for predicting `charges` from `age`, `bmi`, and `region`. Unlike the previous example, which included `smoker`, this exercise focuses on converting `region` into dummy variables.
+
+### Tasks
+
+1. Split the `insurance` dataset into training and testing sets, using 70% of the observations for training and 30% for testing.
+2. Define a recipe for predicting `charges` using `age`, `bmi`, and `region`.
+3. Use `step_dummy()` to convert the categorical predictor `region` into dummy variables.
+4. Use `prep()` to estimate the preprocessing steps from the training data.
+5. Use `bake()` to obtain the preprocessed training data.
+6. Use `bake()` to apply the same preprocessing to the testing data.
+
+### Expected Outcome
+
+- The categorical predictor `region` is represented by dummy variables in both datasets.
+- The numeric predictors `age` and `bmi` remain unchanged.
+- The same preprocessing learned from the training data is applied to the testing data, avoiding the need to estimate preprocessing steps separately for each dataset.
+- The resulting data can be used to fit models whose input requirements are compatible with these predictors.
+
+
+
+
+
+
+
+## Building Workflows with tidymodels
+
+In `tidymodels`, a **workflow** combines preprocessing steps, defined in a recipe, with a model specification in a single object. This makes the modelling process easier to manage and helps ensure that preprocessing is applied consistently during model fitting and prediction.
+
+In the previous section, we learned how to prepare data using `recipes`. We can now combine a recipe with a model to create a complete modelling workflow.
+
+### Why Combine Preprocessing and Modelling?
+
+Suppose we want to predict insurance charges using `age`, `bmi`, and `smoker`. Before fitting a linear regression model, we must ensure that the predictors are represented appropriately. For example, the categorical variable `smoker` must be converted into numeric indicator variables for this modelling approach.
+
+Without a workflow, we would need to prepare the data separately and ensure that the same transformations are applied whenever we use the model to make predictions. A workflow keeps the preprocessing instructions and model specification together, reducing the risk of inconsistent data preparation.
+
+A workflow is particularly useful when a modelling process involves several preprocessing steps, multiple candidate models, or repeated predictions on new data.
+
+### Creating a Workflow
+
+The `workflows` package provides three functions for constructing a workflow:
+
+- `workflow()` creates an empty workflow.
+- `add_recipe()` adds a recipe containing the preprocessing steps.
+- `add_model()` adds a model specification.
+
+We can combine these functions using the pipe operator (`|>` or `%>%`) to create a workflow object.
+
+### Example: Building a Linear Regression Workflow
+
+We will use the `insurance` dataset and predict `charges` from `age`, `bmi`, and `smoker`. To focus on workflows, we assume that the dataset has already been imported and that any required data cleaning has been completed.
+
+First, define a recipe for the predictors. Because `smoker` is categorical, we use `step_dummy()` to create indicator variables.
+
+```{r}
+library(tidymodels)
+
+insurance_recipe <- recipe(
+  charges ~ age + bmi + smoker,
+  data = insurance
+) %>%
+  step_dummy(all_nominal_predictors())
+```
+
+Next, specify the linear regression model. The function `linear_reg()` defines the model, while `set_engine("lm")` specifies that the model will be fitted using R's standard linear modelling function, `lm()`.
+
+```{r}
+lm_model <- linear_reg() %>%
+  set_engine("lm")
+```
+
+We can now combine the recipe and model specification into a workflow.
+
+```{r}
+insurance_workflow <- workflow() %>%
+  add_recipe(insurance_recipe) %>%
+  add_model(lm_model)
+
+insurance_workflow
+```
+
+The object `insurance_workflow` contains both the preprocessing instructions and the model specification. At this stage, the model has not yet been fitted.
+
+### Fitting the Workflow
+
+We fit the workflow using `fit()`, supplying the data on which the model should be trained.
+
+```{r}
+lm_fit <- insurance_workflow %>%
+  fit(data = insurance)
+```
+
+During fitting, the workflow prepares the recipe using the supplied data, applies the resulting preprocessing steps, and fits the linear regression model to the processed data. The fitted workflow, `lm_fit`, retains the trained model and the estimated preprocessing information.
+
+We can inspect the estimated regression coefficients using `extract_fit_parsnip()` and `broom::tidy()`.
+
+```{r}
+lm_fit %>%
+  extract_fit_parsnip() %>%
+  tidy()
+```
+
+The output contains the estimated coefficients for the fitted linear regression model. Their interpretation follows the same principles as in the earlier linear regression chapter.
+
+Notice that we do not need to create dummy variables manually before fitting the model. The workflow applies the transformations defined in the recipe automatically.
+
+### 9.5 Generating Predictions with `predict()`
+
+Once the workflow has been fitted, we can use `predict()` to generate predictions for new observations. The argument `new_data` specifies the data for which predictions are required.
+
+**The new data should be treated as unseen data**: these observations should not have been used to fit the model when the objective is to evaluate its predictive performance. This allows us to assess how well the model predicts outcomes for observations it has not encountered during training.
+
+For illustration, we can generate predictions for the first five observations in the dataset. However, if these observations were also used to fit the model, the predictions would not represent a genuine assessment of out-of-sample predictive performance. This distinction is important when using training and test sets to assess predictive performance.
+
+
+```{r}
+new_observations <- insurance %>%
+  slice(1:5)
+
+predictions <- predict(
+  lm_fit,
+  new_data = new_observations
+)
+
+predictions
+```
+
+The output is a tibble containing the predicted values in a column named `.pred`.
+
+The workflow automatically applies the preprocessing steps learned during fitting before generating predictions. For example, the categorical variable `smoker` is converted into the dummy variables required by the fitted model. We do not need to repeat these transformations manually.
+
+In practice, predictions should generally be generated for observations that were not used to fit the model when the objective is to assess predictive performance. We will examine this process in the next section.
+
+### Key Idea
+
+A workflow combines the recipe and model specification into a single object. After fitting, the resulting object retains both the trained model and the preprocessing information needed to generate predictions consistently.
+
+This provides a reproducible modelling process: define the preprocessing steps, specify the model, combine them into a workflow, fit the workflow, and use the fitted workflow for prediction.
+
+
+
+
+
+
+
+## 9. Using Workflows for Predictive Modelling
+
+In practice, a model is often used to predict outcomes for observations that were not available during model fitting. To assess how well a model generalizes to new observations, we divide the data into a **training set** and a **test set**.
+
+The training set is used to estimate the preprocessing parameters and fit the model. The test set is kept separate until prediction, allowing us to assess the model using unseen observations.
+
+### Fitting a Workflow on Training Data
+
+We begin by splitting the `insurance` dataset into training and test sets, using 80% of the observations for training and the remaining 20% for testing.
+
+```{r}
+library(tidymodels)
+
+set.seed(123)
+
+insurance_split <- initial_split(insurance, prop = 0.8)
+insurance_train <- training(insurance_split)
+insurance_test  <- testing(insurance_split)
+```
+
+Next, we define the recipe and linear regression model, as in the previous section. The recipe converts the categorical predictor `smoker` into dummy variables.
+
+```{r}
+insurance_recipe <- recipe(
+  charges ~ age + bmi + smoker,
+  data = insurance_train
+) %>%
+  step_dummy(all_nominal_predictors())
+
+lm_model <- linear_reg() %>%
+  set_engine("lm")
+```
+
+We combine the recipe and model into a workflow and fit it using only the training data.
+
+```{r}
+insurance_workflow <- workflow() %>%
+  add_recipe(insurance_recipe) %>%
+  add_model(lm_model)
+
+lm_fit <- insurance_workflow %>%
+  fit(data = insurance_train)
+```
+
+During fitting, the workflow estimates the required preprocessing parameters from the training data and fits the linear regression model using the processed predictors. The test data are not used in this process.
+
+### Generating Predictions on Test Data
+
+Once the workflow has been fitted, we use `predict()` to generate predictions for the test observations.
+
+```{r}
+insurance_test_predictions <- predict(
+  lm_fit,
+  new_data = insurance_test
+)
+
+insurance_test_results <- insurance_test %>%
+  bind_cols(insurance_test_predictions)
+
+head(insurance_test_results)
+```
+
+The resulting dataset contains the original test observations and a `.pred` column containing the predicted insurance charges.
+
+Notice that we do not need to apply `bake()` or create dummy variables manually. The fitted workflow automatically applies the preprocessing steps learned from the training data before generating predictions for the test set.
+
+This is an important advantage of workflows: the same preprocessing instructions are applied consistently to both training and new observations, while information from the test set is kept out of model fitting.
+
+### Assessing Predictive Performance
+
+We can compare the predicted charges with the actual charges in `insurance_test_results` to assess predictive performance. For example, we can calculate RMSE, MAE, and \(R^2\) using the methods introduced in the previous chapter.
+
+```{r}
+insurance_test_results %>%
+  metrics(truth = charges, estimate = .pred)
+```
+
+These metrics summarize how well the model predicts charges for observations that were not used to fit it. Their interpretation is the same as discussed in the chapter on model performance.
+
+The key distinction is that the metrics are calculated using the test set rather than the training data. This provides a more appropriate assessment of how the model may perform on future observations drawn from a similar population.
+
+### Exercise: Fit a Workflow and Predict Test Data
+
+Using the `insurance` dataset, complete the following tasks.
+
+1. Split the data into training and test sets using an 80:20 ratio and `set.seed(123)`.
+2. Define a recipe to predict `charges` using `age`, `bmi`, and `smoker`. Convert categorical predictors into dummy variables.
+3. Specify a linear regression model and combine it with the recipe using `workflow()`.
+4. Fit the workflow using only the training data.
+5. Generate predictions for the test set using `predict()`.
+6. Combine the predictions with the actual charges and inspect the results.
+7. Calculate RMSE, MAE, and \(R^2\) for the test set. Interpret the results using the concepts from the model-performance chapter.
+
+
